@@ -20,6 +20,7 @@ class VideoThread:
         cam_thread.start()
         deep_face_thread = Thread(target=self.face.cam_to_info)
         deep_face_thread.start()
+        self.face.visualization = True # 이미지에 데이터 시각화 할 것 인지 값
         self.graphics_view = graphics_view
         self.webcam = self.face.cap
         if not self.webcam.isOpened():
@@ -30,8 +31,10 @@ class VideoThread:
         self.timer.start(60)  # 30 ms마다 프레임을 갱신합니다.
 
     def update_frame(self):
-        status, frame = self.webcam.read()
-        if status:
+        # status, frame = self.webcam.read()
+        ret, frame = self.face.get_frame()
+        if ret:
+            
             # OpenCV의 BGR 이미지를 Qt의 RGB 이미지로 변환합니다.
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             h, w, ch = frame.shape

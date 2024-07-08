@@ -19,27 +19,30 @@ class FaceToInfo():
         self.analyze_result = None
         self.frame = None
         
+        self.visualization = False
         self.known_person = False
         self.pprint_ = False
+        self.ret = False
 
         self.cam_to_info_deamon = True
         self.cam_deamon = True
     
     def run_cam(self):
         while self.cam_deamon:
-            ret, frame = self.cap.read()
-            if ret:
-                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            self.ret, frame = self.cap.read()
+            self.frame = frame
+            if self.ret:
+                # self.gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
                 if self.img_queue.full():
                     self.img_queue.get()
                 
                 self.img_queue.put(frame)
-                if self.analyze_result != None:
+                if self.analyze_result != None and self.visualization:
                     self.frame = self.result_visualization(frame=frame)
-                else:
+                elif self.analyze_result == None and self.visualization:
                     cv2.putText(frame, "Waiting Service...",  (0, 50),     self.font, 2, (0, 0, 255), 1, cv2.LINE_AA)
-    
+                
     
             # cv2.imshow("test", frame)
             # if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -108,6 +111,12 @@ class FaceToInfo():
     def pprint(self, string):
         if self.pprint_ is True:
             print(string)
+
+    def get_frame(self):
+        if self.frame is None:
+            return False, self.frame
+        else:
+            return True, self.frame
 
     def __del__(self):
         self.cap.release()
