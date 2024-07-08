@@ -12,18 +12,19 @@ class FaceToInfo():
         self.cap = cv2.VideoCapture(0)
         self.db_img = cv2.imread(self.db_path)
         self.db = os.listdir(self.db_path)
-        self.blue = (255, 0, 0)
-        self.green = (0, 255, 0)
-        self.red = (0, 0, 255)
-        self.white = (255, 255, 255) 
+        self.color = (255, 255, 255) 
         self.font =  cv2.FONT_HERSHEY_PLAIN
         self.analyze_result = None
         self.img_queue = Queue(maxsize=1)
 
+        self.known_person = False
+        
+        self.pprint_ = False
         self.cam_to_info_deamon = True
+        self.cam_deamon = True
     
     def run_cam(self):
-        while 1:
+        while self.cam_deamon:
             ret, frame = self.cap.read()
             if ret:
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -32,22 +33,10 @@ class FaceToInfo():
                     self.img_queue.get()
                 
                 self.img_queue.put(frame)
-                if not self.analyze_result == None:
-
-                    # print("test1")
-                    # print(analyze_result)
-                    # print("test2")
-                    # print(find_result)
-                    # print("test3")
-                    # print(pose)
-                    
-                    
-                    cv2.putText(frame, self.analyze_result[0]["dominant_gender"],                        (0, 30),     self.font, 2, self.green, 1, cv2.LINE_AA)
-                    cv2.putText(frame, self.analyze_result[0]["dominant_emotion"],                       (0, 60),   self.font, 2, self.green, 1, cv2.LINE_AA)
-                    cv2.putText(frame, str(self.analyze_result[0]["age"]),                               (0, 90),   self.font, 2, self.green, 1, cv2.LINE_AA)
-                    cv2.putText(frame, (self.find_result[0]["identity"][0]).split("/")[2].split(".")[0], (0, 120),   self.font, 2, self.green, 1, cv2.LINE_AA)
+                if self.analyze_result != None:
+                    self.result_visualization(frame=frame)
                 else:
-                    cv2.putText(frame, "Waiting Service...",  (0, 50),     self.font, 2, self.red, 1, cv2.LINE_AA)
+                    cv2.putText(frame, "Waiting Service...",  (0, 50),     self.font, 2, (0, 0, 255), 1, cv2.LINE_AA)
     
     
             cv2.imshow("test", frame)
@@ -56,6 +45,20 @@ class FaceToInfo():
 
         self.cap.release()
         cv2.destroyAllWindows()
+        
+    def result_visualization(self, frame):
+        cv2.putText(frame, self.analyze_result[0]["dominant_gender"],                        (0, 30),     self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)
+        cv2.putText(frame, self.analyze_result[0]["dominant_emotion"],                       (0, 60),   self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)
+        cv2.putText(frame, str(self.analyze_result[0]["age"]),                               (0, 90),   self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)
+        
+        cv2.rectangle(frame, (self.face_data["facial_area"]["x"], self.face_data["facial_area"]["y"]), 
+                        (self.face_data["facial_area"]["x"] + self.face_data["facial_area"]["w"], self.face_data["facial_area"]["y"] + self.face_data["facial_area"]["h"]),
+                        color=self.color)
+        
+        if not self.find_result[0].empty and self.known_person:
+            cv2.putText(frame, (self.find_result[0]["identity"][0]).split("/")[2].split(".")[0], (0, 120),   self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)
+
+        return frame
 
     def cam_to_info(self):
         while self.cam_to_info_deamon:
@@ -65,25 +68,49 @@ class FaceToInfo():
             frame = self.img_queue.get()
             faces = DeepFace.extract_faces(img_path=frame, enforce_detection=False)
             
-            print(faces)
-            w = 0
-
+            # self.pprint(faces)
+            x = 999
+            
             for face_data in faces:
                 face_img = (face_data["face"] * 255).astype(np.uint8) 
                 face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2RGB)
 
-                find_result = (DeepFace.find(img_path = face_img, db_path = self.db_path, threshold = 0.9, silent = True, enforce_detection = False))
+                find_result = DeepFace.find(img_path = face_img, db_path = self.db_path, threshold = 0.8, silent = True, enforce_detection = False)
                 analyze_result = DeepFace.analyze(img_path = face_img, silent = True, enforce_detection = False)
                 
-                # cv2.imshow("cut_img", face_img)
-                if w < analyze_result[0]["region"]["w"]:
-                    self.find_result = find_result
-                    self.analyze_result = analyze_result
-                    w = analyze_result[0]["region"]["w"]
+                if x > abs(face_data["facial_area"]["x"] + face_data["facial_area"]["w"] / 2 - 320) and face_data["facial_area"]["x"] != 0:
+                    x = abs(face_data["facial_area"]["x"] + face_data["facial_area"]["w"] / 2 - 320)
+                    mid_analyze_result = analyze_result
+                    mid_find_result = find_result
+                    mid_face_data = face_data
+                    if not find_result[0].empty :
+                        if find_result[0].distance.iloc[0] < 0.15:
+                            self.color = (0, 255, 0)
+                            self.known_person = True
+                        else:
+                            self.color = (0, 0, 255)
+                            self.known_person = False
+                    else:
+                        self.color = (0, 0, 255)
+                        self.known_person = False
                 else:
                     continue
+                
+                self.pprint(find_result[0].distance)
+                self.pprint(x)
 
+            if 'mid_analyze_result' in locals():
+                self.analyze_result = mid_analyze_result
+                self.find_result = mid_find_result
+                self.face_data = mid_face_data
 
+    def pprint(self, string):
+        if self.pprint_ is True:
+            print(string)
+
+    def __del__(self):
+        self.cap.release()
+        cv2.destroyAllWindows()
 
 
         
