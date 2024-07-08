@@ -1,20 +1,27 @@
 import sys
 import cv2
 import threading
+import face_to_info as face
+from threading import Thread
 from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt, QEvent, QTimer
 
 # UI 파일 연결
-main_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/main2.ui")[0]
-login_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/login.ui")[0]
-menu_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/order_ice_cream2.ui")[0]
+main_form_class = uic.loadUiType("GUI/main2.ui")[0]
+login_form_class = uic.loadUiType("GUI/login.ui")[0]
+menu_form_class = uic.loadUiType("GUI/order_ice_cream2.ui")[0]
 
 class VideoThread:
     def __init__(self, graphics_view):
+        self.face = face.FaceToInfo("test/img_db/")
+        cam_thread = Thread(target=self.face.run_cam)
+        cam_thread.start()
+        deep_face_thread = Thread(target=self.face.cam_to_info)
+        deep_face_thread.start()
         self.graphics_view = graphics_view
-        self.webcam = cv2.VideoCapture(0)
+        self.webcam = self.face.cap
         if not self.webcam.isOpened():
             print("Could not open webcam")
             exit()
@@ -42,6 +49,11 @@ class VideoThread:
     def stop(self):
         self.timer.stop()
         self.webcam.release()
+        self.face.cam_to_info_deamon = False
+        self.face.cam_deamon = False
+
+    def __del__(self):
+        self.stop()
 
 
 # 메인 창 클래스

@@ -7,8 +7,8 @@ from deepface import DeepFace
 from queue import Queue
 
 class FaceToInfo():
-    def __init__(self):
-        self.db_path = "test/img_db/"
+    def __init__(self, db_path = "test/img_db/"):
+        self.db_path = db_path
         self.cap = cv2.VideoCapture(0)
         self.db_img = cv2.imread(self.db_path)
         self.db = os.listdir(self.db_path)
@@ -41,12 +41,12 @@ class FaceToInfo():
                     cv2.putText(frame, "Waiting Service...",  (0, 50),     self.font, 2, (0, 0, 255), 1, cv2.LINE_AA)
     
     
-            cv2.imshow("test", frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            # cv2.imshow("test", frame)
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     break
 
         self.cap.release()
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
         
     def result_visualization(self, frame):
         cv2.putText(frame, self.analyze_result[0]["dominant_gender"],                        (0, 30),     self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)
@@ -70,7 +70,6 @@ class FaceToInfo():
             frame = self.img_queue.get()
             faces = DeepFace.extract_faces(img_path=frame, enforce_detection=False)
             
-            # self.pprint(faces)
             x = 999
             
             for face_data in faces:
@@ -112,7 +111,7 @@ class FaceToInfo():
 
     def __del__(self):
         self.cap.release()
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
 
 
         
