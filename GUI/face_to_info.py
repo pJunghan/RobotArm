@@ -23,7 +23,7 @@ class FaceToInfo():
         
         self.visualization = False  # 이미지 시각화와 관련된 파라미터 결과값을 보고싶다면 True로
         self.known_person = False
-        self.pprint_ = False        # 디버깅 메세지들을 확인하기 위한 파라미터 한번에 관리하기 용이
+        self.log_print_ = False        # 디버깅 메세지들을 확인하기 위한 파라미터 한번에 관리하기 용이
         self.ret = False
 
         self.cam_to_info_deamon = True  # 각 스래드를 정지시키기위한 파라미터 False로 할시 해당 스레드 정지
@@ -94,8 +94,8 @@ class FaceToInfo():
                 else:
                     continue 
                 
-                self.pprint(find_result[0].distance)
-                self.pprint(x)
+                self.log_print(find_result[0].distance)
+                self.log_print(x)
 
             if 'mid_analyze_result' in locals(): # 검출 결과 있는지 확인
                 self.analyze_result = mid_analyze_result
@@ -114,8 +114,8 @@ class FaceToInfo():
             self.color = (0, 0, 255)
             self.known_person = False
 
-    def pprint(self, string) : # self.pprint_ 를 통해 한번에 비활성화, 활성화 가능한 print
-        if self.pprint_ is True:
+    def log_print(self, string) : # self.log_print_ 를 통해 한번에 비활성화, 활성화 가능한 print
+        if self.log_print_ is True:
             print(string)
 
     def get_frame(self) : # 이미지 가져올 수 있는 함수
