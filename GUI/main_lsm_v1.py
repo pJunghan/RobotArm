@@ -1,3 +1,4 @@
+import os
 import sys
 import cv2
 import threading
@@ -8,14 +9,20 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt, QEvent, QTimer
 
+# CUDA 드라이버와 관련된 경고 무시
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
+# Qt 플랫폼 플러그인 경로 설정
+os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = '/home/lsm/.local/lib/python3.10/site-packages/cv2/qt/plugins'
+
 # UI 파일 연결
-main_form_class = uic.loadUiType("RobotArm/GUI/main2.ui")[0]
-login_form_class = uic.loadUiType("RobotArm/GUI/login.ui")[0]
-menu_form_class = uic.loadUiType("RobotArm/GUI/order_ice_cream2.ui")[0]
+main_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/main2.ui")[0]
+login_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/login.ui")[0]
+menu_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/order_ice_cream2.ui")[0] 
 
 class VideoThread:
     def __init__(self, graphics_view):
-        self.face = face.FaceToInfo("test/img_db/")
+        self.face = face.FaceToInfo("/home/lsm/git_ws/RobotArm/test")
         cam_thread = Thread(target=self.face.run_cam)
         cam_thread.start()
         deep_face_thread = Thread(target=self.face.cam_to_info)
