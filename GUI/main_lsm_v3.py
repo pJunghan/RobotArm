@@ -4,7 +4,7 @@ import sqlite3
 import os
 import re
 import threading
-import face_to_info as face
+import face_to_info_v2 as face
 from threading import Thread
 from PyQt5 import uic
 from PyQt5.QtWidgets import *
@@ -23,27 +23,24 @@ signPhoto_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/signPhoto.u
 
 class FaceIDVideoThread:
     def __init__(self, graphics_view):
-        self.face = face.FaceToInfo("/home/lsm/git_ws/RobotArm/test/img_db")
+        self.face = face.FaceToInfo("RobotArm/GUI/DB/user_data.db")
         cam_thread = Thread(target=self.face.run_cam)
         cam_thread.start()
         deep_face_thread = Thread(target=self.face.cam_to_info)
         deep_face_thread.start()
-        self.face.visualization = True # 이미지에 데이터 시각화 할 것 인지 값
+        self.face.visualization = True  # 이미지에 데이터 시각화 할 것인지
         self.graphics_view = graphics_view
         self.webcam = self.face.cap
         if not self.webcam.isOpened():
-            print("Could not open webcam")
+            print("웹캠을 열 수 없습니다.")
             exit()
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_frame)
-        self.timer.start(60)  # 30 ms마다 프레임을 갱신합니다.
+        self.timer.start(60)  # 60 ms마다 프레임을 갱신합니다.
 
     def update_frame(self):
-        # status, frame = self.webcam.read()
         ret, frame = self.face.get_frame()
         if ret:
-            
-            # OpenCV의 BGR 이미지를 Qt의 RGB 이미지로 변환합니다.
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             h, w, ch = frame.shape
             bytes_per_line = ch * w
@@ -55,18 +52,18 @@ class FaceIDVideoThread:
         scene = QGraphicsScene()
         scene.addItem(QGraphicsPixmapItem(pixmap))
         self.graphics_view.setScene(scene)
-        self.graphics_view.fitInView(scene.itemsBoundingRect(), 1)  # 1은 AspectRatioMode의 KeepAspectRatio 값입니다.
+        self.graphics_view.fitInView(scene.itemsBoundingRect(), Qt.KeepAspectRatio)
 
     def stop(self):
-        self.timer.stop()
-        self.webcam.release()
+        if self.timer.isActive():
+            self.timer.stop()
+        if self.webcam.isOpened():
+            self.webcam.release()
         self.face.cam_to_info_deamon = False
         self.face.cam_deamon = False
 
     def __del__(self):
         self.stop()
-
-
 
 # 메인 창 클래스
 class MainWindow(QMainWindow, main_form_class):
@@ -101,7 +98,6 @@ class LoginWindow(QMainWindow, login_form_class):
         self.next_window = MenuWindow()
         self.next_window.show()
         self.close()
-
 
 # 메뉴 창 클래스
 class MenuWindow(QMainWindow, menu_form_class):
@@ -198,15 +194,12 @@ class SignUpDialog(QDialog, signup_form_class):
         self.setupUi(self)
         self.signupBtn.clicked.connect(self.save_to_db)
 
-        # QCheckBox의 상태 변경 시그널을 연결합니다.
         self.checkMale.stateChanged.connect(self.on_check_male)
         self.checkFemale.stateChanged.connect(self.on_check_female)
 
-        # 데이터베이스 초기화
         self.init_db()
 
     def init_db(self):
-        # 데이터베이스 연결 및 테이블 생성
         self.conn = sqlite3.connect('RobotArm/GUI/DB/user_data.db')
         self.cursor = self.conn.cursor()
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS users
@@ -215,11 +208,8 @@ class SignUpDialog(QDialog, signup_form_class):
                                 Phone_Number INTEGER NOT NULL,
                                 Birth INTEGER NOT NULL,
                                 Gender TEXT NOT NULL,
+                                Image BLOB,
                                 Created_at TEXT NOT NULL)''')
-        self.cursor.execute("PRAGMA table_info(users)")
-        columns = [column[1] for column in self.cursor.fetchall()]
-        if 'image' not in columns:
-            self.cursor.execute("ALTER TABLE users ADD COLUMN image BLOB")
         self.conn.commit()
 
     def on_check_male(self, state):
@@ -237,7 +227,6 @@ class SignUpDialog(QDialog, signup_form_class):
         gender = "Male" if self.checkMale.isChecked() else "Female" if self.checkFemale.isChecked() else ""
         created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # 입력 데이터 검증
         phone_pattern = re.compile(r'^\d{10,11}$')
         birth_pattern = re.compile(r'^\d{6}$')
 
@@ -254,23 +243,19 @@ class SignUpDialog(QDialog, signup_form_class):
             self.show_warning("입력 오류", "성별을 선택해주세요.")
             return
 
-        # 중복 사용자 검증
         self.cursor.execute("SELECT * FROM users WHERE phone_number = ?", (phone_number,))
         if self.cursor.fetchone():
             self.show_warning("입력 오류", "이미 가입된 사용자입니다.")
             return
 
-        # 데이터베이스에 데이터 저장
         self.cursor.execute("INSERT INTO users (Name, Phone_Number, Birth, Gender, Created_at) VALUES (?, ?, ?, ?, ?)",
                             (name, phone_number, int(birth), gender, created_at))
         self.conn.commit()
 
-        # 생성된 사용자의 PRIMARY KEY 가져오기
         user_id = self.cursor.lastrowid
 
         QMessageBox.information(self, "성공", "회원가입 성공")
 
-        # SignUpPhotoDialog로 창 전환
         self.open_photo_dialog(user_id)
 
     def open_photo_dialog(self, user_id):
@@ -284,7 +269,7 @@ class SignUpDialog(QDialog, signup_form_class):
         msg_box.move(self.frame.geometry().center().x() - msg_box.width() // 2, self.frame.geometry().center().y() - msg_box.height() // 2)
 
     def closeEvent(self, event):
-        self.conn.close()  # 데이터베이스 연결 종료
+        self.conn.close()
         event.accept()
 
 class SignUpPhotoDialog(QDialog, signPhoto_form_class):
@@ -296,30 +281,24 @@ class SignUpPhotoDialog(QDialog, signPhoto_form_class):
         self.takePhotoBtn.clicked.connect(self.save_photo)
 
     def save_photo(self):
-        # 현재 위치에서 Save_Image 폴더를 생성합니다.
         save_dir = os.path.join("RobotArm/GUI/Image")
         os.makedirs(save_dir, exist_ok=True)
 
-        # PRIMARY KEY 번호를 사용하여 파일 이름을 설정합니다.
         file_name = f"ID{self.user_id}.jpg"
         file_path = os.path.join(save_dir, file_name)
 
-        # 사진을 저장합니다.
         frame = self.video_thread.save_current_frame(file_path)
 
-        # 이미지 데이터를 데이터베이스에 저장합니다.
         if frame is not None:
             _, buffer = cv2.imencode('.jpg', frame)
             image_data = buffer.tobytes()
 
-            # 데이터베이스에 이미지 데이터 저장
             conn = sqlite3.connect('RobotArm/GUI/DB/user_data.db')
             cursor = conn.cursor()
             cursor.execute("UPDATE users SET image = ? WHERE id = ?", (image_data, self.user_id))
             conn.commit()
             conn.close()
 
-            # 사진 촬영 성공 메시지 박스 표시
             QMessageBox.information(self, "성공", "사진 촬영 성공")
         
         self.close()

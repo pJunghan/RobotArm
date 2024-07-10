@@ -6,7 +6,7 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import QTimer
 
 # ui 파일을 로드합니다.
-login_form_class = uic.loadUiType("RobotArm/GUI/login.ui")[0]
+login_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/login.ui")[0]
 
 class VideoThread:
     def __init__(self, graphics_view):
