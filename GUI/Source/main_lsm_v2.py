@@ -14,11 +14,11 @@ from datetime import datetime
 
 
 # UI 파일 연결
-main_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/main_v1.ui")[0]
-login_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/login.ui")[0]
-menu_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/order_ice_cream2.ui")[0]
-signup_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/signup.ui")[0]
-signPhoto_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/signPhoto.ui")[0]
+main_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/UI/main_v1.ui")[0]
+login_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/UI/login.ui")[0]
+menu_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/UI/order_ice_cream2.ui")[0]
+signup_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/UI/signup.ui")[0]
+signPhoto_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/UI/signPhoto.ui")[0]
 
 
 class FaceIDVideoThread:

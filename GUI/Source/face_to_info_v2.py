@@ -28,6 +28,7 @@ images = get_images_from_db(db_path)
 # 웹캠에서 실시간 얼굴 감지 및 분석
 cap = cv2.VideoCapture(0)
 
+# 파라미터 설정
 models = ["VGG-Face", "Facenet", "Facenet512", "OpenFace", "DeepFace", "DeepID", "ArcFace", "Dlib", "SFace", "GhostFaceNet"]
 metrics = ["cosine", "euclidean", "euclidean_l2"]
 backends = ['opencv', 'ssd', 'dlib', 'mtcnn', 'fastmtcnn', 'retinaface', 'mediapipe', 'yolov8', 'yunet', 'centerface']
@@ -67,7 +68,7 @@ while True:
                 for user_id, db_image in images.items():
                     try:
                         face_image = frame[y:y+h, x:x+w]
-                        verify_result = DeepFace.verify(face_image, db_image, model_name=models[0], distance_metric=metrics[1], detector_backend=backends[0])
+                        verify_result = DeepFace.verify(face_image, db_image, model_name=models[0], distance_metric=metrics[1], detector_backend=backends[0], threshold=0.8)
 
                         if verify_result['verified']:
                             match = True
