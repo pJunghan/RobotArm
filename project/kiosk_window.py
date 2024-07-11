@@ -2,8 +2,9 @@ import sys
 import os
 import cv2
 import pymysql
-from PyQt5 import uic, QtCore
-from PyQt5.QtCore import Qt
+import time
+from PyQt5 import uic, QtCore, QtGui
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from menu_window import MenuWindow
@@ -14,17 +15,17 @@ class KioskWindow(QMainWindow):
         super().__init__()
         uic.loadUi(kiosk_ui_path, self)
         self.db_config = db_config
+        self.cap = cv2.VideoCapture(0)  # 0으로 수정하여 기본 카메라 사용
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_frame)
         
         self.captureButton.clicked.connect(self.capture_image)
         
-        self.cap = cv2.VideoCapture(-1)
         if not self.cap.isOpened():
             QMessageBox.warning(self, "카메라 연결 오류", "카메라를 열 수 없습니다.")
         
-        self.timer = QtCore.QTimer(self)
-        self.timer.timeout.connect(self.update_frame)
-        self.timer.start(1000 // 30)
-        
+        self.timer.start(1000 // 30)  # 30 fps로 설정
+
     def update_frame(self):
         ret, frame = self.cap.read()
         if ret:
@@ -50,7 +51,6 @@ class KioskWindow(QMainWindow):
                     if ret:
                         cv2.imwrite(image_path, frame)
                         QMessageBox.information(self, "촬영 완료", "사진이 성공적으로 저장되었습니다.")
-                        # 메뉴 창으로 이동
                         self.go_to_menu_window()
                     else:
                         QMessageBox.warning(self, "촬영 실패", "카메라에서 이미지를 가져오지 못했습니다.")
@@ -63,6 +63,12 @@ class KioskWindow(QMainWindow):
                 conn.close()
                 print("데이터베이스 연결을 닫았습니다.")
             self.close()
+
+    def closeEvent(self, event):
+        self.cap.release()
+        self.timer.stop()
+        event.accept()
+        time.sleep(1)
 
     def go_to_menu_window(self):
         try:
