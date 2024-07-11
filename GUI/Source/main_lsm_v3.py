@@ -8,17 +8,17 @@ import face_to_info_v2 as face
 from threading import Thread
 from PyQt5 import uic
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt, QEvent, QTimer
 from datetime import datetime
 
 
 # UI 파일 연결
-main_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/main_v1.ui")[0]
-login_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/login.ui")[0]
-menu_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/order_ice_cream2.ui")[0]
-signup_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/signup.ui")[0]
-signPhoto_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/signPhoto.ui")[0]
+main_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/UI/main_v1.ui")[0]
+login_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/UI/login.ui")[0]
+menu_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/UI/order_ice_cream2.ui")[0]
+signup_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/UI/signup.ui")[0]
+signPhoto_form_class = uic.loadUiType("/home/lsm/git_ws/RobotArm/GUI/UI/signPhoto.ui")[0]
 
 
 class FaceIDVideoThread:
