@@ -6,20 +6,28 @@ from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap, QImage, QPainter
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QGraphicsScene
-
+from face_to_info import FaceToInfo
 from menu_window import MenuWindow
+from threading import Thread
 from new_account_window import NewAccountWindow
-from config import login_ui_path, db_config, new_account_ui_path
+from config import login_ui_path, db_config, new_account_ui_path, user_img_path
 
 class LoginWindow(QMainWindow):
     def __init__(self):
         super(LoginWindow, self).__init__()
         uic.loadUi(login_ui_path, self)
 
-        self.camera = cv2.VideoCapture(0)  # Open the default camera (0)
-        if not self.camera.isOpened():
-            QMessageBox.critical(self, "카메라 연결 오류", "카메라를 열 수 없습니다.")
-            return
+        self.face = FaceToInfo(user_img_path)
+        cam_thread = Thread(target=self.face.run_cam)
+        cam_thread.start()
+        deep_face_thread = Thread(target=self.face.cam_to_info)
+        deep_face_thread.start()
+        self.face.visualization = True
+
+        # self.camera = cv2.VideoCapture(0)  # Open the default camera (0)
+        # if not self.camera.isOpened():
+        #     QMessageBox.critical(self, "카메라 연결 오류", "카메라를 열 수 없습니다.")
+        #     return
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
@@ -32,7 +40,7 @@ class LoginWindow(QMainWindow):
         self.graphicsView.setScene(self.scene)
 
     def update_frame(self):
-        ret, frame = self.camera.read()
+        ret, frame = self.face.get_frame()
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             h, w, ch = frame.shape
@@ -52,12 +60,20 @@ class LoginWindow(QMainWindow):
             # Ensure the pixmap item is centered in the graphics view
             pixmap_item.setPos((self.graphicsView.width() - pixmap.width()) / 2,
                                (self.graphicsView.height() - pixmap.height()) / 2)
+        self.check_user()
+        
+    def check_user(self):
+        if self.face.known_person and not self.isHidden():
+            self.go_to_menu_window()
 
-    def closeEvent(self, event):
-        if self.camera.isOpened():
-            self.camera.release()
-            time.sleep(1)  # Wait for camera to properly release
-        event.accept()
+
+    def close_event(self):
+        self.timer.stop()
+        self.face.cam_to_info_deamon = False
+        self.face.cam_deamon = False
+        del(self.face)
+        self.close()
+        
 
     def handle_guest_login(self):
         # 데이터베이스에 새로운 비회원 사용자 추가
@@ -102,15 +118,16 @@ class LoginWindow(QMainWindow):
 
 
     def go_to_menu_window(self):
-        self.closeEvent(QtCore.QEvent(QtCore.QEvent.Close))
-        self.hide()  # 메인 윈도우를 숨깁니다.
+        self.close_event()
+        # self.hide()  # 메인 윈도우를 숨깁니다.
         self.next_window = MenuWindow(db_config)
         self.next_window.show()
 
 
+
     def go_to_new_account_window(self):
-        self.closeEvent(QtCore.QEvent(QtCore.QEvent.Close))
-        self.hide()  # 메인 윈도우를 숨깁니다.
+        self.close_event()
+        # self.hide()  # 메인 윈도우를 숨깁니다.
         self.next_window = NewAccountWindow(new_account_ui_path, db_config)
         self.next_window.show()
 

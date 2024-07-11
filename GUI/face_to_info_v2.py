@@ -7,7 +7,7 @@ from deepface import DeepFace
 from queue import Queue
 
 class FaceToInfo:
-    def __init__(self, db_path="RobotArm/GUI/DB/user_data.db"):
+    def __init__(self, db_path="GUI/DB/user_data.db"):
         self.db_path = db_path  # 데이터베이스 경로
         self.cap = cv2.VideoCapture(0)  # 웹캠 캡처 초기화
         self.db_images = []  # 이미지 목록 초기화

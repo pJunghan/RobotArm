@@ -22,7 +22,7 @@ def get_images_from_db(db_path):
     return images
 
 # 데이터베이스에서 이미지를 가져옵니다
-db_path = '/home/lsm/git_ws/RobotArm/GUI/DB/user_data.db'
+db_path = 'GUI/DB/user_data.db'
 images = get_images_from_db(db_path)
 
 # 웹캠에서 실시간 얼굴 감지 및 분석
@@ -67,7 +67,7 @@ while True:
                 for user_id, db_image in images.items():
                     try:
                         face_image = frame[y:y+h, x:x+w]
-                        verify_result = DeepFace.verify(face_image, db_image, model_name=models[0], distance_metric=metrics[1], detector_backend=backends[0])
+                        verify_result = DeepFace.verify(face_image, db_image, model_name=models[0], distance_metric=metrics[1], detector_backend=backends[0], threshold=0.85)
 
                         if verify_result['verified']:
                             match = True

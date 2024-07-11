@@ -23,7 +23,8 @@ class MainWindow(QMainWindow):
         if not hasattr(self, 'login_window'):
             self.login_window = LoginWindow()
             self.login_window.show()
-            self.hide()  # 메인 윈도우를 숨깁니다.
+            self.close()
+            # self.hide()  # 메인 윈도우를 숨깁니다.
 
     def update_purchase_count(self, db_config):
         try:

@@ -5,10 +5,10 @@ import numpy as np
 from threading import Thread
 from deepface import DeepFace
 from queue import Queue
-
+from config import user_img_path
 
 class FaceToInfo():
-    def __init__(self, db_path = "GUI/Image") :
+    def __init__(self, db_path = user_img_path) :
         self.db_path = db_path
         self.cap = cv2.VideoCapture(0)
         self.db_img = cv2.imread(self.db_path)
