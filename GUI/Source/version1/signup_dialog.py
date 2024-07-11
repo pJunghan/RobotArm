@@ -32,7 +32,7 @@ class SignUpDialog(QDialog, signup_form_class):
                                 Phone_Number VARCHAR(11) NOT NULL,
                                 Birth VARCHAR(6) NOT NULL,
                                 Gender VARCHAR(6) NOT NULL,
-                                Point INT DEFAULT 0
+                                Point INT DEFAULT 0,
                                 Created_at DATETIME NOT NULL)''')
         self.conn.commit()
 
