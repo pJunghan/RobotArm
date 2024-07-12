@@ -189,7 +189,28 @@ class ConfirmWindow(QMainWindow):
                         self.item_click_count['topping1'], self.item_click_count['topping2'], self.item_click_count['topping3'],
                         self.user_id
                     ))
-                    
+                    # Update inventory_management_table
+                    inventory_query = """
+                        UPDATE inventory_management_table
+                        SET 
+                            flavor1 = flavor1 + %s,  -- Increment flavor1 with choco_count
+                            flavor2 = flavor2 + %s,  -- Increment flavor2 with vanila_count
+                            flavor3 = flavor3 + %s,  -- Increment flavor3 with strawberry_count
+                            topping1 = topping1 + %s, -- Increment topping1 with topping1_count
+                            topping2 = topping2 + %s, -- Increment topping2 with topping2_count
+                            topping3 = topping3 + %s  -- Increment topping3 with topping3_count
+                        WHERE date_time = NOW();  -- Adjust this condition as needed
+                    """
+
+                    cursor.execute(inventory_query, (
+                        self.item_click_count['choco_count'],      # For flavor1
+                        self.item_click_count['vanila_count'],     # For flavor2
+                        self.item_click_count['strawberry_count'], # For flavor3
+                        self.item_click_count['topping1_count'],   # For topping1
+                        self.item_click_count['topping2_count'],   # For topping2
+                        self.item_click_count['topping3_count']    # For topping3
+                    ))
+
                     conn.commit()
                     QMessageBox.information(self, "결제 완료", "결제가 성공적으로 완료되었습니다.")
                     self.go_to_main_window()

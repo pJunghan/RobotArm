@@ -9,7 +9,9 @@ menu_ui_path = os.path.join(ui_base_path, "order_ice_cream_window.ui")
 new_account_ui_path = os.path.join(ui_base_path, "signup.ui")
 kiosk_ui_path = os.path.join(ui_base_path, "kiosk_cam.ui")
 confirm_ui_path = os.path.join(ui_base_path, "purchase.ui")
+manager_ui_path = os.path.join(ui_base_path, "manager.ui")
 user_img_path = "/home/pjh/dev_ws/EDA/user_pic"
+
 # 데이터베이스 연결 설정
 db_config = {
     'host': '172.30.1.53',      # 데이터베이스 호스트 주소
