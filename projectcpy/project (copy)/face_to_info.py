@@ -20,16 +20,16 @@ class FaceToInfo():
         self.width = 640
 
         self.analyze_result = None
-        self.frame = None
-        self.name = None
+        self.frame          = None
+        self.name           = None      # 검출된 사용자 이름
 
-        self.visualization = False      # 이미지 시각화와 관련된 파라미터 결과값을 보고싶다면 True로
-        self.known_person = False
-        self.log_print_ = False         # 디버깅 메세지들을 확인하기 위한 파라미터 한번에 관리하기 용이
-        self.ret = False
+        self.visualization  = False      # 이미지 시각화와 관련된 파라미터 결과값을 보고싶다면 True로
+        self.known_person   = False
+        self.log_print_     = False         # 디버깅 메세지들을 확인하기 위한 파라미터 한번에 관리하기 용이
+        self.ret            = False
 
         self.cam_to_info_deamon = True  # 각 스래드를 정지시키기위한 파라미터 False로 할시 해당 스레드 정지
-        self.cam_deamon = True          #
+        self.cam_deamon         = True 
     
     def run_cam(self) : # 캠에서 이미지를 받아와 이미지 큐에 넣어주는 함수 결과 시각화가 켜져있다면 해당 결과도 이미지에 추가해줌
         while self.cam_deamon:
@@ -44,6 +44,9 @@ class FaceToInfo():
                 self.img_queue.put(frame)
                 if self.analyze_result != None and self.visualization:
                     self.frame = self.result_visualization(frame=frame)
+                    if not self.find_result[0].empty and self.known_person: # db에 존재하는 인물이라면 해당 이미지의 이름
+                        self.name = (self.find_result[0]["identity"][0]).split("/")[2].split(".")[0]
+                        cv2.putText(frame, self.name, (0, 120),   self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)
                 elif self.analyze_result == None and self.visualization:
                     cv2.putText(frame, "Waiting Service...",  (0, 50),     self.font, 2, (0, 0, 255), 1, cv2.LINE_AA)
 
@@ -56,18 +59,15 @@ class FaceToInfo():
         # cv2.destroyAllWindows()
         
     def result_visualization(self, frame) : # 결과값 시각화 함수
-        cv2.putText(frame, self.analyze_result[0]["dominant_gender"],                        (0, 30),     self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)# 성별
-        cv2.putText(frame, self.analyze_result[0]["dominant_emotion"],                       (0, 60),   self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)  # 감정
-        cv2.putText(frame, str(self.analyze_result[0]["age"]),                               (0, 90),   self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)  # 나이
+        cv2.putText(frame, self.analyze_result[0]["dominant_gender"]    ,                       (0, 30),    self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)  # 성별
+        cv2.putText(frame, self.analyze_result[0]["dominant_emotion"]   ,                       (0, 60),    self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)  # 감정
+        cv2.putText(frame, str(self.analyze_result[0]["age"])           ,                       (0, 90),    self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)  # 나이
+        cv2.putText(frame, (self.find_result[0]["identity"][0]).split("/")[2].split(".")[0],    (0, 120),   self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)
         
         cv2.rectangle(frame, (self.face_data["facial_area"]["x"], self.face_data["facial_area"]["y"]), 
-                        (self.face_data["facial_area"]["x"] + self.face_data["facial_area"]["w"], self.face_data["facial_area"]["y"] + self.face_data["facial_area"]["h"]),
-                        color=self.color,
-                        thickness=3) # 얼굴 범위
-        
-        if not self.find_result[0].empty and self.known_person: # db에 존재하는 인물이라면 해당 이미지의 이름
-            self.name = (self.find_result[0]["identity"][0]).split("/")[2].split(".")[0]
-            cv2.putText(frame, self.name, (0, 120),   self.font, 2, (0, 255, 0), 1, cv2.LINE_AA)
+            (self.face_data["facial_area"]["x"] + self.face_data["facial_area"]["w"], self.face_data["facial_area"]["y"] + self.face_data["facial_area"]["h"]),
+            color=self.color,
+            thickness=3) # 얼굴 범위
 
         return frame
 
@@ -105,7 +105,7 @@ class FaceToInfo():
                 self.find_result = mid_find_result
                 self.face_data = mid_face_data
 
-    def are_you_member(self, find_result) : # 멤버쉽 멤버이면(db에 인식률이 0.85 이상의 사진이 있다면) 초록색, 아니면 빨간색으로 표시해주는 함수
+    def are_you_member(self, find_result) : # 멤버쉽 멤버이면(db에 인식률이 0.85 이상의 사진이 있다면)사각형 색상을 초록색, 아니면 빨간색으로 변경해주는 함수
         if not find_result[0].empty :
             if find_result[0].distance.iloc[0] < 0.15:
                 self.color = (0, 255, 0)
@@ -113,6 +113,7 @@ class FaceToInfo():
             else:
                 self.color = (0, 0, 255)
                 self.known_person = False
+                self.name         = None
         else:
             self.color = (0, 0, 255)
             self.known_person = False
@@ -135,7 +136,6 @@ class FaceToInfo():
         # cv2.destroyAllWindows()
 
 
-        
 
 if __name__ == "__main__":
     face = FaceToInfo()

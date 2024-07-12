@@ -10,7 +10,7 @@
 # All rights reserved.
 #
 # Author: Vinman <vinman.wen@ufactory.cc> <vinman.cub@gmail.com>
-
+import keyboard
 """
 # Notice
 #   1. Changes to this file on Studio will not be preserved
@@ -1835,8 +1835,8 @@ class RobotMain(object):
                         else:
                             self.motion_place_fail_capsule()
                             self.motion_home()
-                            self.clientSocket.send('icecream_cancel'.encode('utf-8'))
-                            self.order_msg['makeReq']['sealing'] = ''
+                            # self.clientSocket.send('icecream_cancel'.encode('utf-8'))
+                            # self.order_msg['makeReq']['sealing'] = ''
                     else:
                         pass
                         # while True:
@@ -2133,10 +2133,16 @@ class RobotMain(object):
             self.motion_greet()
 
     def test_run(self) -> None:
+        
         # self.motion_place_fail_capsule()
         self.gritting("female")
-        # self.motion_trash_cup('A')
-        # self.motion_home()
+
+    def controller(self):
+        keyboard.add_hotkey('q', lambda:self._arm.emergency_stop())
+        keyboard.add_hotkey('w', lambda:self._arm.set_state(0))
+        keyboard.add_hotkey('e', lambda:self.motion_home())
+        keyboard.wait()
+        
         
         
     def joint_state(self):
@@ -2160,3 +2166,5 @@ if __name__ == '__main__':
     run_thread = threading.Thread(target=robot_main.test_run)
     run_thread.start()
     print('run_thread_started')
+    # controller_thread = threading.Thread(target=robot_main.controller)
+    # controller_thread.start()
