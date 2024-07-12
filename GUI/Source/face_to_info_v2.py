@@ -5,10 +5,7 @@ from deepface import DeepFace
 import threading
 
 
-<<<<<<< HEAD
-# 이미지 경로에서 이미지를 가져옵니다
-db_path = '/home/lsm/git_ws/RobotArm/GUI/DB/user_data.db'
-=======
+def get_images_from_db(rows):
     images = {}
     for row in rows:
         user_id, image_data = row
@@ -20,7 +17,7 @@ db_path = '/home/lsm/git_ws/RobotArm/GUI/DB/user_data.db'
 
 # 데이터베이스에서 이미지를 가져옵니다
 db_path = 'GUI/DB/user_data.db'
->>>>>>> 15f417b77574d3cb6426cce36653796fc652c4ef
+
 images = get_images_from_db(db_path)
 
 # 웹캠에서 실시간 얼굴 감지 및 분석
@@ -66,11 +63,9 @@ while True:
                 for user_id, db_image in images.items():
                     try:
                         face_image = frame[y:y+h, x:x+w]
-<<<<<<< HEAD:GUI/face_to_info_v3.py
-                        verify_result = DeepFace.verify(face_image, db_image, model_name=models[0], distance_metric=metrics[1], detector_backend=backends[0], threshold=0.85)
-=======
+
                         verify_result = DeepFace.verify(face_image, db_image, model_name=models[0], distance_metric=metrics[1], detector_backend=backends[0], threshold=0.8)
->>>>>>> edc0fac9526f8c05faa37c1c5a11085241037d4f:GUI/Source/face_to_info_v2.py
+
 
                         if verify_result['verified']:
                             match = True
