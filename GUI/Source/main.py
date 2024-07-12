@@ -15,7 +15,7 @@ menu_form_class = uic.loadUiType("GUI/order_ice_cream2.ui")[0]
 
 class VideoThread:
     def __init__(self, graphics_view):
-        self.face = face.FaceToInfo("test/img_db/")
+        self.face = face.FaceToInfo("GUI/Image")
         cam_thread = Thread(target=self.face.run_cam)
         cam_thread.start()
         deep_face_thread = Thread(target=self.face.cam_to_info)
