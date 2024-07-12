@@ -1,17 +1,14 @@
 import cv2
-import sqlite3
+
 import numpy as np
 from deepface import DeepFace
 import threading
 
-# SQLite 데이터베이스에서 이미지 데이터를 가져오는 함수
-def get_images_from_db(db_path):
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute("SELECT ID, Image FROM users WHERE Image IS NOT NULL")
-    rows = cursor.fetchall()
-    conn.close()
 
+<<<<<<< HEAD
+# 이미지 경로에서 이미지를 가져옵니다
+db_path = '/home/lsm/git_ws/RobotArm/GUI/DB/user_data.db'
+=======
     images = {}
     for row in rows:
         user_id, image_data = row
@@ -23,6 +20,7 @@ def get_images_from_db(db_path):
 
 # 데이터베이스에서 이미지를 가져옵니다
 db_path = 'GUI/DB/user_data.db'
+>>>>>>> 15f417b77574d3cb6426cce36653796fc652c4ef
 images = get_images_from_db(db_path)
 
 # 웹캠에서 실시간 얼굴 감지 및 분석

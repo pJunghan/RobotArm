@@ -26,14 +26,16 @@ class SignUpDialog(QDialog, signup_form_class):
         )
         self.cursor = self.conn.cursor()
         table_name = 'User_Data'  # 원하는 테이블 이름으로 변경
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS {table_name}
-                               (ID INT AUTO_INCREMENT PRIMARY KEY,
+        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS {table_name} (
+                                ID INT AUTO_INCREMENT PRIMARY KEY,
                                 Name VARCHAR(100) NOT NULL,
                                 Phone_Number VARCHAR(11) NOT NULL,
                                 Birth VARCHAR(6) NOT NULL,
                                 Gender VARCHAR(6) NOT NULL,
                                 Point INT DEFAULT 0,
-                                Created_at DATETIME NOT NULL)''')
+                                Image_Path VARCHAR(255) DEFAULT NULL,
+                                Created_at DATETIME NOT NULL
+                                )''')
         self.conn.commit()
 
     def on_check_male(self, state):
@@ -66,12 +68,13 @@ class SignUpDialog(QDialog, signup_form_class):
             self.show_warning("입력 오류", "성별을 선택해주세요.")
             return
 
-        self.cursor.execute("SELECT * FROM users WHERE Phone_Number = %s", (phone_number,))
+        table_name = 'User_Data'  # 테이블 이름을 변수로 지정
+        self.cursor.execute(f"SELECT * FROM {table_name} WHERE Phone_Number = %s", (phone_number,))
         if self.cursor.fetchone():
             self.show_warning("입력 오류", "이미 가입된 사용자입니다.")
             return
 
-        self.cursor.execute("INSERT INTO users (Name, Phone_Number, Birth, Gender, Created_at) VALUES (%s, %s, %s, %s, %s)",
+        self.cursor.execute(f"INSERT INTO {table_name} (Name, Phone_Number, Birth, Gender, Created_at) VALUES (%s, %s, %s, %s, %s)",
                             (name, phone_number, birth, gender, created_at))
         self.conn.commit()
 
@@ -87,7 +90,6 @@ class SignUpDialog(QDialog, signup_form_class):
     def show_warning(self, title, message):
         msg_box = QMessageBox(QMessageBox.Warning, title, message, QMessageBox.Ok, self)
         msg_box.exec_()
-        msg_box.move(self.frame.geometry().center().x() - msg_box.width() // 2, self.frame.geometry().center().y() - msg_box.height() // 2)
 
     def closeEvent(self, event):
         self.conn.close()
