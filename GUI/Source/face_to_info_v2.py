@@ -1,27 +1,11 @@
 import cv2
-import sqlite3
+
 import numpy as np
 from deepface import DeepFace
 import threading
 
-# SQLite 데이터베이스에서 이미지 데이터를 가져오는 함수
-def get_images_from_db(db_path):
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute("SELECT ID, Image FROM users WHERE Image IS NOT NULL")
-    rows = cursor.fetchall()
-    conn.close()
 
-    images = {}
-    for row in rows:
-        user_id, image_data = row
-        np_img = np.frombuffer(image_data, dtype=np.uint8)
-        img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
-        images[user_id] = img
-
-    return images
-
-# 데이터베이스에서 이미지를 가져옵니다
+# 이미지 경로에서 이미지를 가져옵니다
 db_path = '/home/lsm/git_ws/RobotArm/GUI/DB/user_data.db'
 images = get_images_from_db(db_path)
 
