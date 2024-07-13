@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1172</width>
+    <height>722</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>1156</width>
+      <height>471</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>추천 메뉴</string>
+     </attribute>
+     <widget class="QGraphicsView" name="graphicsView_7">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>256</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_8">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>230</y>
+        <width>256</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_10">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>230</y>
+        <width>256</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_12">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>20</y>
+        <width>256</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_13">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>230</y>
+        <width>256</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_14">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>20</y>
+        <width>256</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_19">
+      <property name="geometry">
+       <rect>
+        <x>870</x>
+        <y>230</y>
+        <width>256</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_20">
+      <property name="geometry">
+       <rect>
+        <x>870</x>
+        <y>20</y>
+        <width>256</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <property name="minimumSize">
+      <size>
+       <width>827</width>
+       <height>0</height>
+      </size>
+     </property>
+     <attribute name="title">
+      <string>전체 메뉴</string>
+     </attribute>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QGraphicsView" name="graphicsView"/>
+      </item>
+      <item>
+       <widget class="QGraphicsView" name="graphicsView_2"/>
+      </item>
+      <item>
+       <widget class="QGraphicsView" name="graphicsView_3"/>
+      </item>
+      <item>
+       <widget class="QGraphicsView" name="graphicsView_4"/>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QListView" name="listView">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>550</y>
+      <width>717</width>
+      <height>131</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Next_Button">
+    <property name="geometry">
+     <rect>
+      <x>910</x>
+      <y>560</y>
+      <width>139</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>결제</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Home_Button">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>560</y>
+      <width>138</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>홈</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1172</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

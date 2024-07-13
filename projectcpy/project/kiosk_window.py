@@ -6,16 +6,16 @@ import time
 from PyQt5 import uic, QtCore, QtGui
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox, QGraphicsScene
 from menu_window import MenuWindow
 from config import kiosk_ui_path
 
-class KioskWindow(QMainWindow):
+class KioskWindow(QDialog):
     def __init__(self, db_config):
         super().__init__()
         uic.loadUi(kiosk_ui_path, self)
         self.db_config = db_config
-        self.cap = cv2.VideoCapture(0)  # 0으로 수정하여 기본 카메라 사용
+        self.cap = cv2.VideoCapture(0)  # 기본 카메라 사용
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
         
@@ -26,6 +26,10 @@ class KioskWindow(QMainWindow):
         
         self.timer.start(1000 // 30)  # 30 fps로 설정
 
+        # QGraphicsScene 초기화
+        self.scene = QGraphicsScene()
+        self.graphicsView.setScene(self.scene)
+
     def update_frame(self):
         ret, frame = self.cap.read()
         if ret:
@@ -34,8 +38,11 @@ class KioskWindow(QMainWindow):
             bytesPerLine = ch * w
             convertToQtFormat = QImage(frame.data, w, h, bytesPerLine, QImage.Format_RGB888)
             pixmap = QPixmap.fromImage(convertToQtFormat)
-            self.cameraLabel.setPixmap(pixmap.scaled(self.cameraLabel.size(), Qt.KeepAspectRatio))
             
+            # QGraphicsScene에 pixmap 추가
+            self.scene.clear()
+            self.scene.addPixmap(pixmap.scaled(self.graphicsView.size(), Qt.KeepAspectRatio))
+
     def capture_image(self):
         try:
             conn = pymysql.connect(**self.db_config)
@@ -77,3 +84,15 @@ class KioskWindow(QMainWindow):
             self.menu_window.show()
         except Exception as e:
             print(f"메뉴 창을 열던 중 에러 발생: {e}")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    db_config = {
+        'host': 'localhost',
+        'user': 'yourusername',
+        'password': 'yourpassword',
+        'database': 'yourdatabase'
+    }
+    window = KioskWindow(db_config)
+    window.show()
+    sys.exit(app.exec_())

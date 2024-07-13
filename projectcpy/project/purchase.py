@@ -160,15 +160,27 @@ class ConfirmWindow(QMainWindow):
                     topping2_count = result['topping2_count']
                     topping3_count = result['topping3_count']
 
-                    # 각 상태 계산
-                    flavor1_status = MAX_STOCK - choco_count
-                    flavor2_status = MAX_STOCK - vanila_count
-                    flavor3_status = MAX_STOCK - strawberry_count
-                    topping1_status = MAX_STOCK - topping1_count
-                    topping2_status = MAX_STOCK - topping2_count
-                    topping3_status = MAX_STOCK - topping3_count
-                    current_date = datetime.now().date()
+                    # inventory_management_table에서 각각의 값을 가져옴
+                    cursor.execute("SELECT flavor1, flavor2, flavor3, topping1, topping2, topping3 FROM inventory_management_table WHERE DATE(date_time) = %s", (datetime.now().date(),))
+                    inventory_result = cursor.fetchone()
 
+                    # 각 flavor 및 topping 값을 가져오고 purchase_record_table의 값과 더함
+                    flavor1 = (inventory_result['flavor1'] if inventory_result else 0) + choco_count
+                    flavor2 = (inventory_result['flavor2'] if inventory_result else 0) + vanila_count
+                    flavor3 = (inventory_result['flavor3'] if inventory_result else 0) + strawberry_count
+                    topping1 = (inventory_result['topping1'] if inventory_result else 0) + topping1_count
+                    topping2 = (inventory_result['topping2'] if inventory_result else 0) + topping2_count
+                    topping3 = (inventory_result['topping3'] if inventory_result else 0) + topping3_count
+
+                    # 각 상태 계산
+                    flavor1_status = MAX_STOCK - flavor1
+                    flavor2_status = MAX_STOCK - flavor2
+                    flavor3_status = MAX_STOCK - flavor3
+                    topping1_status = MAX_STOCK - topping1
+                    topping2_status = MAX_STOCK - topping2
+                    topping3_status = MAX_STOCK - topping3
+
+                    current_date = datetime.now().date()
                     # 각 아이스크림의 총 개수를 계산
                     self.total_cnt = self.ice_cream_count * 2 + self.topping_count
 
@@ -265,6 +277,8 @@ class ConfirmWindow(QMainWindow):
             if 'conn' in locals() and conn.open:
                 conn.close()
                 print("데이터베이스 연결을 닫았습니다.")
+
+
     def go_to_main_window(self):
         from main_window import MainWindow
         self.main_window = MainWindow()

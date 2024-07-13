@@ -8,7 +8,8 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox
 from purchase import ConfirmWindow  # ConfirmWindow import 추가
 import pymysql
-from config import menu_ui_path,db_config
+from config import menu_ui_path,db_config,ice_cream_images,topping_images
+
 
 
 class MenuWindow(QMainWindow):
@@ -34,18 +35,6 @@ class MenuWindow(QMainWindow):
         # QStringListModel 초기화
         self.list_model = QStringListModel()
         self.listView.setModel(self.list_model)  # QListView에 모델 설정
-
-        ice_cream_images = [
-            "/home/pjh/dev_ws/EDA/flavor/choco.jpeg",
-            "/home/pjh/dev_ws/EDA/flavor/vanila.jpeg",
-            "/home/pjh/dev_ws/EDA/flavor/strawberry.jpeg"
-        ]
-
-        topping_images = [
-            "/home/pjh/dev_ws/EDA/flavor/topping1.jpeg",
-            "/home/pjh/dev_ws/EDA/flavor/topping2.jpeg",
-            "/home/pjh/dev_ws/EDA/flavor/topping3.jpeg"
-        ]
 
         self.add_image_to_graphics_view(ice_cream_images[0], self.graphicsView, 'choco')
         self.add_image_to_graphics_view(ice_cream_images[1], self.graphicsView_2, 'vanila')
@@ -126,4 +115,3 @@ class MenuWindow(QMainWindow):
         items_to_show = [f"{item}: {count}" for item, count in self.item_click_count.items() if count > 0]
         self.list_model.setStringList(items_to_show)  # QStringList로 업데이트
         self.listView.setModel(self.list_model) 
-
