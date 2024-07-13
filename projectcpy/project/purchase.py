@@ -6,9 +6,10 @@ from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QStringListModel
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QListView
-
+from datetime import datetime
 from config import confirm_ui_path
 
+MAX_STOCK = 200
 ICECREAMPRICE = 3000
 TOPPINGPRICE = 1000
 
@@ -149,31 +150,33 @@ class ConfirmWindow(QMainWindow):
                     WHERE user_id = %s
                 """, (self.user_id,))
                 result = cursor.fetchone()
-                
+
                 if result:
                     # 기존 개수를 불러옴
-                    choco = result['choco']
-                    vanila = result['vanila']
-                    strawberry = result['strawberry']
                     choco_count = result['choco_count']
                     vanila_count = result['vanila_count']
                     strawberry_count = result['strawberry_count']
-                    topping1 = result['topping1']
-                    topping2 = result['topping2']
-                    topping3 = result['topping3']
                     topping1_count = result['topping1_count']
                     topping2_count = result['topping2_count']
                     topping3_count = result['topping3_count']
-                    
+
+                    # 각 상태 계산
+                    flavor1_status = MAX_STOCK - choco_count
+                    flavor2_status = MAX_STOCK - vanila_count
+                    flavor3_status = MAX_STOCK - strawberry_count
+                    topping1_status = MAX_STOCK - topping1_count
+                    topping2_status = MAX_STOCK - topping2_count
+                    topping3_status = MAX_STOCK - topping3_count
+                    current_date = datetime.now().date()
+
                     # 각 아이스크림의 총 개수를 계산
-                    self.total_cnt= self.ice_cream_count * 2 + self.topping_count
-                    
-                    # 사용자의 포인트를 아이스크림 개수만큼 증가
+                    self.total_cnt = self.ice_cream_count * 2 + self.topping_count
+
+                    # 사용자의 포인트 업데이트
                     self.save_points = self.current_points + self.total_cnt
-                    # user_info_table의 포인트 업데이트
                     cursor.execute("UPDATE user_info_table SET point = %s WHERE user_ID = %s", (self.save_points, self.user_id))
-                    
-                    # 각 아이스크림 및 토핑의 구매 기록 업데이트
+
+                    # 구매 기록 업데이트
                     update_query = """
                         UPDATE purchase_record_table
                         SET choco = choco + %s, vanila = vanila + %s, strawberry = strawberry + %s,
@@ -189,28 +192,67 @@ class ConfirmWindow(QMainWindow):
                         self.item_click_count['topping1'], self.item_click_count['topping2'], self.item_click_count['topping3'],
                         self.user_id
                     ))
-                    # Update inventory_management_table
-                    inventory_query = """
-                        UPDATE inventory_management_table
-                        SET 
-                            flavor1 = flavor1 + %s,  -- Increment flavor1 with choco_count
-                            flavor2 = flavor2 + %s,  -- Increment flavor2 with vanila_count
-                            flavor3 = flavor3 + %s,  -- Increment flavor3 with strawberry_count
-                            topping1 = topping1 + %s, -- Increment topping1 with topping1_count
-                            topping2 = topping2 + %s, -- Increment topping2 with topping2_count
-                            topping3 = topping3 + %s  -- Increment topping3 with topping3_count
-                        WHERE date_time = NOW();  -- Adjust this condition as needed
-                    """
 
-                    cursor.execute(inventory_query, (
-                        self.item_click_count['choco_count'],      # For flavor1
-                        self.item_click_count['vanila_count'],     # For flavor2
-                        self.item_click_count['strawberry_count'], # For flavor3
-                        self.item_click_count['topping1_count'],   # For topping1
-                        self.item_click_count['topping2_count'],   # For topping2
-                        self.item_click_count['topping3_count']    # For topping3
-                    ))
+                    # 재고 업데이트 또는 추가
+                    cursor.execute("SELECT * FROM inventory_management_table WHERE DATE(date_time) = %s", (current_date,))
+                    inventory_result = cursor.fetchone()
 
+                    if inventory_result:
+                        # 데이터가 존재할 경우 업데이트
+                        inventory_query = """
+                            UPDATE inventory_management_table
+                            SET 
+                                flavor1 = flavor1 + %s,
+                                flavor2 = flavor2 + %s,
+                                flavor3 = flavor3 + %s,
+                                topping1 = topping1 + %s,
+                                topping2 = topping2 + %s,
+                                topping3 = topping3 + %s,
+                                flavor1_status = %s,
+                                flavor2_status = %s,
+                                flavor3_status = %s,
+                                topping1_status = %s,
+                                topping2_status = %s,
+                                topping3_status = %s
+                            WHERE DATE(date_time) = %s;
+                        """
+                        cursor.execute(inventory_query, (
+                            self.item_click_count['choco'],
+                            self.item_click_count['vanila'],
+                            self.item_click_count['strawberry'],
+                            self.item_click_count['topping1'],
+                            self.item_click_count['topping2'],
+                            self.item_click_count['topping3'],
+                            flavor1_status,
+                            flavor2_status,
+                            flavor3_status,
+                            topping1_status,
+                            topping2_status,
+                            topping3_status,
+                            current_date
+                        ))
+                    else:
+                        # 데이터가 존재하지 않을 경우 새로운 행 추가
+                        inventory_query = """
+                            INSERT INTO inventory_management_table (date_time, flavor1, flavor2, flavor3, topping1, topping2, topping3, flavor1_status, flavor2_status, flavor3_status, topping1_status, topping2_status, topping3_status)
+                            VALUES (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                        """
+                        cursor.execute(inventory_query, (
+                            self.item_click_count['choco'],
+                            self.item_click_count['vanila'],
+                            self.item_click_count['strawberry'],
+                            self.item_click_count['topping1'],
+                            self.item_click_count['topping2'],
+                            self.item_click_count['topping3'],
+                            flavor1_status,
+                            flavor2_status,
+                            flavor3_status,
+                            topping1_status,
+                            topping2_status,
+                            topping3_status
+                        ))
+
+                    # 트랜잭션 커밋
                     conn.commit()
                     QMessageBox.information(self, "결제 완료", "결제가 성공적으로 완료되었습니다.")
                     self.go_to_main_window()
@@ -223,8 +265,8 @@ class ConfirmWindow(QMainWindow):
             if 'conn' in locals() and conn.open:
                 conn.close()
                 print("데이터베이스 연결을 닫았습니다.")
-
     def go_to_main_window(self):
         from main_window import MainWindow
         self.main_window = MainWindow()
         self.main_window.show()
+        self.close()
