@@ -36,7 +36,7 @@ class MenuWindow(QMainWindow):
         self.list_model = QStringListModel()
         self.listView.setModel(self.list_model)  # QListView에 모델 설정
 
-        self.add_image_to_graphics_view(ice_cream_images[0], self.graphicsView, 'choco')
+        self.add_image_to_graphics_view(ice_cream_images[0], self.graphicsView_1, 'choco')
         self.add_image_to_graphics_view(ice_cream_images[1], self.graphicsView_2, 'vanila')
         self.add_image_to_graphics_view(ice_cream_images[2], self.graphicsView_3, 'strawberry')
         self.add_image_to_graphics_view(topping_images[0], self.graphicsView_4, 'topping1')
@@ -70,9 +70,11 @@ class MenuWindow(QMainWindow):
 
     def go_to_purchase_window(self):
         self.update_purchase_record()  # purchase_record_table 업데이트
-        self.confirm_window = ConfirmWindow(self.db_config, self.item_click_count)
+        # Pass the string list from the model to the ConfirmWindow
+        self.confirm_window = ConfirmWindow(self.db_config, self.item_click_count, self.list_model.stringList())
         self.confirm_window.show()
         self.close()
+
 
     def update_purchase_record(self):
         try:

@@ -14,32 +14,61 @@ ICECREAMPRICE = 3000
 TOPPINGPRICE = 1000
 
 class ConfirmWindow(QMainWindow):
-    def __init__(self, db_config, item_click_count):
+    def __init__(self, db_config, item_click_count, purchase_list):
         super().__init__()
         uic.loadUi(confirm_ui_path, self)  # UI 파일 로드
-
+        self.used_points = 0  # 초기화
         self.db_config = db_config
         self.item_click_count = item_click_count
-
-        self.current_points = 0  # 초기화된 포인트
-        self.user_id = None  # 초기화된 user_id
-
-        self.used_points = 0
-        self.save_points = 0
-        self.ice_cream_count = 0
-        self.topping_count = 0
-        self.total_cnt = 0
-
-        # PurchaseList 위젯과 모델 설정
-        self.PurchaseList = QListView()
+        
+        # Initialize the model and set the list of purchased items
         self.list_model = QStringListModel()
         self.PurchaseList.setModel(self.list_model)
+
+        # Update the list view with the passed purchase list
+        self.list_model.setStringList(purchase_list)
 
         self.UsePointBtn.clicked.connect(self.use_points)
         self.PurchaseBtn.clicked.connect(self.confirm_purchase)
 
         # 가장 최근에 수정된 사용자의 user_ID 가져오기
         self.get_latest_user_info()
+    def load_purchase_record(self):
+        try:
+            conn = pymysql.connect(**self.db_config)
+            with conn.cursor() as cursor:
+                for item_name in self.item_click_count:
+                    query = f"SELECT {item_name}_count FROM purchase_record_table WHERE user_id = %s"
+                    cursor.execute(query, (self.user_id,))
+                    result = cursor.fetchone()
+                    if result:
+                        self.item_click_count[item_name] = result[f"{item_name}_count"]
+        except pymysql.MySQLError as err:
+            print(f"데이터베이스 오류 발생: {err}")
+        finally:
+            if 'conn' in locals():
+                conn.close()
+
+    def update_ui(self):
+        self.total_price = self.calculate_total_price()
+        # 구매 목록 업데이트
+        self.list_model.setStringList(self.get_purchase_list())
+
+        self.CurrentPoint.setPlainText(str(self.current_points))
+        self.TotalPrice.setPlainText(f"{self.total_price}원")
+        self.UsedPoint.setPlainText("0")
+        self.DiscountPrice.setPlainText("0원")
+
+    def get_purchase_list(self):
+        purchase_list = []
+        for item_name, count in self.item_click_count.items():
+            if count > 0:
+                if item_name in ['choco', 'vanila', 'strawberry']:
+                    price = ICECREAMPRICE * count
+                else:
+                    price = TOPPINGPRICE * count
+                purchase_list.append(f"{item_name}: {count}개 - {price}원")
+        return purchase_list
 
     def get_latest_user_info(self):
         try:
@@ -69,44 +98,7 @@ class ConfirmWindow(QMainWindow):
             if 'conn' in locals():
                 conn.close()
 
-    def load_purchase_record(self):
-        try:
-            conn = pymysql.connect(**self.db_config)
-            with conn.cursor() as cursor:
-                for item_name in self.item_click_count:
-                    query = f"SELECT {item_name}_count FROM purchase_record_table WHERE user_id = %s"
-                    cursor.execute(query, (self.user_id,))
-                    result = cursor.fetchone()
-                    if result:
-                        self.item_click_count[item_name] = result[f"{item_name}_count"]
-        except pymysql.MySQLError as err:
-            print(f"데이터베이스 오류 발생: {err}")
-        finally:
-            if 'conn' in locals():
-                conn.close()
-
-    def update_ui(self):
-        self.total_price = self.calculate_total_price()
-
-        # 구매 목록 업데이트
-        self.list_model.setStringList(self.get_purchase_list())
-
-        self.CurrentPoint.setPlainText(str(self.current_points))
-        self.TotalPrice.setPlainText(f"{self.total_price}원")
-        self.UsedPoint.setPlainText("0")
-        self.DiscountPrice.setPlainText("0원")
-
-    def get_purchase_list(self):
-        purchase_list = []
-        for item_name, count in self.item_click_count.items():
-            if count > 0:
-                if item_name in ['choco', 'vanila', 'strawberry']:
-                    price = ICECREAMPRICE * count
-                else:
-                    price = TOPPINGPRICE * count
-                purchase_list.append(f"{item_name}: {count}개 - {price}원")
-        return purchase_list
-
+    
     def calculate_total_price(self):
         self.ice_cream_count = self.item_click_count['choco'] + self.item_click_count['vanila'] + self.item_click_count['strawberry']
         self.topping_count = self.item_click_count['topping1'] + self.item_click_count['topping2'] + self.item_click_count['topping3']
