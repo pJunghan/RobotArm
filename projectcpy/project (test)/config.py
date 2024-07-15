@@ -10,6 +10,8 @@ new_account_ui_path = os.path.join(ui_base_path, "signup.ui")
 kiosk_ui_path = os.path.join(ui_base_path, "signPhoto.ui")
 confirm_ui_path = os.path.join(ui_base_path, "purchase.ui")
 manager_ui_path = os.path.join(ui_base_path, "manager.ui")
+check_ui_path = os.path.join(ui_base_path, "check_login.ui")
+check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
 user_img_path = "projectcpy/user_pic"
 
 # 데이터베이스 연결 설정
@@ -22,13 +24,24 @@ user_img_path = "projectcpy/user_pic"
 #     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
 # }
 
+
+# db_config = {
+#     'user': 'root',
+#     'password': '8470',
+#     'host': '127.0.0.1',
+#     'database': 'ARIS',  # 사용할 데이터베이스 이름
+#     'charset': 'utf8',
+#     'cursorclass': pymysql.cursors.DictCursor
+# }
+
+# 데이터베이스 연결 설정
 db_config = {
-    'user': 'root',
-    'password': '8470',
-    'host': '127.0.0.1',
-    'database': 'ARIS',  # 사용할 데이터베이스 이름
-    'charset': 'utf8',
-    'cursorclass': pymysql.cursors.DictCursor
+    'host': '172.30.1.53',      # 데이터베이스 호스트 주소
+    'user': 'user3',        # 사용자 이름
+    'password': 'test1234',       # 비밀번호
+    'database': 'order_db',   # 데이터베이스 이름
+    'charset': 'utf8',        # 문자셋 설정
+    'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
 }
 
 ice_cream_images = [
