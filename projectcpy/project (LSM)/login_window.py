@@ -3,7 +3,7 @@ import cv2
 import pymysql
 import time
 from PyQt5 import uic, QtCore
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QRectF
 from PyQt5.QtGui import QPixmap, QImage, QPainter
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QGraphicsScene
 from face_to_info import FaceToInfo
@@ -24,14 +24,9 @@ class LoginWindow(QMainWindow):
         deep_face_thread.start()
         self.face.visualization = True
 
-        # self.camera = cv2.VideoCapture(0)  # Open the default camera (0)
-        # if not self.camera.isOpened():
-        #     QMessageBox.critical(self, "카메라 연결 오류", "카메라를 열 수 없습니다.")
-        #     return
-
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
-        self.timer.start(1000 // 30)  # Update frame every 33 milliseconds (30 fps)
+        self.timer.start(1000 // 30)  # 매 33 밀리초마다 프레임 업데이트 (30 fps)
 
         self.orderbtn.clicked.connect(self.handle_guest_login)
         self.memberBtn.clicked.connect(self.go_to_new_account_window)
@@ -48,35 +43,32 @@ class LoginWindow(QMainWindow):
             convertToQtFormat = QImage(frame.data, w, h, bytesPerLine, QImage.Format_RGB888)
             pixmap = QPixmap.fromImage(convertToQtFormat)
             
-            # Clear the previous items in the scene
+            # 이전 항목 지우기
             self.scene.clear()
+
+            # 비율을 유지하며 QGraphicsView에 맞게 pixmap 스케일 조정
+            pixmap = pixmap.scaled(self.graphicsView.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
             
-            # Add the new pixmap item to the scene
+            # 새로운 pixmap 항목을 장면에 추가
             pixmap_item = self.scene.addPixmap(pixmap)
-            
-            # Scale the pixmap item to fit the graphics view
-            pixmap_item.setScale(1)
-            
-            # Ensure the pixmap item is centered in the graphics view
-            pixmap_item.setPos((self.graphicsView.width() - pixmap.width()) / 2,
-                               (self.graphicsView.height() - pixmap.height()) / 2)
-        self.check_user()
+
+            # QGraphicsView의 중앙에 pixmap 항목을 맞춤
+            self.graphicsView.setSceneRect(QRectF(pixmap.rect()))
         
+        self.check_user()
+
     def check_user(self):
         if self.face.known_person and not self.isHidden():
             self.go_to_menu_window()
-
 
     def close_event(self):
         self.timer.stop()
         self.face.cam_to_info_deamon = False
         self.face.cam_deamon = False
-        del(self.face)
+        del self.face
         self.close()
-        
 
     def handle_guest_login(self):
-        # 데이터베이스에 새로운 비회원 사용자 추가
         guest_name = self.create_guest_user()
         if guest_name:
             self.go_to_menu_window()
@@ -85,7 +77,6 @@ class LoginWindow(QMainWindow):
         try:
             conn = pymysql.connect(**db_config)
             with conn.cursor() as cursor:
-                # Find the smallest unused user_ID
                 cursor.execute("SELECT user_ID FROM user_info_table ORDER BY user_ID")
                 existing_ids = {row['user_ID'] for row in cursor.fetchall()}
 
@@ -93,10 +84,8 @@ class LoginWindow(QMainWindow):
                 while new_user_id in existing_ids:
                     new_user_id += 1
 
-                # Generate new undefined guest name
                 new_guest_name = f"undefined_{new_user_id}"
 
-                # Insert new user record
                 insert_query = """
                 INSERT INTO user_info_table (user_ID, name, point)
                 VALUES (%s, %s, %s)
@@ -116,17 +105,18 @@ class LoginWindow(QMainWindow):
                 conn.close()
                 print("데이터베이스 연결을 닫았습니다.")
 
-
     def go_to_menu_window(self):
         self.close_event()
-        # self.hide()  # 메인 윈도우를 숨깁니다.
         self.next_window = MenuWindow(db_config)
         self.next_window.show()
 
-
-
     def go_to_new_account_window(self):
         self.close_event()
-        # self.hide()  # 메인 윈도우를 숨깁니다.
         self.next_window = NewAccountWindow(new_account_ui_path, db_config)
         self.next_window.show()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = LoginWindow()
+    window.show()
+    sys.exit(app.exec_())

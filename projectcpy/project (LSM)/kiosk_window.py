@@ -4,9 +4,9 @@ import cv2
 import pymysql
 import time
 from PyQt5 import uic, QtCore, QtGui
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QRectF
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QGraphicsScene
 from menu_window import MenuWindow
 from config import kiosk_ui_path
 
@@ -15,16 +15,19 @@ class KioskWindow(QMainWindow):
         super().__init__()
         uic.loadUi(kiosk_ui_path, self)
         self.db_config = db_config
-        self.cap = cv2.VideoCapture(0)  # 0으로 수정하여 기본 카메라 사용
+        self.cap = cv2.VideoCapture(0)  # 기본 카메라 사용
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
         
-        self.captureButton.clicked.connect(self.capture_image)
+        self.takePhotoBtn.clicked.connect(self.capture_image)
         
         if not self.cap.isOpened():
             QMessageBox.warning(self, "카메라 연결 오류", "카메라를 열 수 없습니다.")
         
         self.timer.start(1000 // 30)  # 30 fps로 설정
+
+        self.scene = QGraphicsScene(self)
+        self.graphicsView.setScene(self.scene)
 
     def update_frame(self):
         ret, frame = self.cap.read()
@@ -34,8 +37,20 @@ class KioskWindow(QMainWindow):
             bytesPerLine = ch * w
             convertToQtFormat = QImage(frame.data, w, h, bytesPerLine, QImage.Format_RGB888)
             pixmap = QPixmap.fromImage(convertToQtFormat)
-            self.cameraLabel.setPixmap(pixmap.scaled(self.cameraLabel.size(), Qt.KeepAspectRatio))
+
+            # Clear the previous items in the scene
+            self.scene.clear()
+
+            # Scale the pixmap to fit the graphics view geometry while maintaining aspect ratio
+            pixmap = pixmap.scaled(self.graphicsView.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
             
+            # Add the new pixmap item to the scene
+            pixmap_item = self.scene.addPixmap(pixmap)
+
+            # Center the pixmap item in the graphics view
+            self.graphicsView.setSceneRect(QRectF(pixmap.rect()))
+            self.graphicsView.fitInView(QRectF(pixmap.rect()), Qt.KeepAspectRatio)
+
     def capture_image(self):
         try:
             conn = pymysql.connect(**self.db_config)
@@ -77,3 +92,11 @@ class KioskWindow(QMainWindow):
             self.menu_window.show()
         except Exception as e:
             print(f"메뉴 창을 열던 중 에러 발생: {e}")
+
+
+if __name__ == "__main__":
+    from config import db_config  # db_config를 import합니다.
+    app = QApplication(sys.argv)
+    window = KioskWindow(db_config)
+    window.show()
+    sys.exit(app.exec_())
