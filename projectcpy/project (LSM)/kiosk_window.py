@@ -60,7 +60,7 @@ class KioskWindow(QMainWindow):
                 result = cursor.fetchone()
                 if result:
                     user_id = result['user_id']
-                    image_path = os.path.expanduser(f"~/dev_ws/EDA/user_pic/{user_id}.jpeg")
+                    image_path = os.path.expanduser(f"projectcpy/user_pic/{user_id}.jpeg")
 
                     ret, frame = self.cap.read()
                     if ret:

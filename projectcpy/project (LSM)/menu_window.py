@@ -126,4 +126,3 @@ class MenuWindow(QMainWindow):
         items_to_show = [f"{item}: {count}" for item, count in self.item_click_count.items() if count > 0]
         self.list_model.setStringList(items_to_show)  # QStringList로 업데이트
         self.listView.setModel(self.list_model) 
-

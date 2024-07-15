@@ -9,6 +9,8 @@ menu_ui_path = os.path.join(ui_base_path, "order_ice_cream_window.ui")
 new_account_ui_path = os.path.join(ui_base_path, "signup.ui")
 kiosk_ui_path = os.path.join(ui_base_path, "kiosk_cam.ui")
 confirm_ui_path = os.path.join(ui_base_path, "purchase.ui")
+check_ui_path = os.path.join(ui_base_path, "check_login.ui")
+check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
 user_img_path = "projectcpy/user_pic"
 # 데이터베이스 연결 설정
 db_config = {
