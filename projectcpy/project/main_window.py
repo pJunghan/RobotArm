@@ -1,6 +1,5 @@
 import sys
 import os
-import cv2
 import pymysql
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt
@@ -21,7 +20,7 @@ class MainWindow(QMainWindow):
 
     def go_to_login_window(self):
         if not hasattr(self, 'login_window'):
-            self.login_window = LoginWindow()
+            self.login_window = LoginWindow(self)
             self.login_window.show()
             self.hide()  # 메인 윈도우를 숨깁니다.
 
@@ -47,6 +46,13 @@ class MainWindow(QMainWindow):
 
         except pymysql.MySQLError as e:
             print(f"Error updating purchase counts: {e}")
+
+    def home(self):
+        self.update_purchase_count(db_config)
+        self.show()
+        del(self.login_window)
+
+    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

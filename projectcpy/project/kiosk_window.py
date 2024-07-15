@@ -11,9 +11,10 @@ from menu_window import MenuWindow
 from config import kiosk_ui_path
 
 class KioskWindow(QDialog):
-    def __init__(self, db_config):
+    def __init__(self, db_config, main):
         super().__init__()
         uic.loadUi(kiosk_ui_path, self)
+        self.main = main
         self.db_config = db_config
         self.cap = cv2.VideoCapture(0)  # 기본 카메라 사용
         self.timer = QTimer(self)
@@ -80,7 +81,7 @@ class KioskWindow(QDialog):
     def go_to_menu_window(self):
         try:
             if not hasattr(self, 'menu_window') or not self.menu_window.isVisible():
-                self.menu_window = MenuWindow(self.db_config)
+                self.menu_window = MenuWindow(self.db_config, self.main)
             self.menu_window.show()
         except Exception as e:
             print(f"메뉴 창을 열던 중 에러 발생: {e}")

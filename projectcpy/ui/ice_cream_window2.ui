@@ -27,13 +27,13 @@
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
       <string>추천 메뉴</string>
      </attribute>
-     <widget class="QGraphicsView" name="graphicsView_7">
+     <widget class="QGraphicsView" name="recommendView_1">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -43,7 +43,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QGraphicsView" name="graphicsView_8">
+     <widget class="QGraphicsView" name="recommendView_5">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -53,7 +53,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QGraphicsView" name="graphicsView_10">
+     <widget class="QGraphicsView" name="recommendView_6">
       <property name="geometry">
        <rect>
         <x>300</x>
@@ -63,7 +63,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QGraphicsView" name="graphicsView_12">
+     <widget class="QGraphicsView" name="recommendView_2">
       <property name="geometry">
        <rect>
         <x>300</x>
@@ -73,7 +73,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QGraphicsView" name="graphicsView_13">
+     <widget class="QGraphicsView" name="recommendView_7">
       <property name="geometry">
        <rect>
         <x>580</x>
@@ -83,7 +83,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QGraphicsView" name="graphicsView_14">
+     <widget class="QGraphicsView" name="recommendView_3">
       <property name="geometry">
        <rect>
         <x>580</x>
@@ -93,7 +93,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QGraphicsView" name="graphicsView_19">
+     <widget class="QGraphicsView" name="recommendView_8">
       <property name="geometry">
        <rect>
         <x>870</x>
@@ -103,7 +103,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QGraphicsView" name="graphicsView_20">
+     <widget class="QGraphicsView" name="recommendView_4">
       <property name="geometry">
        <rect>
         <x>870</x>
@@ -124,20 +124,88 @@
      <attribute name="title">
       <string>전체 메뉴</string>
      </attribute>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QGraphicsView" name="graphicsView"/>
-      </item>
-      <item>
-       <widget class="QGraphicsView" name="graphicsView_2"/>
-      </item>
-      <item>
-       <widget class="QGraphicsView" name="graphicsView_3"/>
-      </item>
-      <item>
-       <widget class="QGraphicsView" name="graphicsView_4"/>
-      </item>
-     </layout>
+     <widget class="QWidget" name="gridLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>1133</x>
+        <y>9</y>
+        <width>16</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2"/>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>1141</x>
+        <y>9</y>
+        <width>16</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3"/>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_3">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>22</y>
+        <width>321</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_6">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>220</y>
+        <width>321</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_5">
+      <property name="geometry">
+       <rect>
+        <x>420</x>
+        <y>220</y>
+        <width>321</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_2">
+      <property name="geometry">
+       <rect>
+        <x>420</x>
+        <y>20</y>
+        <width>321</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_4">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>218</y>
+        <width>321</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_1">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>20</y>
+        <width>321</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QListView" name="listView">
