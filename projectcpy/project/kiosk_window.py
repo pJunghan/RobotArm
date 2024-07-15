@@ -75,7 +75,6 @@ class KioskWindow(QDialog):
     def closeEvent(self, event):
         self.cap.release()
         self.timer.stop()
-        self.main.home()
         event.accept()
         time.sleep(1)
 

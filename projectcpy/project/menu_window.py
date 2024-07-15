@@ -70,7 +70,7 @@ class MenuWindow(QMainWindow):
     def go_to_purchase_window(self):
         self.update_purchase_record()  # purchase_record_table 업데이트
         # Pass the string list from the model to the ConfirmWindow
-        self.confirm_window = ConfirmWindow(self.db_config, self.item_click_count, self.list_model.stringList())
+        self.confirm_window = ConfirmWindow(self.db_config, self.item_click_count, self.list_model.stringList(), self.main)
         self.confirm_window.show()
         self.close()
 

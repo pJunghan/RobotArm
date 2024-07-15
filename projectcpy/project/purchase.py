@@ -14,9 +14,10 @@ ICECREAMPRICE = 3000
 TOPPINGPRICE = 1000
 
 class ConfirmWindow(QMainWindow):
-    def __init__(self, db_config, item_click_count, purchase_list):
+    def __init__(self, db_config, item_click_count, purchase_list, main):
         super().__init__()
         uic.loadUi(confirm_ui_path, self)  # UI 파일 로드
+        self.main = main
         self.used_points = 0  # 초기화
         self.db_config = db_config
         self.item_click_count = item_click_count
@@ -285,7 +286,5 @@ class ConfirmWindow(QMainWindow):
 
 
     def go_to_main_window(self):
-        from main_window import MainWindow
-        self.main_window = MainWindow()
-        self.main_window.show()
+        self.main.home()
         self.close()
