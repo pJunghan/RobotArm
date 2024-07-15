@@ -50,7 +50,7 @@ import logging
 class YOLOMain:
     def __init__(self, robot_main):
         # 모델 로드
-        self.model = YOLO('/home/beakhongha/collision avoidance/train9/weights/best.pt')
+        self.model = YOLO('xArm-Python-SDK/best.pt')
 
         # 카메라 열기
         self.webcam = cv2.VideoCapture(2)  # 웹캠 장치 열기
