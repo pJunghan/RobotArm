@@ -2,7 +2,7 @@ import pymysql
 import os
 
 # UI 파일 경로
-ui_base_path = "projectcpy/ui"
+ui_base_path = "/home/pjh/dev_ws/EDA/ui"
 main_ui_path = os.path.join(ui_base_path, "main.ui")
 login_ui_path = os.path.join(ui_base_path, "login.ui")
 menu_ui_path = os.path.join(ui_base_path, "ice_cream_window2.ui")
@@ -10,7 +10,11 @@ new_account_ui_path = os.path.join(ui_base_path, "signup.ui")
 kiosk_ui_path = os.path.join(ui_base_path, "signPhoto.ui")
 confirm_ui_path = os.path.join(ui_base_path, "purchase.ui")
 manager_ui_path = os.path.join(ui_base_path, "manager.ui")
-user_img_path = "projectcpy/user_pic"
+order_manage_ui_path = os.path.join(ui_base_path,"manager.ui")
+self_manage_ui_path = os.path.join(ui_base_path, "self_manage.ui")
+
+model_file_path = "/home/pjh/dev_ws/EDA/project/linear_regression_model.pkl"
+user_img_path = "/home/pjh/dev_ws/EDA/user_pic"
 
 # 데이터베이스 연결 설정
 # db_config = {
@@ -21,16 +25,14 @@ user_img_path = "projectcpy/user_pic"
 #     'charset': 'utf8',        # 문자셋 설정
 #     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
 # }
-
 db_config = {
-    'user': 'root',
-    'password': '8470',
-    'host': '127.0.0.1',
-    'database': 'ARIS',  # 사용할 데이터베이스 이름
+    'user': 'junghan',
+    'password': '6488',
+    'host': 'localhost',
+    'database': 'order_db',  # 사용할 데이터베이스 이름
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor
 }
-
 ice_cream_images = [
             "/home/pjh/dev_ws/EDA/flavor/choco.jpeg",
             "/home/pjh/dev_ws/EDA/flavor/vanila.jpeg",

@@ -132,9 +132,7 @@ class FaceToInfo():
         self.cam_deamon = False          #
         self.cap.release()
         # cv2.destroyAllWindows()
-
        
-
 if __name__ == "__main__":
     face = FaceToInfo()
     cam_thread = Thread(target=face.run_cam)

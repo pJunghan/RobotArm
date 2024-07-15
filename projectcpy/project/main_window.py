@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         uic.loadUi(main_ui_path, self)
         self.orderButton.clicked.connect(self.go_to_login_window)
-
+        self.autoButton.clicked.connect(self.go_to_auto_order_window)
         # main.ui가 불려올 때마다 데이터 초기화 함수 실행
         self.update_purchase_count(db_config)
 
@@ -24,6 +24,11 @@ class MainWindow(QMainWindow):
             self.login_window.show()
             self.hide()  # 메인 윈도우를 숨깁니다.
 
+    def go_to_auto_order_window(self):
+        from auto_order import OrderManager
+        self.win = OrderManager(self)
+        self.win.show()
+        self.hide()
     def update_purchase_count(self, db_config):
         try:
             # 데이터베이스 연결
@@ -50,8 +55,9 @@ class MainWindow(QMainWindow):
     def home(self):
         self.update_purchase_count(db_config)
         self.show()
-        del(self.login_window)
-
+        # Check if login_window exists before attempting to delete
+        if hasattr(self, 'login_window'):
+            del self.login_window
     
 
 if __name__ == "__main__":
