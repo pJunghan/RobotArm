@@ -128,5 +128,5 @@ class LoginWindow(QMainWindow):
     def go_to_new_account_window(self):
         self.close_event()
         # self.hide()  # 메인 윈도우를 숨깁니다.
-        self.next_window = NewAccountWindow(new_account_ui_path, db_config)
+        self.next_window = NewAccountWindow(new_account_ui_path, db_config, self.main)
         self.next_window.show()

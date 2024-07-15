@@ -52,6 +52,8 @@ class MainWindow(QMainWindow):
         self.show()
         del(self.login_window)
 
+    
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = MainWindow()

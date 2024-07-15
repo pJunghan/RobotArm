@@ -5,9 +5,10 @@ import pymysql
 from kiosk_window import KioskWindow
 
 class NewAccountWindow(QDialog):  # Inherit from QDialog
-    def __init__(self, ui_path, db_config):
+    def __init__(self, ui_path, db_config, main):
         super().__init__()
         uic.loadUi(ui_path, self)
+        self.main = main
         self.db_config = db_config
         self.gender = None
         self.signupBtn.clicked.connect(self.save_user_info)  # Correct button name
@@ -77,6 +78,6 @@ class NewAccountWindow(QDialog):  # Inherit from QDialog
             self.go_to_next_window()
 
     def go_to_next_window(self):
-        self.next_window = KioskWindow(self.db_config)
+        self.next_window = KioskWindow(self.db_config, self.main)
         self.next_window.show()
         self.close()
