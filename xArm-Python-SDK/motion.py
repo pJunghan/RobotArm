@@ -1935,6 +1935,158 @@ class RobotMain(object):
         print('motion_trash_capsule finish')
         time.sleep(0.5)
 
+    def motion_trash_cup(self, position) -> None:
+        self._angle_speed = 100
+        self._angle_acc = 100
+
+        self._tcp_speed = 100
+        self._tcp_acc = 1000
+
+        code = self._arm.stop_lite6_gripper()
+        if not self._check_code(code, 'stop_lite6_gripper'):
+            return
+        time.sleep(0.5)
+
+        try:
+            self.clientSocket.send('motion_trash_cup_start'.encode('utf-8'))
+        except:
+            print('socket error')
+
+        code = self._arm.set_servo_angle(angle=[176, 31.7, 31, 76.7, 91.2, -1.9], speed=self._angle_speed,
+                                            mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        
+        code = self._arm.open_lite6_gripper()
+        if not self._check_code(code, 'open_lite6_gripper'):
+            return
+        time.sleep(1)
+
+        if position == 'A':
+
+            code = self._arm.set_servo_angle(angle=[179.5, 33.5, 32.7, 113.0, 93.1, -2.3], speed=self._angle_speed,
+                                             mvacc=self._angle_acc, wait=False, radius=20.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+
+            code = self._arm.set_position(*self.position_jig_A_grab, speed=self._tcp_speed,
+                                          mvacc=self._tcp_acc, radius=0.0, wait=True)
+            if not self._check_code(code, 'set_position'):
+                return
+
+        elif position == 'B':
+
+            code = self._arm.set_position(*self.position_jig_B_grab, speed=self._tcp_speed,
+                                          mvacc=self._tcp_acc, radius=0.0, wait=True)
+            if not self._check_code(code, 'set_position'):
+                return
+
+        elif position == 'C':
+
+            code = self._arm.set_servo_angle(angle=[182.6, 27.8, 27.7, 55.7, 90.4, -6.4], speed=self._angle_speed,
+                                             mvacc=self._angle_acc, wait=False, radius=20.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            
+            code = self._arm.set_position(*self.position_jig_C_grab, speed=self._tcp_speed,
+                                          mvacc=self._tcp_acc, radius=0.0, wait=True)
+            if not self._check_code(code, 'set_position'):
+                return
+
+        code = self._arm.close_lite6_gripper()
+        if not self._check_code(code, 'close_lite6_gripper'):
+            return
+
+        time.sleep(1)
+
+        pose = self._arm.get_position()
+        pose[1][2] += 15
+        
+        code = self._arm.set_position(*pose[1], speed=self._tcp_speed,
+                                        mvacc=self._tcp_acc, radius=0.0, wait=True)
+        if not self._check_code(code, 'set_position'):
+            return
+
+        code = self._arm.set_servo_angle(angle=[176, 31.7, 31, 76.7, 105.2, -1.9], speed=self._angle_speed,
+                                            mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        
+        code = self._arm.set_servo_angle(angle=[152.6, 11.5, 17.1, 238.1, 91.2, -1.9], speed=self._angle_speed,
+                                            mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        
+        code = self._arm.set_servo_angle(angle=[152.6, 11.5, 17.1, 238.1, 91.2, -174], speed=self._angle_speed,
+                                            mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        
+
+        code = self._arm.open_lite6_gripper()
+        if not self._check_code(code, 'open_lite6_gripper'):
+            return
+        time.sleep(1)
+        code = self._arm.stop_lite6_gripper()
+        if not self._check_code(code, 'stop_lite6_gripper'):
+            return
+        
+        code = self._arm.set_servo_angle(angle=[152.6, 11.5, 17.1, 238.1, 91.2, -1.9], speed=self._angle_speed,
+                                            mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        
+        # home
+        code = self._arm.set_servo_angle(angle=[152.6, 11.5, 17.1, 186.7, 91.2, -1.9], speed=self._angle_speed, 
+                                            mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        
+        code = self._arm.set_servo_angle(angle=[179.2, -42.1, 7.4, 186.7, 41.5, -1.6], speed=self._angle_speed, 
+                                            mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        
+        
+    def gritting(self, gender) -> None: 
+        self._angle_speed = 100
+        self._angle_acc = 100
+
+        if gender == "female":
+            code = self._arm.set_servo_angle(angle=[207.4, -15.5, 60.6, 181.7, 46.8, -2.5], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[247.6, -15.5, 8.9, 87, 78.5, -104.7], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[179.2, -42.1, 7.4, 186.7, 41.5, -1.6], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0) # home
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            
+        elif gender == "male":
+            code = self._arm.set_servo_angle(angle=[265.4, -17.3, 105.2, 186.8, -17.1, 0], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[265.4, -9.6, 37.1, 179.8, -6, -8.2], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[265.4, -17.3, 105.2, 186.8, -23.1, 0], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[179.2, -42.1, 7.4, 186.7, 41.5, -1.6], speed=self._angle_speed,  
+                                                mvacc=self._angle_acc, wait=True, radius=0.0) # home
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            
+        else:
+            self.motion_greet()
+
     def robot_pause(self):
         global robot_state
         if robot_state == 'robot stop':
