@@ -13,10 +13,10 @@ from new_account_window import NewAccountWindow
 from config import login_ui_path, db_config, new_account_ui_path, user_img_path
 
 class LoginWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, main):
         super(LoginWindow, self).__init__()
         uic.loadUi(login_ui_path, self)
-
+        self.main = main
         self.face = FaceToInfo(user_img_path)
         cam_thread = Thread(target=self.face.run_cam)
         cam_thread.start()
@@ -120,7 +120,7 @@ class LoginWindow(QMainWindow):
     def go_to_menu_window(self):
         self.close_event()
         # self.hide()  # 메인 윈도우를 숨깁니다.
-        self.next_window = MenuWindow(db_config)
+        self.next_window = MenuWindow(db_config, self.main)
         self.next_window.show()
 
 

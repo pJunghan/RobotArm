@@ -13,8 +13,9 @@ from config import menu_ui_path,db_config,ice_cream_images,topping_images
 
 
 class MenuWindow(QMainWindow):
-    def __init__(self, db_config):
+    def __init__(self, db_config, main):
         super().__init__()
+        self.main = main
         self.menu_items = {}
         uic.loadUi(menu_ui_path, self)  # UI 파일 로드
 
@@ -63,9 +64,7 @@ class MenuWindow(QMainWindow):
                 conn.close()
 
     def go_to_main_window(self):
-        from main_window import MainWindow
-        self.main_window = MainWindow()
-        self.main_window.show()
+        self.main.home()
         self.close()
 
     def go_to_purchase_window(self):
