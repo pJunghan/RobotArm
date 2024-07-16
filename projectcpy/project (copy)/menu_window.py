@@ -8,14 +8,12 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox
 from purchase import ConfirmWindow  # ConfirmWindow import 추가
 import pymysql
-from config import menu_ui_path,db_config,ice_cream_images,topping_images
-
+from config import menu_ui_path,db_config
 
 
 class MenuWindow(QMainWindow):
-    def __init__(self, db_config, main):
+    def __init__(self, db_config):
         super().__init__()
-        self.main = main
         self.menu_items = {}
         uic.loadUi(menu_ui_path, self)  # UI 파일 로드
 
@@ -37,7 +35,19 @@ class MenuWindow(QMainWindow):
         self.list_model = QStringListModel()
         self.listView.setModel(self.list_model)  # QListView에 모델 설정
 
-        self.add_image_to_graphics_view(ice_cream_images[0], self.graphicsView_1, 'choco')
+        ice_cream_images = [
+            "/home/pjh/dev_ws/EDA/flavor/choco.jpeg",
+            "/home/pjh/dev_ws/EDA/flavor/vanila.jpeg",
+            "/home/pjh/dev_ws/EDA/flavor/strawberry.jpeg"
+        ]
+
+        topping_images = [
+            "/home/pjh/dev_ws/EDA/flavor/topping1.jpeg",
+            "/home/pjh/dev_ws/EDA/flavor/topping2.jpeg",
+            "/home/pjh/dev_ws/EDA/flavor/topping3.jpeg"
+        ]
+
+        self.add_image_to_graphics_view(ice_cream_images[0], self.graphicsView, 'choco')
         self.add_image_to_graphics_view(ice_cream_images[1], self.graphicsView_2, 'vanila')
         self.add_image_to_graphics_view(ice_cream_images[2], self.graphicsView_3, 'strawberry')
         self.add_image_to_graphics_view(topping_images[0], self.graphicsView_4, 'topping1')
@@ -64,16 +74,16 @@ class MenuWindow(QMainWindow):
                 conn.close()
 
     def go_to_main_window(self):
-        self.main.home()
+        from main_window import MainWindow
+        self.main_window = MainWindow()
+        self.main_window.show()
         self.close()
 
     def go_to_purchase_window(self):
         self.update_purchase_record()  # purchase_record_table 업데이트
-        # Pass the string list from the model to the ConfirmWindow
-        self.confirm_window = ConfirmWindow(self.db_config, self.item_click_count, self.list_model.stringList(), self.main)
+        self.confirm_window = ConfirmWindow(self.db_config, self.item_click_count)
         self.confirm_window.show()
         self.close()
-
 
     def update_purchase_record(self):
         try:
@@ -109,22 +119,11 @@ class MenuWindow(QMainWindow):
         item.mousePressEvent = lambda event: self.item_click_event(event, item_name)
 
     def item_click_event(self, event, item_name):
-    # 아이스크림 아이템인지 확인
-        if item_name in ['choco', 'vanila', 'strawberry']:
-            # 모든 아이스크림 아이템의 선택 개수를 0으로 초기화
-            for key in ['choco', 'vanila', 'strawberry']:
-                self.item_click_count[key] = 0
-        # 토핑 아이템인지 확인
-        elif item_name in ['topping1', 'topping2', 'topping3']:
-            # 모든 토핑 아이템의 선택 개수를 0으로 초기화
-            for key in ['topping1', 'topping2', 'topping3']:
-                self.item_click_count[key] = 0
-        
-        # 클릭된 아이템의 선택 개수를 1로 설정
-        self.item_click_count[item_name] = 1
+        self.item_click_count[item_name] += 1
         self.update_list_view()
 
     def update_list_view(self):
         items_to_show = [f"{item}: {count}" for item, count in self.item_click_count.items() if count > 0]
         self.list_model.setStringList(items_to_show)  # QStringList로 업데이트
-        self.listView.setModel(self.list_model)
+        self.listView.setModel(self.list_model) 
+

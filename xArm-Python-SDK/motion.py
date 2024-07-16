@@ -46,8 +46,6 @@ from scipy.spatial.distance import cdist
 
 import logging
 
-# robot_paused = threading.Event()
-
 class YOLOMain:
     def __init__(self, robot_main):
         # 모델 로드
@@ -99,7 +97,6 @@ class YOLOMain:
     def segmentation(self):
 
         global A_ZONE, B_ZONE, C_ZONE, NOT_SEAL
-        global robot_paused
 
         # YOLO 모델의 로깅 레벨 설정
         logging.getLogger('ultralytics').setLevel(logging.ERROR)
@@ -221,14 +218,12 @@ class YOLOMain:
                 min_distance = 300
                 min_distance_bool = False
 
-            # 거리 조건 체크 및 로봇 제어
+            # 거리 조건 체크 및 로봇 일시정지 제어
             if min_distance <= 50 and min_distance_bool and self.robot.pressing == False:
                 robot_state = 'robot stop'
-                # robot_paused.clear()
                 self.robot._arm.set_state(3)
             elif min_distance > 50 or not min_distance_bool:
                 robot_state = 'robot move'
-                # robot_paused.set()
                 self.robot._arm.set_state(0)
 
             # 설정된 ROI를 흰색 바운딩 박스로 그리고 선을 얇게 설정
@@ -1808,6 +1803,7 @@ class RobotMain(object):
             self._arm.set_state(0)
 
 
+
     # ==================== pause test motion ====================
     def run_robot_pause_test(self):
         self._angle_speed = 10
@@ -1832,6 +1828,7 @@ class RobotMain(object):
         code = self._arm.set_servo_angle(angle=self.position_home, speed=self._angle_speed,
                                          mvacc=self._angle_acc, wait=True, radius=0.0)
         if not self._check_code(code, 'set_servo_angle'): return
+
 
     def run_robot_test(self):
 
@@ -1919,6 +1916,7 @@ class RobotMain(object):
 
         print('motion_make_icecream finish')
         time.sleep(0.5)
+
 
 
 
