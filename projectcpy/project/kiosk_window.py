@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox, QGraphicsScene
 from menu_window import MenuWindow
-from config import kiosk_ui_path
+from config import kiosk_ui_path, user_img_path
 
 class KioskWindow(QDialog):
     def __init__(self, db_config, main):
@@ -53,7 +53,7 @@ class KioskWindow(QDialog):
                 result = cursor.fetchone()
                 if result:
                     user_id = result['user_id']
-                    image_path = os.path.expanduser(f"~/dev_ws/EDA/user_pic/{user_id}.jpeg")
+                    image_path = os.path.expanduser(f"{user_img_path}/{user_id}.jpeg")
 
                     ret, frame = self.cap.read()
                     if ret:
