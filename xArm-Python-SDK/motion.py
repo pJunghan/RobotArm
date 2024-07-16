@@ -2043,19 +2043,14 @@ if __name__ == '__main__':
     RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
     arm = XArmAPI('192.168.1.167', baud_checkset=False)
     robot_main = RobotMain(arm)
-    # yolo_main = YOLOMain(robot_main)
+    yolo_main = YOLOMain(robot_main)
 
     # 스레드 생성
-    # robot_thread = threading.Thread(target=robot_main.run_robot)
-    # yolo_thread = threading.Thread(target=yolo_main.segmentation)
+    robot_thread = threading.Thread(target=robot_main.run_robot)
+    yolo_thread = threading.Thread(target=yolo_main.segmentation)
     socket_thread = threading.Thread(target=robot_main.socket_connect)
 
     # 스레드 시작
-    # robot_thread.start()
-    # yolo_thread.start()
+    robot_thread.start()
+    yolo_thread.start()
     socket_thread.start()
-
-    # 스레드가 끝날 때까지 대기
-    # robot_thread.join()
-    # yolo_thread.join()
-    socket_thread.join()
