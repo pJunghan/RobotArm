@@ -10,7 +10,7 @@
 # All rights reserved.
 #
 # Author: Vinman <vinman.wen@ufactory.cc> <vinman.cub@gmail.com>
-
+import keyboard
 """
 # Notice
 #   1. Changes to this file on Studio will not be preserved
@@ -1782,7 +1782,205 @@ class RobotMain(object):
         if hasattr(self._arm, 'release_count_changed_callback'):
             self._arm.release_count_changed_callback(self._count_changed_callback)
 
-    def motion_trash_cup(self, position) :
+    def run_aris(self):
+        try:
+            while self.is_alive:
+                # Joint Motion
+                if self.state == 'icecreaming':
+                    # --------------icecream start--------------------
+                    # try:
+                    #     self.clientSocket.send('icecream_start'.encode('utf-8'))
+                    # except:
+                    #     print('socket error')
+                    # time.sleep(int(self.order_msg['makeReq']['latency']))
+                    self.motion_home()
+                    # self.check_gripper()
+                    # while True:
+                    #     if self.order_msg['makeReq']['latency'] in ['go', 'stop']:
+                    #         break
+                    #     time.sleep(0.2)
+                    if self.order_msg['makeReq']['latency'] in ['go']:
+                        self.motion_grab_capsule()
+                        if self.order_msg['makeReq']['sealing'] in ['yes']:
+                            self.motion_check_sealing()
+                            # try:
+                            #     self.clientSocket.send('sealing_check'.encode('utf-8'))
+                            # except:
+                            #     pass
+                            # count = 0
+                            # while True:
+                            #     # if sealing_check request arrives or 5sec past
+                            #     if self.order_msg['makeReq']['sealing'] in ['go', 'stop'] or count >= 5:
+                            #         print(self.order_msg['makeReq']['sealing'])
+                            #         break
+                            #     time.sleep(0.2)
+                            #     count += 0.2
+                        if self.order_msg['makeReq']['sealing'] in ['go'] or self.order_msg['makeReq']['sealing'] not in ['yes', 'stop']:
+                            #print('sealing_pass')
+                            self.motion_place_capsule()
+                            self.motion_grab_cup()
+                            self.motion_topping()
+                            self.motion_make_icecream()
+                            self.motion_serve()
+                            self.motion_trash_capsule()
+                            self.motion_home()
+                            print('icecream finish')
+                            # while True:
+                            #     try:
+                            #         self.clientSocket.send('icecream_finish'.encode('utf-8'))
+                            #         break
+                            #     except:
+                            #         time.sleep(0.2)
+                            #         print('socket_error')
+                        else:
+                            self.motion_place_fail_capsule()
+                            self.motion_home()
+                            # self.clientSocket.send('icecream_cancel'.encode('utf-8'))
+                            # self.order_msg['makeReq']['sealing'] = ''
+                    else:
+                        pass
+                        # while True:
+                        #     try:
+                        #         self.clientSocket.send('icecream_cancel'.encode('utf-8'))
+                        #         break
+                        #     except:
+                        #         print('socket error')
+                    #     self.order_msg['makeReq']['latency'] = 0
+                    # print('sendsendsendsnedasdhfaenbeijakwlbrsvz;ikbanwzis;fklnairskjf')
+                    self.state = 'ready'
+
+                elif self.state == 'test':
+                    try:
+                        self.clientSocket.send('test_start'.encode('utf-8'))
+                    except:
+                        print('socket error')
+                    # self.motion_home()
+                    # self.motion_grab_cup()
+                    # self.motion_serve()
+
+                elif self.state == 'greet':
+                    self.motion_greet()
+                    self.motion_home()
+                    while True:
+                        try:
+                            self.clientSocket.send('greet_finish'.encode('utf-8'))
+                            break
+                        except:
+                            print('socket error')
+                            time.sleep(0.2)
+                    print('greet finish')
+                    self.state = 'ready'
+
+                elif self.state == 'dance_random':
+                    dance_num = random.randrange(1, 4)
+                    if dance_num == 1:
+                        self.motion_dance_a()
+                    elif dance_num == 2:
+                        self.motion_dance_b()
+                    elif dance_num == 3:
+                        self.motion_dance_c()
+                    while True:
+                        try:
+                            self.clientSocket.send('dance_random_finish'.encode('utf-8'))
+                            break
+                        except:
+                            print('socket error')
+                            time.sleep(0.2)
+                    self.state = 'ready'
+
+                elif self.state == 'dance_a':
+                    self.motion_dance_a()
+                    self.motion_home()
+                    while True:
+                        try:
+                            self.clientSocket.send('dance_a_finish'.encode('utf-8'))
+                            break
+                        except:
+                            print('socket error')
+                            time.sleep(0.2)
+                    self.state = 'ready'
+
+                elif self.state == 'dance_b':
+                    self.motion_dance_b()
+                    self.motion_home()
+                    while True:
+                        try:
+                            self.clientSocket.send('dance_b_finish'.encode('utf-8'))
+                            break
+                        except:
+                            print('socket error')
+                            time.sleep(0.2)
+                    self.state = 'ready'
+
+                elif self.state == 'dance_c':
+                    self.motion_dance_c()
+                    self.motion_home()
+                    # self.clientSocket.send('dance_c_finish'.encode('utf-8'))
+                    self.state = 'ready'
+
+                elif self.state == 'breath':
+                    try:
+                        self.clientSocket.send('breath_start'.encode('utf-8'))
+                        time.sleep(5)
+                        self.clientSocket.send('breath_finish'.encode('utf-8'))
+                    except:
+                        print('socket error')
+
+                elif self.state == 'sleep':
+                    self.motion_sleep()
+                    self.motion_home()
+                    while True:
+                        try:
+                            self.clientSocket.send('sleep_finish'.encode('utf-8'))
+                            break
+                        except:
+                            print('socket error')
+                            time.sleep(0.2)
+                    self.state = 'ready'
+
+                elif self.state == 'comeon':
+                    print('come_on start')
+                    self.motion_come_on()
+                    # self.motion_home()
+                    self.state = 'ready'
+
+                elif self.state == 'clean_mode':
+                    try:
+                        self.clientSocket.send('clean_mode_start'.encode('utf-8'))
+                    except:
+                        print('socket error')
+                    self.state = 'ready'
+
+                    code = self._arm.set_cgpio_digital(1, 1, delay_sec=0)
+                    if not self._check_code(code, 'set_cgpio_digital'):
+                        return
+                    self.state = 'ready'
+
+                elif self.state == 'clean_mode_end':
+                    code = self._arm.set_cgpio_digital(1, 0, delay_sec=0)
+                    if not self._check_code(code, 'set_cgpio_digital'):
+                        return
+                    self.state = 'ready'
+
+
+                elif self.state == 'ping':
+                    print('ping checked')
+                    # self.motion_home()
+                    self.state = 'ready'
+
+                else:
+                    pass
+
+                # self.state = 'ready'
+        except Exception as e:
+            self.pprint('MainException: {}'.format(e))
+        self.alive = False
+        self._arm.release_error_warn_changed_callback(self._error_warn_changed_callback)
+        self._arm.release_state_changed_callback(self._state_changed_callback)
+        if hasattr(self._arm, 'release_count_changed_callback'):
+            self._arm.release_count_changed_callback(self._count_changed_callback)
+
+    def motion_trash_cup(self, position) -> None:
         self._angle_speed = 100
         self._angle_acc = 100
 
@@ -1895,11 +2093,56 @@ class RobotMain(object):
             return
         
         
-        
+    def gritting(self, gender) -> None: 
+        self._angle_speed = 100
+        self._angle_acc = 100
 
-    def test_run(self):
-        self.motion_trash_cup('A')
-        # self.motion_home()
+        if gender == "female":
+            code = self._arm.set_servo_angle(angle=[207.4, -15.5, 60.6, 181.7, 46.8, -2.5], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[247.6, -15.5, 8.9, 87, 78.5, -104.7], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[179.2, -42.1, 7.4, 186.7, 41.5, -1.6], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0) # home
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            
+        elif gender == "male":
+            code = self._arm.set_servo_angle(angle=[265.4, -17.3, 105.2, 186.8, -17.1, 0], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[265.4, -9.6, 37.1, 179.8, -6, -8.2], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[265.4, -17.3, 105.2, 186.8, -23.1, 0], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[179.2, -42.1, 7.4, 186.7, 41.5, -1.6], speed=self._angle_speed,  
+                                                mvacc=self._angle_acc, wait=True, radius=0.0) # home
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            
+        else:
+            self.motion_greet()
+
+    def test_run(self) -> None:
+        
+        # self.motion_place_fail_capsule()
+        self.gritting("female")
+
+    def controller(self):
+        keyboard.add_hotkey('q', lambda:self._arm.emergency_stop())
+        keyboard.add_hotkey('w', lambda:self._arm.set_state(0))
+        keyboard.add_hotkey('e', lambda:self.motion_home())
+        keyboard.wait()
+        
         
         
     def joint_state(self):
@@ -1923,3 +2166,5 @@ if __name__ == '__main__':
     run_thread = threading.Thread(target=robot_main.test_run)
     run_thread.start()
     print('run_thread_started')
+    # controller_thread = threading.Thread(target=robot_main.controller)
+    # controller_thread.start()
