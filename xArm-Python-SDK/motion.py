@@ -24,6 +24,7 @@
 import sys
 import math
 import time
+import json
 import queue
 import datetime
 import random
@@ -377,8 +378,9 @@ class RobotMain(object):
 
     def socket_connect(self):
 
-        self.HOST = '192.168.1.167'
-        self.PORT = 20002
+        # self.HOST = '192.168.1.167'
+        self.HOST = '127.0.0.1'
+        self.PORT = 10002
         self.BUFSIZE = 1024
         self.ADDR = (self.HOST, self.PORT)
 
@@ -423,168 +425,20 @@ class RobotMain(object):
                 break
             except:
                 pass
-        # self.clientSocket.settimeout(10.0)
         print("accept")
-        print("--client info--")
-        # print(self.clientSocket)
+
 
         self.connected = True
         self.state = 'ready'
 
         # ------------------- receive msg start -----------
         while self.connected:
-            print('loop start')
-            time.sleep(0.5)
             try:
-                print('waiting')
-                self.clientSocket.settimeout(10.0)
-                self.recv_msg = self.clientSocket.recv(1024).decode('utf-8')
-                # try:
-                #    self.recv_msg = self.clientSocket.recv(1024).decode('utf-8')
-                # except Exception as e:
-                #    self.pprint('MainException: {}'.format(e))
+                self.recv_msg = json.loads(self.clientSocket.recv(1024).decode())
                 print('\n' + self.recv_msg)
-                if self.recv_msg == '':
-                    print('here')
-                    # continue
-                    # pass
-                    # break
-                    raise Exception('empty msg')
-                self.recv_msg = self.recv_msg.split('/')
-
-                if self.recv_msg[0] == 'app_ping':
-                    # print('app_ping received')
-                    send_msg = 'robot_ping'
-                    now_temp = arm.temperatures
-                    now_cur = arm.currents
-                    send_msg = [
-                        {
-                            'type': 'A', 'joint_name': 'Base', 'temperature': now_temp[0],
-                            'current': round(now_cur[0], 3) * 100
-                        }, {
-                            'type': 'B', 'joint_name': 'Shoulder', 'temperature': now_temp[1],
-                            'current': round(now_cur[1], 3) * 100
-                        }, {
-                            'type': 'C', 'joint_name': 'Elbow', 'temperature': now_temp[2],
-                            'current': round(now_cur[2], 3) * 100
-                        }, {
-                            'type': 'D', 'joint_name': 'Wrist1', 'temperature': now_temp[3],
-                            'current': round(now_cur[3], 3) * 100
-                        }, {
-                            'type': 'E', 'joint_name': 'Wrist2', 'temperature': now_temp[4],
-                            'current': round(now_cur[4], 3) * 100
-                        }, {
-                            'type': 'F', 'joint_name': 'Wrist3', 'temperature': now_temp[5],
-                            'current': round(now_cur[5], 3) * 100
-                        }
-                    ]
-                    try:
-                        time.sleep(0.5)
-                        self.clientSocket.send(f'{send_msg}'.encode('utf-8'))
-                        print('robot_ping')
-
-                    except Exception as e:
-                        self.pprint('MainException: {}'.format(e))
-                        print('ping send fail')
-                    # send_msg = arm.temperatures
-                    if self.state == 'ready':
-                        print('STATE : ready for new msg')
-                    else:
-                        print('STATE : now moving')
-                else:
-                    self.recv_msg[0] = self.recv_msg[0].replace("app_ping", "")
-                    if self.recv_msg[0] in ['breath', 'greet', 'farewell' 'dance_random', 'dance_a', 'dance_b',
-                                            'dance_c',
-                                            'sleep', 'comeon']:
-                        print(f'got message : {self.recv_msg[0]}')
-                        if self.state == 'ready':
-                            self.state = self.recv_msg[0]
-                    elif self.recv_msg[0] == 'robot_script_stop':
-                        code = self._arm.set_state(4)
-                        if not self._check_code(code, 'set_state'):
-                            return
-                        sys.exit()
-                        self.is_alive = False
-                        print('program exit')
-
-                    # 픽업존 아이스크림 뺐는지 여부 확인
-                    elif self.recv_msg[0].find('icecream_go') >= 0 or self.recv_msg[0].find(
-                            'icecream_stop') >= 0 and self.state == 'icecreaming':
-                        print(self.recv_msg[0])
-                        if self.recv_msg[0].find('icecream_go') >= 0:
-                            self.order_msg['makeReq']['latency'] = 'go'
-                        else:
-                            self.order_msg['makeReq']['latency'] = 'stop'
-                            print('000000000000000000000000000000')
-
-                    # 실링 존재 여부 확인
-
-                    if self.recv_msg[0].find('sealing_pass') >= 0 and self.state == 'icecreaming':
-                        self.order_msg['makeReq']['sealing'] = 'go'
-                        print('socket_go')
-                    elif self.recv_msg[0].find('sealing_reject') >= 0 and self.state == 'icecreaming':
-                        self.order_msg['makeReq']['sealing'] = 'stop'
-                        print('socket_stop')
-
-                    else:
-                        # print('else')
-                        try:
-                            self.order_msg = json.loads(self.recv_msg[0])
-                            if self.order_msg['type'] == 'ICECREAM':
-                                if self.state == 'ready':
-                                    print('STATE : icecreaming')
-                                    print(f'Order message : {self.order_msg}')
-                                    self.state = 'icecreaming'
-                            # else:
-                            #    self.clientSocket.send('ERROR : already moving'.encode('utf-8'))
-                            else:
-                                self.clientSocket.send('ERROR : wrong msg received'.encode('utf-8'))
-                        except:
-                            pass
-                self.recv_msg[0] = 'zzz'
-
-            except Exception as e:
-                self.pprint('MainException: {}'.format(e))
-                # if e == 'empty msg' :
-                #    pass
-                # self.connected = False
-                print('connection lost')
-                while True:
-                    time.sleep(2)
-                    try:
-
-                        try:
-                            self.serverSocket.shutdown(socket.SHUT_RDWR)
-                            self.serverSocket.close()
-                        except:
-                            pass
-
-                        print('socket_making')
-                        self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                        self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-                        self.serverSocket.bind(self.ADDR)
-                        print("bind")
-
-                        while True:
-                            print('listening')
-                            self.serverSocket.listen(1)
-                            print(f'reconnecting')
-                            try:
-                                self.clientSocket, addr_info = self.serverSocket.accept()
-                                break
-
-                            except socket.timeout:
-                                print('socket.timeout')
-                                break
-
-                            except:
-                                pass
-                        break
-                    except Exception as e:
-                        self.pprint('MainException: {}'.format(e))
-                        print('except')
-                        # pass
+            except:
+                continue
+           
 
     # =================================  motion  =======================================
 
@@ -2189,16 +2043,19 @@ if __name__ == '__main__':
     RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
     arm = XArmAPI('192.168.1.167', baud_checkset=False)
     robot_main = RobotMain(arm)
-    yolo_main = YOLOMain(robot_main)
+    # yolo_main = YOLOMain(robot_main)
 
     # 스레드 생성
-    robot_thread = threading.Thread(target=robot_main.run_robot)
-    yolo_thread = threading.Thread(target=yolo_main.segmentation)
+    # robot_thread = threading.Thread(target=robot_main.run_robot)
+    # yolo_thread = threading.Thread(target=yolo_main.segmentation)
+    socket_thread = threading.Thread(target=robot_main.socket_connect)
 
     # 스레드 시작
-    robot_thread.start()
-    yolo_thread.start()
+    # robot_thread.start()
+    # yolo_thread.start()
+    socket_thread.start()
 
     # 스레드가 끝날 때까지 대기
-    robot_thread.join()
-    yolo_thread.join()
+    # robot_thread.join()
+    # yolo_thread.join()
+    socket_thread.join()
