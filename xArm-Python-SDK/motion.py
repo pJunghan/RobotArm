@@ -45,8 +45,6 @@ import numpy as np
 from scipy.spatial.distance import cdist
 import logging
 
-# robot_paused = threading.Event()
-
 class YOLOMain:
     def __init__(self, robot_main):
         # 모델 로드
@@ -98,7 +96,6 @@ class YOLOMain:
     def segmentation(self):
 
         global A_ZONE, B_ZONE, C_ZONE, NOT_SEAL
-        global robot_paused
 
         # YOLO 모델의 로깅 레벨 설정
         logging.getLogger('ultralytics').setLevel(logging.ERROR)
@@ -220,14 +217,12 @@ class YOLOMain:
                 min_distance = 300
                 min_distance_bool = False
 
-            # 거리 조건 체크 및 로봇 제어
+            # 거리 조건 체크 및 로봇 일시정지 제어
             if min_distance <= 50 and min_distance_bool and self.robot.pressing == False:
                 robot_state = 'robot stop'
-                # robot_paused.clear()
                 self.robot._arm.set_state(3)
             elif min_distance > 50 or not min_distance_bool:
                 robot_state = 'robot move'
-                # robot_paused.set()
                 self.robot._arm.set_state(0)
 
             # 설정된 ROI를 흰색 바운딩 박스로 그리고 선을 얇게 설정
@@ -1806,6 +1801,7 @@ class RobotMain(object):
             self._arm.set_state(0)
 
 
+
     # ==================== pause test motion ====================
     def run_robot_pause_test(self):
         self._angle_speed = 10
@@ -1830,95 +1826,6 @@ class RobotMain(object):
         code = self._arm.set_servo_angle(angle=self.position_home, speed=self._angle_speed,
                                          mvacc=self._angle_acc, wait=True, radius=0.0)
         if not self._check_code(code, 'set_servo_angle'): return
-
-    def run_robot_test(self):
-
-        global A_ZONE, B_ZONE, C_ZONE, NOT_SEAL
-
-        # --------------모드 설정 변수(나중에 방식 변경)--------------
-        global Toping, MODE
-        Toping = True
-        MODE = 'icecreaming'
-
-        # --------------카메라 없이 테스트할 때 변수--------------
-        A_ZONE = True
-        B_ZONE = False
-        C_ZONE = False
-        NOT_SEAL = True
-
-        self._angle_speed = 100
-        self._angle_acc = 100
-
-        self._tcp_speed = 100
-        self._tcp_acc = 1000
-
-        print('motion_grab_cup start')
-        
-        code = self._arm.set_servo_angle(angle=[2.9, -31.0, 33.2, 125.4, -30.4, -47.2], speed=self._angle_speed,
-                                         mvacc=self._angle_acc, wait=True, radius=0.0)
-        if not self._check_code(code, 'set_servo_angle'): return
-        
-        code = self._arm.set_cgpio_analog(0, 5)
-        if not self._check_code(code, 'set_cgpio_analog'):
-            return
-        code = self._arm.set_cgpio_analog(1, 5)
-        if not self._check_code(code, 'set_cgpio_analog'):
-            return
-
-        print('motion_grab_cup finish')
-        time.sleep(0.5)
-
-        global toppingAmount
-        toppingAmount = 5
-
-        print('motion_topping start')
-        print('send')
-
-        if Toping:
-            code = self._arm.set_position(*self.position_icecream_with_topping, speed=self._tcp_speed,
-                                            mvacc=self._tcp_acc, radius=0.0, wait=True)
-            if not self._check_code(code, 'set_position'): return
-            
-        else:
-            code = self._arm.set_servo_angle(angle=self.position_icecream_no_topping, speed=self._angle_speed,
-                                                mvacc=self._angle_acc, wait=True, radius=0.0)
-            if not self._check_code(code, 'set_servo_angle'): return
-
-        print('motion_topping finish')
-        time.sleep(0.5)
-
-        print('motion_make_icecream start')
-
-        if Toping:
-            time.sleep(5)
-        else:
-            time.sleep(8)
-
-        time.sleep(4)
-        code = self._arm.set_position(z=-20, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
-                                      wait=True)
-        if not self._check_code(code, 'set_position'): return
-
-        time.sleep(4)
-        code = self._arm.set_position(z=-10, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
-                                      wait=True)
-        if not self._check_code(code, 'set_position'): return
-        
-        if not self._check_code(code, 'set_pause_time'):
-            return
-
-        code = self._arm.set_position(z=-50, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
-                                      wait=True)
-        if not self._check_code(code, 'set_position'): return
-        
-        time.sleep(1)
-
-        # code = self._arm.set_cgpio_digital(3, 0, delay_sec=0)
-        # if not self._check_code(code, 'set_cgpio_digital'):
-        #     return
-
-        print('motion_make_icecream finish')
-        time.sleep(0.5)
 
 
 
