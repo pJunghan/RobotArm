@@ -13,6 +13,9 @@ manager_ui_path = os.path.join(ui_base_path, "manager.ui")
 order_manage_ui_path = os.path.join(ui_base_path,"manager.ui")
 self_manage_ui_path = os.path.join(ui_base_path, "self_manage.ui")
 
+
+
+
 model_file_path = "/home/pjh/dev_ws/EDA/project/linear_regression_model.pkl"
 user_img_path = "/home/pjh/dev_ws/EDA/user_pic"
 

@@ -16,7 +16,7 @@ self_manage_ui_path = os.path.join(ui_base_path, "self_manage.ui")
 check_ui_path = os.path.join(ui_base_path, "check_login.ui")
 check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
 
-model_file_path = "/home/pjh/dev_ws/EDA/project/linear_regression_model.pkl"
+model_file_path = "/home/lsm/git_ws/RobotArm/projectcpy/project(test)/linear_regression_model.pkl"
 user_img_path = "projectcpy/user_pic"
 
 # 데이터베이스 연결 설정
@@ -49,13 +49,13 @@ db_config = {
 }
 
 ice_cream_images = [
-            "/home/pjh/dev_ws/EDA/flavor/choco.jpeg",
-            "/home/pjh/dev_ws/EDA/flavor/vanila.jpeg",
-            "/home/pjh/dev_ws/EDA/flavor/strawberry.jpeg"
+            "/home/lsm/git_ws/RobotArm/flavor/choco.jpeg",
+            "/home/lsm/git_ws/RobotArm/flavor/vanila.jpeg",
+            "/home/lsm/git_ws/RobotArm/flavor/strawberry.jpeg"
         ]
 
 topping_images = [
-            "/home/pjh/dev_ws/EDA/flavor/topping1.jpeg",
-            "/home/pjh/dev_ws/EDA/flavor/topping2.jpeg",
-            "/home/pjh/dev_ws/EDA/flavor/topping3.jpeg"
+            "/home/lsm/git_ws/RobotArm/flavor/topping1.jpeg",
+            "/home/lsm/git_ws/RobotArm/flavor/topping2.jpeg",
+            "/home/lsm/git_ws/RobotArm/flavor/topping3.jpeg"
         ]
