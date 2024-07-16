@@ -45,7 +45,23 @@ class CheckLoginWindow(QDialog):
             print(f"Error: Cannot read image from {user_image_path}")
 
         # 사용자 정보 표시
-        try :
+        # try :
+        #     self.Name.setHtml(f"""
+        #         <div style="text-align: center;">
+        #             <span style="font-size: 14pt; font-weight: bold;">{user_info['name']}</span>
+        #         </div>
+        #     """)
+        #     self.Birth.setHtml(f"""
+        #         <div style="text-align: center;">
+        #             <span style="font-size: 14pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
+        #         </div>
+        #     """)
+        # except:
+        #     pass
+
+        
+        # 사용자 정보 표시 예외 처리 추가
+        if user_info is not None and 'name' in user_info and 'birthday' in user_info:
             self.Name.setHtml(f"""
                 <div style="text-align: center;">
                     <span style="font-size: 14pt; font-weight: bold;">{user_info['name']}</span>
@@ -56,8 +72,9 @@ class CheckLoginWindow(QDialog):
                     <span style="font-size: 14pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
                 </div>
             """)
-        except:
-            pass
+        else:
+            print("Error: user_info is None or missing required keys")
+  
 
         
     def open_menu_window(self):

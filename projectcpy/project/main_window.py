@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi(main_ui_path, self)
-        self.data = {"flaver" : "test", "topping1" : 3, "topping2" : 3, "topping3" : 3}
+        self.data = {"flavor" : "test", "topping1" : 3, "topping2" : 3, "topping3" : 3}
         self.orderButton.clicked.connect(self.go_to_login_window)
         self.autoButton.clicked.connect(self.go_to_auto_order_window)
         # main.ui가 불려올 때마다 데이터 초기화 함수 실행
