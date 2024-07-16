@@ -97,7 +97,7 @@ class FaceToInfo():
         if not find_result[0].empty:
             if find_result[0].distance.iloc[0] < 0.15: # 85프로 이상 일치할때 찾음
                 self.color = (0, 255, 0)
-                self.known_person = find_result[0]["identity"][0].split("/")[2].split(".")[0]  # 사용자 ID로 설정
+                self.known_person = find_result[0]["identity"][0].split("/")[-1].split(".")[0]  # 사용자 ID로 설정
             else:
                 self.color = (0, 0, 255)
                 self.known_person = None
