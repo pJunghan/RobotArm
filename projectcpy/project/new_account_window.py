@@ -109,6 +109,4 @@ class NewAccountWindow(QDialog):  # Inherit from QDialog
         self.next_window.show()
         self.close()
 
-    def closeEvent(self, event):
-        self.main.home()
-        event.accept()
+
