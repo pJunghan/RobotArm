@@ -31,24 +31,24 @@ user_img_path = "projectcpy/user_pic"
 #     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
 # }
 
-# db_config = {
-#     'user': 'junghan',
-#     'password': '6488',
-#     'host': 'localhost',
-#     'database': 'order_db',  # 사용할 데이터베이스 이름
-#     'charset': 'utf8',
-#     'cursorclass': pymysql.cursors.DictCursor
-# }
-
-
 db_config = {
-    'host': '172.30.1.53',      # 데이터베이스 호스트 주소
-    'user': 'user3',        # 사용자 이름
-    'password': 'test1234',       # 비밀번호
-    'database': 'order_db',   # 데이터베이스 이름
-    'charset': 'utf8',        # 문자셋 설정
-    'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
+    'user': 'junghan',
+    'password': '6488',
+    'host': 'localhost',
+    'database': 'order_db',  # 사용할 데이터베이스 이름
+    'charset': 'utf8',
+    'cursorclass': pymysql.cursors.DictCursor
 }
+
+
+# db_config = {
+#     'host': '172.30.1.53',      # 데이터베이스 호스트 주소
+#     'user': 'user3',        # 사용자 이름
+#     'password': 'test1234',       # 비밀번호
+#     'database': 'order_db',   # 데이터베이스 이름
+#     'charset': 'utf8',        # 문자셋 설정
+#     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
+# }
 
 ice_cream_images = [
             "flavor/choco.jpeg",
