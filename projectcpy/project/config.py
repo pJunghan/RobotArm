@@ -32,11 +32,12 @@ user_img_path = "projectcpy/user_pic"
 db_config = {
     'user': 'junghan',
     'password': '6488',
-    'host': 'localhost',
-    'database': 'order_db',  # 사용할 데이터베이스 이름
+    'host': '172.30.1.29',  # 변경된 IP 주소
+    'database': 'order_db',
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor
 }
+
 
 
 # db_config = {
