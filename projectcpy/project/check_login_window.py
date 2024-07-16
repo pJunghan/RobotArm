@@ -45,17 +45,21 @@ class CheckLoginWindow(QDialog):
             print(f"Error: Cannot read image from {user_image_path}")
 
         # 사용자 정보 표시
-        self.Name.setHtml(f"""
-            <div style="text-align: center;">
-                <span style="font-size: 14pt; font-weight: bold;">{user_info['name']}</span>
-            </div>
-        """)
-        self.Birth.setHtml(f"""
-            <div style="text-align: center;">
-                <span style="font-size: 14pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
-            </div>
-        """)
+        try :
+            self.Name.setHtml(f"""
+                <div style="text-align: center;">
+                    <span style="font-size: 14pt; font-weight: bold;">{user_info['name']}</span>
+                </div>
+            """)
+            self.Birth.setHtml(f"""
+                <div style="text-align: center;">
+                    <span style="font-size: 14pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
+                </div>
+            """)
+        except:
+            pass
 
+        
     def open_menu_window(self):
         self.accept()  # 현재 창을 닫고
         self.parent.close()  # LoginWindow를 닫음
