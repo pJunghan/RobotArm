@@ -283,6 +283,8 @@ class ConfirmWindow(QMainWindow):
                 conn.close()
                 print("데이터베이스 연결을 닫았습니다.")
 
+
+
     def go_to_main_window(self):
         self.main.home()
         self.close()
