@@ -109,10 +109,22 @@ class MenuWindow(QMainWindow):
         item.mousePressEvent = lambda event: self.item_click_event(event, item_name)
 
     def item_click_event(self, event, item_name):
-        self.item_click_count[item_name] += 1
+    # 아이스크림 아이템인지 확인
+        if item_name in ['choco', 'vanila', 'strawberry']:
+            # 모든 아이스크림 아이템의 선택 개수를 0으로 초기화
+            for key in ['choco', 'vanila', 'strawberry']:
+                self.item_click_count[key] = 0
+        # 토핑 아이템인지 확인
+        elif item_name in ['topping1', 'topping2', 'topping3']:
+            # 모든 토핑 아이템의 선택 개수를 0으로 초기화
+            for key in ['topping1', 'topping2', 'topping3']:
+                self.item_click_count[key] = 0
+        
+        # 클릭된 아이템의 선택 개수를 1로 설정
+        self.item_click_count[item_name] = 1
         self.update_list_view()
 
     def update_list_view(self):
         items_to_show = [f"{item}: {count}" for item, count in self.item_click_count.items() if count > 0]
         self.list_model.setStringList(items_to_show)  # QStringList로 업데이트
-        self.listView.setModel(self.list_model) 
+        self.listView.setModel(self.list_model)
