@@ -119,7 +119,6 @@ class FaceToInfo():
         self.cam_to_info_deamon = False
         self.cam_deamon = False
         self.cap.release()
-        cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     face = FaceToInfo()
