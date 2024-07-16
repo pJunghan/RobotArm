@@ -29,13 +29,13 @@ class MainWindow(QMainWindow):
         if not hasattr(self, 'login_window'):
             self.login_window = LoginWindow(self)
             self.login_window.show()
-            self.hide()  # 메인 윈도우를 숨깁니다.
+            self.close()  # 메인 윈도우를 숨깁니다.
 
     def go_to_auto_order_window(self):
         from auto_order import OrderManager
         self.win = OrderManager(self)
         self.win.show()
-        self.hide()
+        self.close()
     def update_purchase_count(self, db_config):
         try:
             # 데이터베이스 연결

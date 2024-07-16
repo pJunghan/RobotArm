@@ -119,6 +119,7 @@ class LoginWindow(QMainWindow):
         self.stop_camera()  # 카메라 동작 중지
         guest_name = self.create_guest_user()  # 새로운 비회원 사용자 생성
         if guest_name:
+            self.close()
             self.go_to_menu_window()
 
     def create_guest_user(self):
@@ -133,7 +134,7 @@ class LoginWindow(QMainWindow):
                 while new_user_id in existing_ids:
                     new_user_id += 1
 
-                new_guest_name = f"undefined_{new_user_id}"
+                new_guest_name = f"guest_{new_user_id}"
 
                 insert_query = """
                 INSERT INTO user_info_table (user_ID, name, point)
@@ -163,6 +164,7 @@ class LoginWindow(QMainWindow):
     def go_to_new_account_window(self):
         # 새로운 계정 생성 창으로 이동
         self.stop_camera()
+        self.close()
         self.next_window = NewAccountWindow(new_account_ui_path, db_config, self.main)
         self.next_window.show()
 
