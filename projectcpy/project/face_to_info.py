@@ -29,6 +29,7 @@ class FaceToInfo():
 
         self.cam_to_info_deamon = True  # 각 스레드를 정지시키기 위한 파라미터 False로 할 시 해당 스레드 정지
         self.cam_deamon = True
+        self.failed_attempts = 0  # 인식 실패 횟수를 기록하는 변수
     
     def run_cam(self):  # 캠에서 이미지를 받아와 이미지 큐에 넣어주는 함수
         while self.cam_deamon:
@@ -93,17 +94,24 @@ class FaceToInfo():
                 self.find_result = mid_find_result
                 self.face_data = mid_face_data
 
+
     def are_you_member(self, find_result):  # 멤버쉽 멤버인지 확인
         if not find_result[0].empty:
             if find_result[0].distance.iloc[0] < 0.20: # 80프로 이상 일치할때 찾음
+                self.failed_attempts = 0  # 인식 성공 시 실패 횟수 초기화
                 self.color = (0, 255, 0)
                 self.known_person = find_result[0]["identity"][0].split("/")[-1].split(".")[0]  # 사용자 ID로 설정
+                
             else:
                 self.color = (0, 0, 255)
                 self.known_person = None
+                
+                self.failed_attempts += 1  # 인식 실패 시 실패 횟수 증가
+                print(f"회원인식 실패 횟수 {self.failed_attempts}")
         else:
             self.color = (0, 0, 255)
             self.known_person = None
+
 
     def log_print(self, string):  # 디버깅 로그 출력
         if self.log_print_:
