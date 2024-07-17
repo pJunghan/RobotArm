@@ -3,6 +3,8 @@ import os
 import cv2
 import pymysql
 import time
+from datetime import datetime
+
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QTimer, QRectF
 from PyQt5.QtGui import QPixmap, QImage, QPainter
@@ -54,10 +56,8 @@ class LoginWindow(QMainWindow):
                 pixmap_item = self.scene.addPixmap(pixmap)
                 self.graphicsView.setSceneRect(QRectF(pixmap.rect()))
                 self.check_user()
-
         else:
             print("Error: Failed to get frame from camera or frame is None.")
-        
 
     def check_user(self):
         # 얼굴 인식된 사용자가 있으면 로그인 처리
@@ -67,13 +67,14 @@ class LoginWindow(QMainWindow):
             user_info = self.get_user_info(user_id)  # 사용자 정보 가져오기
             user_image_path = os.path.join(user_img_path, f"{user_id}.jpeg")
 
-            
             if os.path.exists(user_image_path):
                 check_window = CheckLoginWindow(user_image_path, user_info, self)
                 if check_window.exec_() == QDialog.Rejected:
                     self.start_camera()  # 로그인 실패 시 카메라 재시작
             else:
                 print(f"Error: Image file {user_image_path} does not exist.")
+        elif self.face.failed_attempts == 5:  # 5회 이상 인식 실패 시 비회원 로그인 처리
+            self.handle_guest_login()
 
     def get_user_info(self, user_id):
         # 데이터베이스에서 사용자 정보 가져오기
@@ -136,11 +137,25 @@ class LoginWindow(QMainWindow):
 
                 new_guest_name = f"guest_{new_user_id}"
 
+
+                # 추정한 성별을 db 형식에 맞게 변환하여 저장
+                if self.face.analyze_result[0]["dominant_gender"] == "Man":
+                    new_gender = "Male"
+                
+                elif self.face.analyze_result[0]["dominant_gender"] == "Woman":
+                    new_gender = "Female"
+
+
+                # 추정한 나이를 생년월일로 변환하여 YYYY-01-01 형식으로 db에 저장
+                new_age = self.face.analyze_result[0]["age"]
+                current_year = datetime.now().year
+                new_birthday = f"{current_year - new_age}-01-01"  
+
                 insert_query = """
-                INSERT INTO user_info_table (user_ID, name, point)
-                VALUES (%s, %s, %s)
+                INSERT INTO user_info_table (user_ID, name, point, gender, birthday)
+                VALUES (%s, %s, %s, %s, %s)
                 """
-                cursor.execute(insert_query, (new_user_id, new_guest_name, 0))
+                cursor.execute(insert_query, (new_user_id, new_guest_name, 0, new_gender, new_birthday))
                 conn.commit()
 
                 return new_guest_name
@@ -167,5 +182,3 @@ class LoginWindow(QMainWindow):
         self.close()
         self.next_window = NewAccountWindow(new_account_ui_path, db_config, self.main)
         self.next_window.show()
-
-
