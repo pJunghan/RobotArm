@@ -2,9 +2,9 @@ import sys
 import os
 import cv2
 import pymysql
+import tts
 import time
 from datetime import datetime
-
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QTimer, QRectF
 from PyQt5.QtGui import QPixmap, QImage, QPainter
@@ -138,27 +138,41 @@ class LoginWindow(QMainWindow):
                 new_guest_name = f"guest_{new_user_id}"
 
 
-                # 추정한 성별을 db 형식에 맞게 변환하여 저장
-                if self.face.analyze_result[0]["dominant_gender"] == "Man":
-                    new_gender = "Male"
+                # analyze_result가 None이 아니고 필요한 키가 존재하는지 확인
+                if self.face.analyze_result is not None and 'dominant_gender' in self.face.analyze_result[0] and 'age' in self.face.analyze_result[0]:
+                    # 추정한 성별을 db 형식에 맞게 변환하여 저장
+                    if self.face.analyze_result[0]["dominant_gender"] == "Man":
+                        new_gender = "Male"
+                    elif self.face.analyze_result[0]["dominant_gender"] == "Woman":
+                        new_gender = "Female"
+
+                    # 추정한 나이를 생년월일로 변환하여 YYYY-01-01 형식으로 db에 저장
+                    new_age = self.face.analyze_result[0]["age"]
+                    current_year = datetime.now().year
+                    new_birthday = f"{current_year - new_age}-01-01"
+
+                    insert_query = """
+                    INSERT INTO user_info_table (user_ID, name, point, gender, birthday)
+                    VALUES (%s, %s, %s, %s, %s)
+                    """
+                    cursor.execute(insert_query, (new_user_id, new_guest_name, 0, new_gender, new_birthday))
+                    conn.commit()
+
+                    return new_guest_name
                 
-                elif self.face.analyze_result[0]["dominant_gender"] == "Woman":
-                    new_gender = "Female"
+                else:
+                    new_birthday = "19901020"
+                    insert_query = """
+                    INSERT INTO user_info_table (user_ID, name, point, birthday)
+                    VALUES (%s, %s, %s, %s)
+                    """
+                    cursor.execute(insert_query, (new_user_id, new_guest_name, 0, new_birthday))
+                    conn.commit()
 
+                    return new_guest_name
+        
 
-                # 추정한 나이를 생년월일로 변환하여 YYYY-01-01 형식으로 db에 저장
-                new_age = self.face.analyze_result[0]["age"]
-                current_year = datetime.now().year
-                new_birthday = f"{current_year - new_age}-01-01"  
-
-                insert_query = """
-                INSERT INTO user_info_table (user_ID, name, point, gender, birthday)
-                VALUES (%s, %s, %s, %s, %s)
-                """
-                cursor.execute(insert_query, (new_user_id, new_guest_name, 0, new_gender, new_birthday))
-                conn.commit()
-
-                return new_guest_name
+                
 
         except pymysql.MySQLError as err:
             print(f"데이터베이스 오류 발생: {err}")

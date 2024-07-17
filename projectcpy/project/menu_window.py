@@ -2,6 +2,7 @@ import sys
 import os
 import cv2
 import pymysql
+import tts
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel
 from PyQt5.QtGui import QImage, QPixmap
@@ -44,9 +45,27 @@ class MenuWindow(QMainWindow):
         self.add_image_to_graphics_view(topping_images[1], self.graphicsView_5, 'topping2')
         self.add_image_to_graphics_view(topping_images[2], self.graphicsView_6, 'topping3')
         self.setup_recommendations()
+        self.greeting_tts()
+         
+
+    # 0.04초 후에 tts.google_tts_and_play("안녕하세요.") 호출
+    def greeting_tts(self):
+        _, gender, name = self.get_user_info(self.user_id)
+        if name.startswith("guest"):
+            if gender == "Male":
+                QTimer.singleShot(40, lambda: tts.google_tts_and_play("남성 회원님 안녕하세요."))
+
+            elif gender == "Female":
+                QTimer.singleShot(40, lambda: tts.google_tts_and_play("여성 회원님 안녕하세요."))
+
+            else:
+                QTimer.singleShot(40, lambda: tts.google_tts_and_play("게스트 회원님 안녕하세요."))
+
+        else:
+            QTimer.singleShot(40, lambda: tts.google_tts_and_play(f"{name}님 안녕하세요."))
 
     def setup_recommendations(self):
-        age, gender = self.get_user_info(self.user_id)
+        age, gender, _ = self.get_user_info(self.user_id)
         recommended_flavor = self.recommend_flavor(age, gender)  # 추천 아이스크림 가져오기
         # 추천 아이스크림을 각 recommendView에 추가
         self.add_image_to_graphics_view(ice_cream_images[['choco', 'vanila', 'strawberry'].index(recommended_flavor)], self.recommendView_1, recommended_flavor)
@@ -55,20 +74,21 @@ class MenuWindow(QMainWindow):
         try:
             conn = pymysql.connect(**self.db_config)
             with conn.cursor() as cursor:
-                query = "SELECT gender, birthday FROM user_info_table WHERE user_ID = %s"
+                query = "SELECT gender, birthday, name FROM user_info_table WHERE user_ID = %s"
                 cursor.execute(query, (user_id,))
                 result = cursor.fetchone()
                 if result:
                     gender = result['gender']
                     birthday = result['birthday']
                     age = self.calculate_age(birthday)
-                    return age, gender
+                    name = result['name']
+                    return age, gender, name
                 else:
                     QMessageBox.warning(self, "사용자 정보 없음", "등록된 사용자 정보가 없습니다.")
-                    return None, None
+                    return None, None, None
         except pymysql.MySQLError as err:
             print(f"데이터베이스 오류 발생: {err}")
-            return None, None
+            return None, None, None
         finally:
             if 'conn' in locals():
                 conn.close()

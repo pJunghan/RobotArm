@@ -1,7 +1,8 @@
 import os
 import cv2
+import tts
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtCore import Qt, QRectF, QTimer
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QDialog, QGraphicsScene
 from config import check_ui_path, user_img_path
@@ -16,6 +17,7 @@ class CheckLoginWindow(QDialog):
         self.user_info = user_info
         self.parent = parent
 
+        # 하나의 메서드로 두 가지 작업 수행
         self.yesBtn.clicked.connect(self.open_menu_window)
         self.noBtn.clicked.connect(self.open_check_account_window)
 
@@ -23,6 +25,7 @@ class CheckLoginWindow(QDialog):
         self.user_photo.setScene(self.scene)
 
         self.display_user_info(user_image_path, user_info)
+
 
     def display_user_info(self, user_image_path, user_info):
         # 사용자 사진 표시
@@ -44,22 +47,6 @@ class CheckLoginWindow(QDialog):
         else:
             print(f"Error: Cannot read image from {user_image_path}")
 
-        # 사용자 정보 표시
-        # try :
-        #     self.Name.setHtml(f"""
-        #         <div style="text-align: center;">
-        #             <span style="font-size: 14pt; font-weight: bold;">{user_info['name']}</span>
-        #         </div>
-        #     """)
-        #     self.Birth.setHtml(f"""
-        #         <div style="text-align: center;">
-        #             <span style="font-size: 14pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
-        #         </div>
-        #     """)
-        # except:
-        #     pass
-
-        
         # 사용자 정보 표시 예외 처리 추가
         if user_info is not None and 'name' in user_info and 'birthday' in user_info:
             self.Name.setHtml(f"""
@@ -74,9 +61,7 @@ class CheckLoginWindow(QDialog):
             """)
         else:
             print("Error: user_info is None or missing required keys")
-  
 
-        
     def open_menu_window(self):
         self.accept()  # 현재 창을 닫고
         self.parent.close()  # LoginWindow를 닫음
@@ -87,3 +72,6 @@ class CheckLoginWindow(QDialog):
         self.accept()  # 현재 창을 닫고
         self.check_account_window = CheckAccountWindow(self.parent)  # parent를 전달
         self.check_account_window.exec_()  # CheckAccountWindow를 모달 창으로 열림
+
+        
+

@@ -93,6 +93,7 @@ class MainWindow(QMainWindow):
                 print("send data")
                 clientSocket.send(msg.encode())
                 self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0}
+    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
