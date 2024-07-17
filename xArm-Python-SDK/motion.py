@@ -43,12 +43,13 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 from scipy.spatial.distance import cdist
+
 import logging
 
 class YOLOMain:
     def __init__(self, robot_main):
         # 모델 로드
-        self.model = YOLO('/home/beakhongha/collision avoidance/train13/weights/best.pt')
+        self.model = YOLO("xArm-Python-SDK/best.pt")
 
         # 카메라 열기
         self.webcam = cv2.VideoCapture(2)  # 웹캠 장치 열기
@@ -240,15 +241,15 @@ class YOLOMain:
             cv2.putText(image_with_masks, f'A_ZONE: {A_ZONE}, B_ZONE: {B_ZONE}, C_ZONE: {C_ZONE}, NOT_SEAL: {NOT_SEAL}', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
             # 마스크가 적용된 프레임 표시
-            cv2.imshow("Webcam with Segmentation Masks and Detection Boxes", image_with_masks)
+            # cv2.imshow("Webcam with Segmentation Masks and Detection Boxes", image_with_masks)
 
             # 'q' 키를 누르면 종료
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     break
 
         # 자원 해제
         self.webcam.release()  # 웹캠 장치 해제
-        cv2.destroyAllWindows()  # 모든 OpenCV 창 닫기
+        # cv2.destroyAllWindows()  # 모든 OpenCV 창 닫기
 
 
 class RobotMain(object):
@@ -266,6 +267,7 @@ class RobotMain(object):
         self._robot_init()
         self.state = 'stopped'
         self.pressing = False
+        self.order_list = []
 
 
         self.position_home = [179.2, -42.1, 7.4, 186.7, 41.5, -1.6] #angle
@@ -430,9 +432,11 @@ class RobotMain(object):
         # ------------------- receive msg start -----------
         while self.connected:
             try:
-                self.recv_msg = json.loads(self.clientSocket.recv(1024).decode())
+                self.recv_msg = self.clientSocket.recv(1024).decode()
                 print('\n' + self.recv_msg)
-            except:
+                self.order_list.append(self.recv_msg)
+            except Exception as e:
+                print(e)
                 continue
 
     # =================================  motion  =======================================
@@ -1392,14 +1396,12 @@ class RobotMain(object):
         time.sleep(0.5)
 
     def motion_topping_test(self):
-
-        global toppingAmount
-        toppingAmount = 5
+        self.toppingAmount = 5
 
         print('motion_topping start')
         print('send')
 
-        if Toping:
+        if self.Toping:
             code = self._arm.set_servo_angle(angle=[36.6, -36.7, 21.1, 85.6, 59.4, 44.5], speed=self._angle_speed,
                                                 mvacc=self._angle_acc, wait=True, radius=0.0)
             if not self._check_code(code, 'set_servo_angle'): return
@@ -1417,7 +1419,7 @@ class RobotMain(object):
                                                 wait=True)
                 if not self._check_code(code, 'set_position'): return
                 
-                code = self._arm.set_pause_time(toppingAmount - 3)
+                code = self._arm.set_pause_time(self.toppingAmount - 3)
                 if not self._check_code(code, 'set_pause_time'):
                     return
                 
@@ -1455,7 +1457,7 @@ class RobotMain(object):
                                                 wait=True)
                 if not self._check_code(code, 'set_position'): return
 
-                code = self._arm.set_pause_time(toppingAmount - 4)
+                code = self._arm.set_pause_time(self.toppingAmount - 4)
                 if not self._check_code(code, 'set_pause_time'):
                     return
                 
@@ -1493,7 +1495,7 @@ class RobotMain(object):
                 if not self._check_code(code, 'set_cgpio_digital'):
                     return
                 
-                code = self._arm.set_pause_time(toppingAmount - 1)
+                code = self._arm.set_pause_time(self.toppingAmount - 1)
                 if not self._check_code(code, 'set_servo_angle'): return
 
                 
@@ -1543,7 +1545,7 @@ class RobotMain(object):
 
         print('motion_make_icecream start')
 
-        if Toping:
+        if self.Toping:
             time.sleep(4)
         else:
             time.sleep(7)
@@ -1828,6 +1830,95 @@ class RobotMain(object):
         if not self._check_code(code, 'set_servo_angle'): return
 
 
+    def run_robot_test(self):
+
+        global A_ZONE, B_ZONE, C_ZONE, NOT_SEAL
+
+        # --------------모드 설정 변수(나중에 방식 변경)--------------
+        self.Toping = True
+        self.MODE = 'icecreaming'
+
+        # --------------카메라 없이 테스트할 때 변수--------------
+        A_ZONE = True
+        B_ZONE = False
+        C_ZONE = False
+        NOT_SEAL = True
+
+        self._angle_speed = 100
+        self._angle_acc = 100
+
+        self._tcp_speed = 100
+        self._tcp_acc = 1000
+
+        print('motion_grab_cup start')
+        
+        code = self._arm.set_servo_angle(angle=[2.9, -31.0, 33.2, 125.4, -30.4, -47.2], speed=self._angle_speed,
+                                         mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'): return
+        
+        code = self._arm.set_cgpio_analog(0, 5)
+        if not self._check_code(code, 'set_cgpio_analog'):
+            return
+        code = self._arm.set_cgpio_analog(1, 5)
+        if not self._check_code(code, 'set_cgpio_analog'):
+            return
+
+        print('motion_grab_cup finish')
+        time.sleep(0.5)
+
+        self.toppingAmount = 5
+
+        print('motion_topping start')
+        print('send')
+
+        if self.Toping:
+            code = self._arm.set_position(*self.position_icecream_with_topping, speed=self._tcp_speed,
+                                            mvacc=self._tcp_acc, radius=0.0, wait=True)
+            if not self._check_code(code, 'set_position'): return
+            
+        else:
+            code = self._arm.set_servo_angle(angle=self.position_icecream_no_topping, speed=self._angle_speed,
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'): return
+
+        print('motion_topping finish')
+        time.sleep(0.5)
+
+        print('motion_make_icecream start')
+
+        if self.Toping:
+            time.sleep(5)
+        else:
+            time.sleep(8)
+
+        time.sleep(4)
+        code = self._arm.set_position(z=-20, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
+                                      wait=True)
+        if not self._check_code(code, 'set_position'): return
+
+        time.sleep(4)
+        code = self._arm.set_position(z=-10, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
+                                      wait=True)
+        if not self._check_code(code, 'set_position'): return
+        
+        if not self._check_code(code, 'set_pause_time'):
+            return
+
+        code = self._arm.set_position(z=-50, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
+                                      wait=True)
+        if not self._check_code(code, 'set_position'): return
+        
+        time.sleep(1)
+
+        # code = self._arm.set_cgpio_digital(3, 0, delay_sec=0)
+        # if not self._check_code(code, 'set_cgpio_digital'):
+        #     return
+
+        print('motion_make_icecream finish')
+        time.sleep(0.5)
+
+
+
 
     # ==================== main ====================
     def run_robot(self):
@@ -1835,19 +1926,19 @@ class RobotMain(object):
         global A_ZONE, B_ZONE, C_ZONE, NOT_SEAL
 
         # --------------모드 설정 변수(나중에 방식 변경)--------------
-        global Toping, MODE
-        Toping = True
-        MODE = 'icecreaming'
+        self.Toping = True
+        self.MODE = 'icecreaming'
 
         while self.is_alive:
-            # --------------카메라 없이 테스트할 때 변수--------------
-            # A_ZONE = False
-            # B_ZONE = True
-            # C_ZONE = False
-            # NOT_SEAL = True
+            if self.order_list != []:
+                self.MODE = 'icecreaming'
+            else:
+                self.MODE = 'ready'
 
             # Joint Motion
-            if MODE == 'icecreaming':
+            if self.MODE == 'icecreaming':
+                raw_order = self.order_list.pop(0)
+                order = json.loads(raw_order)
                 # --------------icecream start--------------------
                 print('icecream start')
                 time.sleep(4)
@@ -1883,6 +1974,7 @@ class RobotMain(object):
                 else:
                     self.motion_place_fail_capsule_test()
                     self.motion_home_test()
+                    self.order_list.insert(0, raw_order)
                     print('please take off the seal')
 
                 code = self._arm.stop_lite6_gripper()

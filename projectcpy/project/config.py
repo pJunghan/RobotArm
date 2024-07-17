@@ -40,8 +40,6 @@ db_config = {
     'cursorclass': pymysql.cursors.DictCursor
 }
 
-
-
 # db_config = {
 #     'host': '172.30.1.53',      # 데이터베이스 호스트 주소
 #     'user': 'user3',        # 사용자 이름

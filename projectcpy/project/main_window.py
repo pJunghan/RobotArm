@@ -17,7 +17,9 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi(main_ui_path, self)
-        self.data = {"flavor" : "test", "topping1" : 3, "topping2" : 3, "topping3" : 3}
+
+        self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0}
+
         self.orderButton.clicked.connect(self.go_to_login_window)
         self.autoButton.clicked.connect(self.go_to_auto_order_window)
         # main.ui가 불려올 때마다 데이터 초기화 함수 실행
@@ -27,13 +29,13 @@ class MainWindow(QMainWindow):
         if not hasattr(self, 'login_window'):
             self.login_window = LoginWindow(self)
             self.login_window.show()
-            self.hide()  # 메인 윈도우를 숨깁니다.
+            self.close()  # 메인 윈도우를 숨깁니다.
 
     def go_to_auto_order_window(self):
         from auto_order import OrderManager
         self.win = OrderManager(self)
         self.win.show()
-        self.hide()
+        self.close()
     def update_purchase_count(self, db_config):
         try:
             # 데이터베이스 연결
@@ -85,7 +87,12 @@ class MainWindow(QMainWindow):
         while True:
             time.sleep(0.1)
             # print("send")
-            clientSocket.send(msg.encode())
+            if self.data == {"topping1" : 0, "topping2" : 0, "topping3" : 0}:
+                continue
+            else:
+                print("send data")
+                clientSocket.send(msg.encode())
+                self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0}
     
 
 if __name__ == "__main__":

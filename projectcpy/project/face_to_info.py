@@ -95,7 +95,7 @@ class FaceToInfo():
 
     def are_you_member(self, find_result):  # 멤버쉽 멤버인지 확인
         if not find_result[0].empty:
-            if find_result[0].distance.iloc[0] < 0.15: # 85프로 이상 일치할때 찾음
+            if find_result[0].distance.iloc[0] < 0.20: # 80프로 이상 일치할때 찾음
                 self.color = (0, 255, 0)
                 self.known_person = find_result[0]["identity"][0].split("/")[-1].split(".")[0]  # 사용자 ID로 설정
             else:
@@ -119,7 +119,6 @@ class FaceToInfo():
         self.cam_to_info_deamon = False
         self.cam_deamon = False
         self.cap.release()
-        cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     face = FaceToInfo()

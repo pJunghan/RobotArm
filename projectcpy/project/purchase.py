@@ -272,6 +272,9 @@ class ConfirmWindow(QMainWindow):
                     # 트랜잭션 커밋
                     conn.commit()
                     QMessageBox.information(self, "결제 완료", "결제가 성공적으로 완료되었습니다.")
+                    self.main.data["topping1"] = self.item_click_count["topping1"]
+                    self.main.data["topping2"] = self.item_click_count["topping2"]
+                    self.main.data["topping3"] = self.item_click_count["topping3"]
                     self.go_to_main_window()
 
         except pymysql.MySQLError as err:
