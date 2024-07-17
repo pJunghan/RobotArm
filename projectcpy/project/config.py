@@ -19,6 +19,12 @@ check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
 
 model_file_path = "projectcpy/project/linear_regression_model.pkl"
 user_img_path = "projectcpy/user_pic"
+db_path = "projectcpy/user_pic"  # 데이터베이스 경로
+model_path = "projectcpy/project/Asian_emotion_model.h5"  # 감정 인식 모델 경로
+age_prototxt = "projectcpy/project/deploy_age.prototxt"  # 나이 예측 모델 prototxt 경로
+age_model = "projectcpy/project/age_net.caffemodel"  # 나이 예측 모델 caffemodel 경로
+gender_prototxt = "projectcpy/project/deploy_gender.prototxt"  # 성별 예측 모델 prototxt 경로
+gender_model = "projectcpy/project/gender_net.caffemodel"  # 성별 예측 모델 caffemodel 경로
 
 
 # 데이터베이스 연결 설정

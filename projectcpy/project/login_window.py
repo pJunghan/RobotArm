@@ -9,7 +9,8 @@ from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QTimer, QRectF
 from PyQt5.QtGui import QPixmap, QImage, QPainter
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QGraphicsScene, QDialog
-from face_to_info import FaceToInfo
+# from face_to_info import FaceToInfo
+from face_emotion_age_gender_detect import FaceRecognition
 from menu_window import MenuWindow
 from threading import Thread
 from new_account_window import NewAccountWindow
@@ -23,10 +24,10 @@ class LoginWindow(QMainWindow):
         uic.loadUi(login_ui_path, self)  # UI 파일 로드
         self.db_config = db_config  # db_config 속성 추가
         self.main = main
-        self.face = FaceToInfo(user_img_path)  # 얼굴 인식 객체 초기화
+        self.face = FaceRecognition()  # 얼굴 인식 객체 초기화
         self.cam_thread = Thread(target=self.face.run_cam)  # 카메라 스레드 시작
         self.cam_thread.start()
-        self.deep_face_thread = Thread(target=self.face.cam_to_info)  # 얼굴 인식 처리 스레드 시작
+        self.deep_face_thread = Thread(target=self.face.compare_faces)  # 얼굴 인식 처리 스레드 시작
         self.deep_face_thread.start()
         self.face.visualization = True
 
@@ -73,8 +74,9 @@ class LoginWindow(QMainWindow):
                     self.start_camera()  # 로그인 실패 시 카메라 재시작
             else:
                 print(f"Error: Image file {user_image_path} does not exist.")
-        elif self.face.failed_attempts == 5:  # 5회 이상 인식 실패 시 비회원 로그인 처리
+        elif self.face.failed_attempts >= 5:  # 5회 이상 인식 실패 시 비회원 로그인 처리
             self.handle_guest_login()
+        
 
     def get_user_info(self, user_id):
         # 데이터베이스에서 사용자 정보 가져오기
@@ -104,24 +106,27 @@ class LoginWindow(QMainWindow):
         self.timer.stop()
         self.face.cam_to_info_deamon = False
         self.face.cam_deamon = False
+        self.face.cap.release()
 
     def start_camera(self):
         # 카메라와 관련된 스레드 및 타이머 시작
+        self.face.cap = cv2.VideoCapture(0)
         self.face.cam_to_info_deamon = True
         self.face.cam_deamon = True
         self.cam_thread = Thread(target=self.face.run_cam)
         self.cam_thread.start()
-        self.deep_face_thread = Thread(target=self.face.cam_to_info)
+        self.deep_face_thread = Thread(target=self.face.compare_faces)
         self.deep_face_thread.start()
         self.timer.start(1000 // 30)
 
     def handle_guest_login(self):
         # 비회원 로그인 처리
-        self.stop_camera()  # 카메라 동작 중지
-        guest_name = self.create_guest_user()  # 새로운 비회원 사용자 생성
-        if guest_name:
-            self.close()
-            self.go_to_menu_window()
+        if self.face.result_dict["detected"]:
+            self.stop_camera()  # 카메라 동작 중지
+            guest_name = self.create_guest_user()  # 새로운 비회원 사용자 생성
+            if guest_name:
+                self.close()
+                self.go_to_menu_window()
 
     def create_guest_user(self):
         # 데이터베이스에 새로운 비회원 사용자 추가
@@ -196,3 +201,6 @@ class LoginWindow(QMainWindow):
         self.close()
         self.next_window = NewAccountWindow(new_account_ui_path, db_config, self.main)
         self.next_window.show()
+
+    def __del__(self):
+        del(self.face)

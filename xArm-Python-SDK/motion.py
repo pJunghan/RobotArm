@@ -1395,7 +1395,7 @@ class RobotMain(object):
         print('motion_grab_cup finish')
         time.sleep(0.5)
 
-    def motion_topping_test(self):
+    def motion_topping_test(self, order):
         self.toppingAmount = 5
 
         print('motion_topping start')
@@ -1406,7 +1406,7 @@ class RobotMain(object):
                                                 mvacc=self._angle_acc, wait=True, radius=0.0)
             if not self._check_code(code, 'set_servo_angle'): return
             
-            if C_ZONE:
+            if order["topping1"] > 0:
                 code = self._arm.set_position(*self.position_topping_C, speed=self._tcp_speed,
                                                 mvacc=self._tcp_acc, radius=0.0, wait=True)
                 if not self._check_code(code, 'set_position'): return
@@ -1440,7 +1440,7 @@ class RobotMain(object):
                                                 relative=True, wait=False)
                 if not self._check_code(code, 'set_position'): return
 
-            elif B_ZONE:
+            elif order["topping2"] > 0:
                 code = self._arm.set_servo_angle(angle=[55.8, -48.2, 14.8, 86.1, 60.2, 58.7], speed=self._angle_speed,
                                                     mvacc=self._angle_acc, wait=False, radius=20.0)
                 if not self._check_code(code, 'set_servo_angle'): return
@@ -1486,7 +1486,7 @@ class RobotMain(object):
                                                 mvacc=self._tcp_acc, radius=10.0, wait=False)
                 if not self._check_code(code, 'set_position'): return
 
-            elif A_ZONE:
+            elif order["topping3"] > 0:
                 code = self._arm.set_position(*self.position_topping_A, speed=self._tcp_speed,
                                                 mvacc=self._tcp_acc, radius=0.0, wait=True)
                 if not self._check_code(code, 'set_position'): return
@@ -1843,7 +1843,7 @@ class RobotMain(object):
         B_ZONE = False
         C_ZONE = False
         NOT_SEAL = True
-
+        
         self._angle_speed = 100
         self._angle_acc = 100
 
@@ -1964,7 +1964,7 @@ class RobotMain(object):
                 if NOT_SEAL:
                     self.motion_place_capsule_test()
                     self.motion_grab_cup_test()
-                    self.motion_topping_test()
+                    self.motion_topping_test(order)
                     self.motion_make_icecream_test()
                     self.motion_serve_test()
                     self.motion_trash_capsule_test()
