@@ -85,15 +85,3 @@ class KioskWindow(QDialog):
             self.menu_window.show()
         except Exception as e:
             print(f"메뉴 창을 열던 중 에러 발생: {e}")
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    db_config = {
-        'host': 'localhost',
-        'user': 'yourusername',
-        'password': 'yourpassword',
-        'database': 'yourdatabase'
-    }
-    window = KioskWindow(db_config)
-    window.show()
-    sys.exit(app.exec_())

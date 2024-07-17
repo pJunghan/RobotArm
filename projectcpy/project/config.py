@@ -18,7 +18,7 @@ check_ui_path = os.path.join(ui_base_path, "check_login.ui")
 check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
 
 model_file_path = "projectcpy/project/linear_regression_model.pkl"
-user_img_path = "projectcpy/user_pic"
+user_img_path = "/home/pjh/RobotArm/projectcpy/user_pic"
 
 
 # 데이터베이스 연결 설정
