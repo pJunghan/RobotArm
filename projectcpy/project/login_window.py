@@ -58,7 +58,6 @@ class LoginWindow(QMainWindow):
         else:
             print("Error: Failed to get frame from camera or frame is None.")
         
-
     def check_user(self):
         # 얼굴 인식된 사용자가 있으면 로그인 처리
         if self.face.known_person:

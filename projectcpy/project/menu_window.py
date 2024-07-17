@@ -47,9 +47,75 @@ class MenuWindow(QMainWindow):
 
     def setup_recommendations(self):
         age, gender = self.get_user_info(self.user_id)
-        recommended_flavor = self.recommend_flavor(age, gender)  # 추천 아이스크림 가져오기
+        
+        if age is None or gender is None:
+            recommended_flavor = 'choco'  # 기본값으로 'choco' 설정
+        else:
+            recommended_flavor = self.recommend_flavor(age, gender)  # 추천 아이스크림 가져오기
+        
         # 추천 아이스크림을 각 recommendView에 추가
-        self.add_image_to_graphics_view(ice_cream_images[['choco', 'vanila', 'strawberry'].index(recommended_flavor)], self.recommendView_1, recommended_flavor)
+        self.add_image_to_graphics_view(
+            ice_cream_images[['choco', 'vanila', 'strawberry'].index(recommended_flavor)],
+            self.recommendView_1,
+            recommended_flavor
+        )
+
+        historical_recommendation, topping_recommendation = self.recommend_based_on_history(self.user_id)
+        self.add_image_to_graphics_view(
+            ice_cream_images[['choco', 'vanila', 'strawberry'].index(historical_recommendation)],
+            self.recommendView_3,
+            historical_recommendation
+        )
+        self.add_image_to_graphics_view(
+            topping_images[['topping1', 'topping2', 'topping3'].index(topping_recommendation)],
+            self.recommendView_7,
+            topping_recommendation
+        )
+
+    def recommend_based_on_history(self, user_id):
+        try:
+            conn = pymysql.connect(**self.db_config)
+            with conn.cursor() as cursor:
+                query = """
+                SELECT choco_count, vanila_count, strawberry_count, topping1_count, topping2_count, topping3_count
+                FROM purchase_record_table
+                WHERE user_id = %s
+                """
+                cursor.execute(query, (user_id,))
+                result = cursor.fetchone()
+                if result:
+                    ice_cream_counts = np.array([
+                        result['choco_count'],
+                        result['vanila_count'],
+                        result['strawberry_count']
+                    ])
+                    topping_counts = np.array([
+                        result['topping1_count'],
+                        result['topping2_count'],
+                        result['topping3_count']
+                    ])
+                    
+                    # 가장 많이 주문한 아이스크림 맛 찾기
+                    max_ice_cream_index = np.argmax(ice_cream_counts)
+                    ice_cream_flavors = ['choco', 'vanila', 'strawberry']
+                    recommended_ice_cream = ice_cream_flavors[max_ice_cream_index]
+                    
+                    # 가장 많이 주문한 토핑 찾기
+                    max_topping_index = np.argmax(topping_counts)
+                    topping_flavors = ['topping1', 'topping2', 'topping3']
+                    recommended_topping = topping_flavors[max_topping_index]
+
+                    return recommended_ice_cream, recommended_topping
+                else:
+                    QMessageBox.warning(self, "기록 없음", "사용자 기록이 없습니다.")
+                    return 'choco', 'topping1'  # 기본값으로 'choco'와 'topping1' 반환
+        except pymysql.MySQLError as err:
+            print(f"데이터베이스 오류 발생: {err}")
+            return 'choco', 'topping1'  # 기본값으로 'choco'와 'topping1' 반환
+        finally:
+            if 'conn' in locals():
+                conn.close()
+
 
     def get_user_info(self, user_id):
         try:
@@ -61,7 +127,11 @@ class MenuWindow(QMainWindow):
                 if result:
                     gender = result['gender']
                     birthday = result['birthday']
-                    age = self.calculate_age(birthday)
+                    if birthday is not None:  # birthday가 None인지 확인
+                        age = self.calculate_age(birthday)
+                    else:
+                        QMessageBox.warning(self, "생년월일 없음", "사용자의 생년월일이 등록되어 있지 않습니다.")
+                        return None, gender  # 생년월일이 없으면 나이를 None으로 반환
                     return age, gender
                 else:
                     QMessageBox.warning(self, "사용자 정보 없음", "등록된 사용자 정보가 없습니다.")
