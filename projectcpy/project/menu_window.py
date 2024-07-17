@@ -146,12 +146,13 @@ class MenuWindow(QMainWindow):
                 if result:
                     gender = result['gender']
                     birthday = result['birthday']
+                    name = result['name']
                     if birthday is not None:  # birthday가 None인지 확인
                         age = self.calculate_age(birthday)
                     else:
                         QMessageBox.warning(self, "생년월일 없음", "사용자의 생년월일이 등록되어 있지 않습니다.")
                         return None, gender  # 생년월일이 없으면 나이를 None으로 반환
-                    return age, gender
+                    return age, gender, name
                 else:
                     QMessageBox.warning(self, "사용자 정보 없음", "등록된 사용자 정보가 없습니다.")
                     return None, None, None

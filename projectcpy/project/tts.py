@@ -5,7 +5,7 @@ from pydub import AudioSegment
 import simpleaudio as sa
 
 # 서비스 계정 키 파일 경로 설정
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "projectcpy/project/aris-tts-b53db7629dbd.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "projectcpy/project/aris-tts-db0d4caef6e0.json"
 
 def google_tts_and_play(text):
     client = texttospeech.TextToSpeechClient()
