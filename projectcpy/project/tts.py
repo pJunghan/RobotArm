@@ -3,9 +3,10 @@ import io
 from google.cloud import texttospeech
 from pydub import AudioSegment
 import simpleaudio as sa
+from config import tts_account_path
 
 # 서비스 계정 키 파일 경로 설정
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "projectcpy/project/aris-tts-db0d4caef6e0.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = tts_account_path
 
 def google_tts_and_play(text):
     client = texttospeech.TextToSpeechClient()

@@ -12,10 +12,9 @@ confirm_ui_path = os.path.join(ui_base_path, "purchase.ui")
 manager_ui_path = os.path.join(ui_base_path, "manager.ui")
 order_manage_ui_path = os.path.join(ui_base_path,"manager.ui")
 self_manage_ui_path = os.path.join(ui_base_path, "self_manage.ui")
-
-
 check_ui_path = os.path.join(ui_base_path, "check_login.ui")
 check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
+
 
 model_file_path = "projectcpy/project/linear_regression_model.pkl"
 user_img_path = "projectcpy/user_pic"
@@ -25,6 +24,8 @@ age_prototxt = "projectcpy/project/deploy_age.prototxt"  # 나이 예측 모델 
 age_model = "projectcpy/project/age_net.caffemodel"  # 나이 예측 모델 caffemodel 경로
 gender_prototxt = "projectcpy/project/deploy_gender.prototxt"  # 성별 예측 모델 prototxt 경로
 gender_model = "projectcpy/project/gender_net.caffemodel"  # 성별 예측 모델 caffemodel 경로
+tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클라우드 로그인 계정
+
 
 
 # 데이터베이스 연결 설정
