@@ -268,6 +268,7 @@ class RobotMain(object):
         self.state = 'stopped'
         self.pressing = False
         self.order_list = []
+        self.gritting_list = []
 
 
         self.position_home = [179.2, -42.1, 7.4, 186.7, 41.5, -1.6] #angle
@@ -434,7 +435,10 @@ class RobotMain(object):
             try:
                 self.recv_msg = self.clientSocket.recv(1024).decode()
                 print('\n' + self.recv_msg)
-                self.order_list.append(self.recv_msg)
+                self.order_list.append({"topping1" : self.recv_msg["topping1"], 
+                                        "topping2" : self.recv_msg["topping2"], 
+                                        "topping3" : self.recv_msg["topping3"]})
+                self.gritting_list.append([self.recv_msg["gender"], self.recv_msg["age"]])
             except Exception as e:
                 print(e)
                 continue
@@ -1917,7 +1921,44 @@ class RobotMain(object):
         print('motion_make_icecream finish')
         time.sleep(0.5)
 
+    def gritting(self, gender) -> None: 
+        self._angle_speed = 100
+        self._angle_acc = 100
 
+        if gender == "female":
+            code = self._arm.set_servo_angle(angle=[207.4, -15.5, 60.6, 181.7, 46.8, -2.5], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[247.6, -15.5, 8.9, 87, 78.5, -104.7], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[179.2, -42.1, 7.4, 186.7, 41.5, -1.6], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0) # home
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            
+        elif gender == "male":
+            code = self._arm.set_servo_angle(angle=[265.4, -17.3, 105.2, 186.8, -17.1, 0], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[265.4, -9.6, 37.1, 179.8, -6, -8.2], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[265.4, -17.3, 105.2, 186.8, -23.1, 0], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[179.2, -42.1, 7.4, 186.7, 41.5, -1.6], speed=self._angle_speed,  
+                                                mvacc=self._angle_acc, wait=True, radius=0.0) # home
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            
+        else:
+            self.motion_greet()
 
 
     # ==================== main ====================
@@ -1927,11 +1968,12 @@ class RobotMain(object):
 
         # --------------모드 설정 변수(나중에 방식 변경)--------------
         self.Toping = True
-        self.MODE = 'icecreaming'
 
         while self.is_alive:
             if self.order_list != []:
                 self.MODE = 'icecreaming'
+            elif self.gritting_list != []:
+                self.MODE = 'gritting'
             else:
                 self.MODE = 'ready'
 
@@ -1981,7 +2023,12 @@ class RobotMain(object):
                 if not self._check_code(code, 'stop_lite6_gripper'):
                     return
                 A_ZONE, B_ZONE, C_ZONE, NOT_SEAL = False, False, False, False
-                time.sleep(3)      
+                time.sleep(3)   
+            elif self.MODE == 'gritting':
+                data = self.gritting_list.pop(0)
+                gender = data[0]
+                age = data[1]
+                self.gritting(gender)
            
 
 if __name__ == '__main__':
