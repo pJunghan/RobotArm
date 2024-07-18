@@ -144,7 +144,6 @@ class LoginWindow(QMainWindow):
 
                 new_guest_name = f"guest_{new_user_id}"
 
-
                 # analyze_result가 None이 아니고 필요한 키가 존재하는지 확인
                 if self.face.analyze_result is not None and 'dominant_gender' in self.face.analyze_result[0] and 'age' in self.face.analyze_result[0]:
                     # 추정한 성별을 db 형식에 맞게 변환하여 저장
@@ -178,8 +177,6 @@ class LoginWindow(QMainWindow):
 
                     return new_guest_name
         
-
-                
 
         except pymysql.MySQLError as err:
             print(f"데이터베이스 오류 발생: {err}")

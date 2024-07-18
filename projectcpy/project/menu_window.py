@@ -113,13 +113,17 @@ class MenuWindow(QMainWindow):
             self.recommendView_1,
             recommended_flavor
         )
-
+        self.recommendView_1.mousePressEvent = lambda event: self.recommend_item_click_event(event, recommended_flavor, topping_recommendation)
+        
         # 토핑 추천을 위한 이미지를 추가합니다.
         self.add_image_to_graphics_view(
-            topping_images[self.topping_flavors.index(topping_recommendation)],  # Use topping_flavors here
+            topping_images[self.topping_flavors.index(topping_recommendation)],
             self.recommendView_5,
             topping_recommendation
         )
+        self.recommendView_5.mousePressEvent = lambda event: self.recommend_item_click_event(event, recommended_flavor, topping_recommendation)
+
+        # Note: No separate click event for recommendView_5 as it is triggered by recommendView_1's event
 
         # 과거 구매 기록을 바탕으로 한 추천 아이스크림 및 토핑 설정
         historical_recommendation, historical_topping_recommendation = self.recommend_based_on_history(self.user_id)
@@ -128,12 +132,33 @@ class MenuWindow(QMainWindow):
             self.recommendView_3,
             historical_recommendation
         )
+        self.recommendView_3.mousePressEvent = lambda event: self.recommend_item_click_event(event, historical_recommendation, historical_topping_recommendation)
+
         self.add_image_to_graphics_view(
-            topping_images[self.topping_flavors.index(historical_topping_recommendation)],  # Use topping_flavors here
+            topping_images[self.topping_flavors.index(historical_topping_recommendation)],
             self.recommendView_7,
             historical_topping_recommendation
         )
+        self.recommendView_7.mousePressEvent = lambda event: self.recommend_item_click_event(event, historical_recommendation, historical_topping_recommendation)
+        
         self.process_emotion()
+        
+        # 재고 기반 맛 추천(가장 많이 팔림)
+        inventory_flavor, inventory_topping = self.recommend_by_inventory()
+        self.add_image_to_graphics_view(
+            ice_cream_images[self.flavors.index(inventory_flavor)],
+            self.recommendView_4,
+            inventory_flavor
+        )
+        self.recommendView_4.mousePressEvent = lambda event: self.recommend_item_click_event(event, inventory_flavor, inventory_topping)
+        
+        self.add_image_to_graphics_view(
+            topping_images[self.topping_flavors.index(inventory_topping)],
+            self.recommendView_8,
+            inventory_topping
+        )
+        self.recommendView_8.mousePressEvent = lambda event: self.recommend_item_click_event(event, inventory_flavor, inventory_topping)
+
     def set_emotion(self, emotion):
         """감정 정보 설정 메서드"""
         self.current_emotion = emotion
@@ -146,11 +171,15 @@ class MenuWindow(QMainWindow):
             self.recommendView_2,
             emotion_ice
         )
+        self.recommendView_2.mousePressEvent = lambda event: self.recommend_item_click_event(event, emotion_ice, emotion_topping)
+        
         self.add_image_to_graphics_view(
             topping_images[self.topping_flavors.index(emotion_topping)],
             self.recommendView_6,
             emotion_topping
         )
+        self.recommendView_6.mousePressEvent = lambda event: self.recommend_item_click_event(event, emotion_ice, emotion_topping)
+
     def get_emotion_recommendations(self, emotion):
         """감정에 따라 추천 아이스크림 및 토핑 반환 메서드"""
         emotion_ice = 'choco'
@@ -167,7 +196,45 @@ class MenuWindow(QMainWindow):
             emotion_topping = self.topping_flavors[2]  # 'topping3'
 
         return emotion_ice, emotion_topping
-    
+    def recommend_by_inventory(self):
+        try:
+            conn = pymysql.connect(**self.db_config)
+            with conn.cursor() as cursor:
+                # 가장 최근 레코드를 가져오는 쿼리
+                query = """
+                SELECT flavor1, flavor2, flavor3, topping1, topping2, topping3
+                FROM inventory_management_table
+                ORDER BY date_time DESC
+                LIMIT 1
+                """
+                cursor.execute(query)
+                result = cursor.fetchone()
+                if result:
+                    flavors_count = np.array([result['flavor1'], result['flavor2'], result['flavor3']])
+                    toppings_count = np.array([result['topping1'], result['topping2'], result['topping3']])
+                    
+                    # 가장 재고가 많은 아이스크림 맛 찾기
+                    max_flavor_index = np.argmax(flavors_count)
+                    flavors = ['choco', 'vanila', 'strawberry']
+                    inventory_ice = flavors[max_flavor_index]
+                    
+                    # 가장 재고가 많은 토핑 찾기
+                    max_topping_index = np.argmax(toppings_count)
+                    toppings = ['topping1', 'topping2', 'topping3']
+                    inventory_topping = toppings[max_topping_index]
+
+                    return inventory_ice, inventory_topping
+                else:
+                    QMessageBox.warning(self, "재고 정보 없음", "재고 정보를 가져올 수 없습니다.")
+                    return 'choco', 'topping1'  # 기본값으로 'choco'와 'topping1' 반환
+                    
+        except pymysql.MySQLError as err:
+            print(f"데이터베이스 오류 발생: {err}")
+            return 'choco', 'topping1'  # 기본값으로 'choco'와 'topping1' 반환
+        finally:
+            if 'conn' in locals():
+                conn.close()
+
     def recommend_based_on_history(self, user_id):
         try:
             conn = pymysql.connect(**self.db_config)
@@ -211,7 +278,6 @@ class MenuWindow(QMainWindow):
         finally:
             if 'conn' in locals():
                 conn.close()
-
 
     def get_user_info(self, user_id):
         try:
@@ -362,23 +428,49 @@ class MenuWindow(QMainWindow):
 
         item.mousePressEvent = lambda event: self.item_click_event(event, item_name)
 
-    def item_click_event(self, event, item_name):
+    def item_click_event(self, event, flavor, topping):
+        # Reset all item counts to 0
+        for key in self.item_click_count:
+            self.item_click_count[key] = 0
+        
+        # Set the clicked item count to 1 based on whether it's a flavor or topping
+        if flavor in ['choco', 'vanilla', 'strawberry']:
+            self.item_click_count[flavor] = 1
+            self.item_click_count[topping] = 0
+            self.update_list_view(flavor, topping)  # Update list view with selected flavor
+        elif topping in ['topping1', 'topping2', 'topping3']:
+            self.item_click_count[topping] = 1
+            self.item_click_count[flavor] = 0
+            self.update_list_view(flavor, topping)  # Update list view with selected topping
+
+
+    def recommend_item_click_event(self, event, flavor, topping):
     # 아이스크림 아이템인지 확인
-        if item_name in ['choco', 'vanila', 'strawberry']:
+        if flavor in ['choco', 'vanila', 'strawberry']:
             # 모든 아이스크림 아이템의 선택 개수를 0으로 초기화
             for key in ['choco', 'vanila', 'strawberry']:
                 self.item_click_count[key] = 0
         # 토핑 아이템인지 확인
-        elif item_name in ['topping1', 'topping2', 'topping3']:
+        elif topping in ['topping1', 'topping2', 'topping3']:
             # 모든 토핑 아이템의 선택 개수를 0으로 초기화
             for key in ['topping1', 'topping2', 'topping3']:
                 self.item_click_count[key] = 0
-        
-        # 클릭된 아이템의 선택 개수를 1로 설정
-        self.item_click_count[item_name] = 1
-        self.update_list_view()
 
-    def update_list_view(self):
-        items_to_show = [f"{item}: {count}" for item, count in self.item_click_count.items() if count > 0]
-        self.list_model.setStringList(items_to_show)  # QStringList로 업데이트
-        self.listView.setModel(self.list_model)
+        # 클릭된 아이템의 선택 개수를 1로 설정
+        self.item_click_count[flavor] = 1
+        self.item_click_count[topping] = 1
+        
+        # listView에 선택된 아이스크림과 토핑 추가
+        self.update_list_view(flavor, topping)
+
+
+    def update_list_view(self, flavor, topping):
+    # 모델에서 아이템 리스트를 가져옴
+        item_list = self.list_model.stringList()
+        # 기존의 아이템을 모두 제거
+        item_list.clear()
+        # 새로운 아이스크림과 토핑 추가
+        item_list.append(flavor)
+        item_list.append(topping)
+        # 모델을 업데이트
+        self.list_model.setStringList(item_list)

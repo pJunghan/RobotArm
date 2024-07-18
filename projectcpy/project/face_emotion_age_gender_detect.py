@@ -8,7 +8,6 @@ from queue import Queue
 import tensorflow as tf
 from insightface.app import FaceAnalysis
 from config import db_path, model_path, age_prototxt, age_model, gender_prototxt, gender_model
-
 class EmotionAnalyzer:
     def __init__(self):
         self.current_emotion = 'happy'  # 기본 감정 설정
@@ -52,6 +51,7 @@ class FaceRecognition:
         self.cam_deamon = True
         self.current_emotion = 'happy'  # 초기 감정 설정
         self.emotion_analyzer = None 
+
     def run_cam(self):
         """웹캠을 통해 얼굴을 인식하고 결과를 화면에 표시"""
         while self.cam_deamon:

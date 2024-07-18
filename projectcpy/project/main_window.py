@@ -73,8 +73,7 @@ class MainWindow(QMainWindow):
         self.PORT = 10002
         self.BUFSIZE = 1024
         self.ADDR = (self.HOST, self.PORT)
-        
-        
+             
         clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         while True:
             try:
