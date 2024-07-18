@@ -9,9 +9,22 @@ import tensorflow as tf
 from insightface.app import FaceAnalysis
 from config import db_path, model_path, age_prototxt, age_model, gender_prototxt, gender_model
 
+class EmotionAnalyzer:
+    def __init__(self):
+        self.current_emotion = 'happy'  # 기본 감정 설정
+
+    def set_emotion(self, emotion):
+        """감정 정보 설정 메서드"""
+        self.current_emotion = emotion
+
+    def get_emotion(self):
+        """현재 설정된 감정 반환 메서드"""
+        return self.current_emotion
+
 class FaceRecognition:
     def __init__(self, db_path=db_path, model_path=model_path, age_prototxt=age_prototxt, age_model=age_model, gender_prototxt=gender_prototxt, gender_model=gender_model):
         self.db_path = db_path
+        self.emotion_analyzer = EmotionAnalyzer()
         self.cap = cv2.VideoCapture(0)
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.detected = False
@@ -37,7 +50,8 @@ class FaceRecognition:
         self.result_dict = {"detected": False, "member_id": None, "emotion": None, "age": None, "gender": None}  # 초기화 추가
         self.failed_attempts = 0
         self.analyze_result = None 
-
+        self.current_emotion = 'happy'  # 초기 감정 설정
+        self.emotion_analyzer = None 
     def run_cam(self):
         """웹캠을 통해 얼굴을 인식하고 결과를 화면에 표시"""
         while self.cam_deamon:
@@ -168,6 +182,7 @@ class FaceRecognition:
                             age, gender = self.predict_age_and_gender(face_img)  # 나이 및 성별 예측
                             self.result_queue.put((True, member_id, emotion, age, gender))
                             detected = True
+                            self.transfer_emotion(self.result_dict)
                             self.result_to_dict(detected, member_id, emotion, age, gender)
                             break
                     except Exception as e:
@@ -200,6 +215,32 @@ class FaceRecognition:
             self.known_person = None
             self.failed_attempts += 1
             print(f"회원인식 실패 횟수 {self.failed_attempts}")
+
+    def transfer_emotion(self, result_dict):
+        """result_dict에서 감정 정보를 가져와 저장하는 메서드"""
+        detected = result_dict.get("detected", False)
+        emotion = result_dict.get("emotion", "happy")
+
+        if detected:
+            self.current_emotion = emotion
+            print(f"Detected emotion: {emotion}")
+            # 여기서 다른 모듈에 감정 정보를 전달할 수 있는 코드 추가
+        else:
+            print("No person detected.")
+            # 감정 정보를 초기화하거나 다른 처리를 수행할 수 있는 코드 추가
+
+    def transfer_emotion(self, result_dict):
+        """result_dict에서 감정 정보를 가져와 저장하는 메서드"""
+        detected = result_dict.get("detected", False)
+        emotion = result_dict.get("emotion", "happy")
+
+        if detected:
+            self.current_emotion = emotion
+            print(f"Detected emotion: {emotion}")
+            # 여기서 다른 모듈에 감정 정보를 전달할 수 있는 코드 추가
+        else:
+            print("No person detected.")
+            # 감정 정보를 초기화하거나 다른 처리를 수행할 수 있는 코드 추가
 
     def __del__(self):
         self.cap.release()

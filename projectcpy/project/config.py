@@ -14,7 +14,7 @@ order_manage_ui_path = os.path.join(ui_base_path,"manager.ui")
 self_manage_ui_path = os.path.join(ui_base_path, "self_manage.ui")
 check_ui_path = os.path.join(ui_base_path, "check_login.ui")
 check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
-
+image_folder = os.path.join("projectcpy/flavor")
 
 model_file_path = "projectcpy/project/linear_regression_model.pkl"
 user_img_path = "projectcpy/user_pic"
@@ -27,17 +27,7 @@ gender_model = "projectcpy/project/gender_net.caffemodel"  # 성별 예측 모�
 tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클라우드 로그인 계정
 
 
-
 # 데이터베이스 연결 설정
-# db_config = {
-#     'host': 'localhost',      # 데이터베이스 호스트 주소
-#     'user': 'junghan',        # 사용자 이름
-#     'password': '6488',       # 비밀번호
-#     'database': 'order_db',   # 데이터베이스 이름
-#     'charset': 'utf8',        # 문자셋 설정
-#     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
-# }
-
 db_config = {
     'user': 'junghan',
     'password': '6488',
@@ -48,6 +38,16 @@ db_config = {
 }
 
 # db_config = {
+#     'host': 'localhost',      # 데이터베이스 호스트 주소
+#     'user': 'junghan',        # 사용자 이름
+#     'password': '6488',       # 비밀번호
+#     'database': 'order_db',   # 데이터베이스 이름
+#     'charset': 'utf8',        # 문자셋 설정
+#     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
+# }
+
+
+# db_config = {
 #     'host': '172.30.1.53',      # 데이터베이스 호스트 주소
 #     'user': 'user3',        # 사용자 이름
 #     'password': 'test1234',       # 비밀번호
@@ -56,14 +56,24 @@ db_config = {
 #     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
 # }
 
-ice_cream_images = [
-            "flavor/choco.jpeg",
-            "flavor/vanila.jpeg",
-            "flavor/strawberry.jpeg"
-        ]
+# db_config = {
+#     'host': 'localhost',      # 데이터베이스 호스트 주소
+#     'user': 'root',        # 사용자 이름
+#     'password': '8470',       # 비밀번호
+#     'database': 'ARIS',   # 데이터베이스 이름
+#     'charset': 'utf8',        # 문자셋 설정
+#     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
+# }
 
+ice_cream_images = [
+    os.path.join(image_folder, "choco.jpeg"),
+    os.path.join(image_folder, "vanila.jpeg"),
+    os.path.join(image_folder, "strawberry.jpeg")
+]
+
+# 토핑 이미지 경로
 topping_images = [
-            "flavor/topping1.jpeg",
-            "flavor/topping2.jpeg",
-            "flavor/topping3.jpeg"
-        ]
+    os.path.join(image_folder, "topping1.jpeg"),
+    os.path.join(image_folder, "topping2.jpeg"),
+    os.path.join(image_folder, "topping3.jpeg")
+]
