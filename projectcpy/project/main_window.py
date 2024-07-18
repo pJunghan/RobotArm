@@ -18,7 +18,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         uic.loadUi(main_ui_path, self)
 
-        self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0}
+        self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0}
+        self.none_data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0}
 
         self.orderButton.clicked.connect(self.go_to_login_window)
         self.autoButton.clicked.connect(self.go_to_auto_order_window)
@@ -87,12 +88,12 @@ class MainWindow(QMainWindow):
         while True:
             time.sleep(0.1)
             # print("send")
-            if self.data == {"topping1" : 0, "topping2" : 0, "topping3" : 0}:
+            if self.data == self.none_data:
                 continue
             else:
-                print("send data")
+                print(f"send data{str(self.data)}")
                 clientSocket.send(msg.encode())
-                self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0}
+                self.data = self.none_data
     
 
 if __name__ == "__main__":
