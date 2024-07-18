@@ -4,7 +4,7 @@ import cv2
 import pymysql
 import tts
 from PyQt5 import uic, QtCore
-from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel
+from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox
 from purchase import ConfirmWindow  # ConfirmWindow import 추가
@@ -12,6 +12,26 @@ from config import menu_ui_path, db_config, ice_cream_images, topping_images, us
 from deepface import DeepFace
 import numpy as np
 from datetime import datetime
+
+class GreetingThread(QThread):
+    def __init__(self, parent, gender, name):
+        QThread.__init__(self)
+        self.parent = parent
+        self.gender = gender
+        self.name = name
+
+    def run(self):
+        if self.name.startswith("guest"):
+            if self.gender == "Male":
+                tts.google_tts_and_play("남성 회원님 안녕하세요.")
+            elif self.gender == "Female":
+                tts.google_tts_and_play("여성 회원님 안녕하세요.")
+            else:
+                tts.google_tts_and_play("게스트 회원님 안녕하세요.")
+        else:
+            first_name = self.name.split(maxsplit=1)[-1]
+            tts.google_tts_and_play(f"{first_name}님 안녕하세요.")
+
 
 class MenuWindow(QMainWindow):
     def __init__(self, db_config, main):
@@ -48,21 +68,26 @@ class MenuWindow(QMainWindow):
         self.greeting_tts()
          
 
-    # 0.04초 후에 tts.google_tts_and_play("안녕하세요.") 호출
+    # 0.05초 후에 tts.google_tts_and_play("안녕하세요.") 호출
     def greeting_tts(self):
         _, gender, name = self.get_user_info(self.user_id)
-        if name.startswith("guest"):
-            if gender == "Male":
-                QTimer.singleShot(40, lambda: tts.google_tts_and_play("남성 회원님 안녕하세요."))
+        self.greeting_thread = GreetingThread(self, gender, name)
+        self.greeting_thread.start()
 
-            elif gender == "Female":
-                QTimer.singleShot(40, lambda: tts.google_tts_and_play("여성 회원님 안녕하세요."))
+        # if name.startswith("guest"):
+        #     if gender == "Male":
+        #         QTimer.singleShot(50, lambda: tts.google_tts_and_play("남성 회원님 안녕하세요."))
 
-            else:
-                QTimer.singleShot(40, lambda: tts.google_tts_and_play("게스트 회원님 안녕하세요."))
+        #     elif gender == "Female":
+        #         QTimer.singleShot(50, lambda: tts.google_tts_and_play("여성 회원님 안녕하세요."))
 
-        else:
-            QTimer.singleShot(40, lambda: tts.google_tts_and_play(f"{name}님 안녕하세요."))
+        #     else:
+        #         QTimer.singleShot(50, lambda: tts.google_tts_and_play("게스트 회원님 안녕하세요."))
+
+        # else:
+        #     # 이름이 공백으로 구분되어 있는 경우를 처리 및 성 제외하고 이름만 출력
+        #     first_name = name.split(maxsplit=1)[-1]
+        #     QTimer.singleShot(50, lambda: tts.google_tts_and_play(f"{first_name}님 안녕하세요."))
 
     def setup_recommendations(self):
         age, gender, _ = self.get_user_info(self.user_id)
