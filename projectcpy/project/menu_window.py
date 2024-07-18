@@ -70,9 +70,11 @@ class MenuWindow(QMainWindow):
 
     # 0.05초 후에 tts.google_tts_and_play("안녕하세요.") 호출
     def greeting_tts(self):
-        _, gender, name = self.get_user_info(self.user_id)
+        age, gender, name = self.get_user_info(self.user_id)
         self.greeting_thread = GreetingThread(self, gender, name)
         self.greeting_thread.start()
+        self.main.data["gender"] = gender
+        self.main.data["age"] = age
 
         # if name.startswith("guest"):
         #     if gender == "Male":

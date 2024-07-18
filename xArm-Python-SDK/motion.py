@@ -1972,15 +1972,21 @@ class RobotMain(object):
         while self.is_alive:
             if self.order_list != []:
                 self.MODE = 'icecreaming'
+                raw_order = self.order_list.pop(0)
+                order = json.loads(raw_order)
+
             elif self.gritting_list != []:
                 self.MODE = 'gritting'
+                data = self.gritting_list.pop(0)
+                gender = data[0]
+                age = data[1]
+
             else:
                 self.MODE = 'ready'
 
             # Joint Motion
             if self.MODE == 'icecreaming':
-                raw_order = self.order_list.pop(0)
-                order = json.loads(raw_order)
+                
                 # --------------icecream start--------------------
                 print('icecream start')
                 time.sleep(4)
@@ -2025,9 +2031,6 @@ class RobotMain(object):
                 A_ZONE, B_ZONE, C_ZONE, NOT_SEAL = False, False, False, False
                 time.sleep(3)   
             elif self.MODE == 'gritting':
-                data = self.gritting_list.pop(0)
-                gender = data[0]
-                age = data[1]
                 self.gritting(gender)
            
 
@@ -2035,13 +2038,13 @@ if __name__ == '__main__':
     RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
     arm = XArmAPI('192.168.1.167', baud_checkset=False)
     robot_main = RobotMain(arm)
-    yolo_main = YOLOMain(robot_main)
+    # yolo_main = YOLOMain(robot_main)
 
     robot_thread = threading.Thread(target=robot_main.run_robot)
-    yolo_thread = threading.Thread(target=yolo_main.segmentation)
+    # yolo_thread = threading.Thread(target=yolo_main.segmentation)
     socket_thread = threading.Thread(target=robot_main.socket_connect)
 
 
     robot_thread.start()
-    yolo_thread.start()
+    # yolo_thread.start()
     socket_thread.start()
