@@ -12,6 +12,11 @@ confirm_ui_path = os.path.join(ui_base_path, "purchase.ui")
 manager_ui_path = os.path.join(ui_base_path, "manager.ui")
 order_manage_ui_path = os.path.join(ui_base_path,"manager.ui")
 self_manage_ui_path = os.path.join(ui_base_path, "self_manage.ui")
+<<<<<<< HEAD
+image_folder = "flavor"
+
+=======
+>>>>>>> 0595d535887283b1721d9f9fa039e0feb08dd32b
 check_ui_path = os.path.join(ui_base_path, "check_login.ui")
 check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
 
@@ -67,13 +72,14 @@ db_config = {
 # }
 
 ice_cream_images = [
-            "flavor/choco.jpeg",
-            "flavor/vanila.jpeg",
-            "flavor/strawberry.jpeg"
-        ]
+    os.path.join(image_folder, "choco.jpeg"),
+    os.path.join(image_folder, "vanila.jpeg"),
+    os.path.join(image_folder, "strawberry.jpeg")
+]
 
+# 토핑 이미지 경로
 topping_images = [
-            "flavor/topping1.jpeg",
-            "flavor/topping2.jpeg",
-            "flavor/topping3.jpeg"
-        ]
+    os.path.join(image_folder, "topping1.jpeg"),
+    os.path.join(image_folder, "topping2.jpeg"),
+    os.path.join(image_folder, "topping3.jpeg")
+]
