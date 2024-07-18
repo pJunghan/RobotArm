@@ -218,10 +218,10 @@ class YOLOMain:
 
             # 거리 조건 체크 및 로봇 일시정지 제어
             if min_distance <= 50 and min_distance_bool and self.robot.pressing == False:
-                self.robot_main.robot_state = 'robot stop'
+                self.robot.robot_state = 'robot stop'
                 self.robot._arm.set_state(3)
             elif min_distance > 50 or not min_distance_bool:
-                self.robot_main.robot_state = 'robot move'
+                self.robot.robot_state = 'robot move'
                 self.robot._arm.set_state(0)
 
             # 설정된 ROI를 흰색 바운딩 박스로 그리고 선을 얇게 설정
@@ -233,7 +233,7 @@ class YOLOMain:
                           (255, 255, 255), 1)  # 특정 ROI를 흰색 사각형으로 그림
 
             # 화면 왼쪽 위에 최단 거리 및 로봇 상태 표시
-            cv2.putText(image_with_masks, f'Distance: {min_distance:.2f}, state: {self.robot_main.robot_state}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(image_with_masks, f'Distance: {min_distance:.2f}, state: {self.robot.robot_state}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
             # 화면 왼쪽 위에 ROI 상태 표시
             cv2.putText(image_with_masks, f'self.A_ZONE: {self.A_ZONE}, self.B_ZONE: {self.B_ZONE}, self.C_ZONE: {self.C_ZONE}, self.NOT_SEAL: {self.NOT_SEAL}', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
