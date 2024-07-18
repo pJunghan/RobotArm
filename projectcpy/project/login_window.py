@@ -7,15 +7,14 @@ import time
 from datetime import datetime
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QTimer, QRectF
-from PyQt5.QtGui import QPixmap, QImage, QPainter
+from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QGraphicsScene, QDialog
-# from face_to_info import FaceToInfo
+
 from face_emotion_age_gender_detect import FaceRecognition
 from menu_window import MenuWindow
 from threading import Thread
 from new_account_window import NewAccountWindow
 from check_login_window import CheckLoginWindow
-from check_account_window import CheckAccountWindow
 from config import login_ui_path, db_config, new_account_ui_path, user_img_path, check_ui_path
 
 class LoginWindow(QMainWindow):
@@ -74,33 +73,36 @@ class LoginWindow(QMainWindow):
                     self.start_camera()  # 로그인 실패 시 카메라 재시작
             else:
                 print(f"Error: Image file {user_image_path} does not exist.")
-        elif self.face.failed_attempts >= 5:  # 5회 이상 인식 실패 시 비회원 로그인 처리
+        elif self.face.failed_attempts == 5:  # 3회 이상 인식 실패 시 비회원 로그인 처리
             self.handle_guest_login()
-        
 
     def get_user_info(self, user_id):
         # 데이터베이스에서 사용자 정보 가져오기
+        conn = None
+        cursor = None
         try:
             conn = pymysql.connect(**db_config)
-            with conn.cursor() as cursor:
-                query = ("SELECT name, birthday, photo_path FROM user_info_table WHERE user_ID = %s")
-                cursor.execute(query, (user_id,))
-                result = cursor.fetchone()
+            cursor = conn.cursor()
+            query = ("SELECT name, birthday, photo_path FROM user_info_table WHERE user_ID = %s")
+            cursor.execute(query, (user_id,))
+            result = cursor.fetchone()
 
-                if result:
-                    update_query = ("UPDATE user_info_table SET last_modified = CURRENT_TIMESTAMP WHERE user_ID = %s")
-                    cursor.execute(update_query, (user_id,))
-                    conn.commit()
-                    return {'name': result['name'], 'birthday': result['birthday'], 'photo_path': result['photo_path']}
+            if result:
+                update_query = ("UPDATE user_info_table SET last_modified = CURRENT_TIMESTAMP WHERE user_ID = %s")
+                cursor.execute(update_query, (user_id,))
+                conn.commit()
+                return {'name': result['name'], 'birthday': result['birthday'], 'photo_path': result['photo_path']}
         except pymysql.MySQLError as err:
             print(f"데이터베이스 오류 발생: {err}")
             QMessageBox.warning(self, "오류", f"데이터베이스 오류 발생: {err}")
             return None
         finally:
-            if 'conn' in locals():
+            if cursor:
+                cursor.close()
+            if conn:
                 conn.close()
-                print("데이터베이스 연결을 닫았습니다.")
-    
+            print("데이터베이스 연결을 닫았습니다.")
+
     def stop_camera(self):
         # 카메라와 관련된 스레드 및 타이머 중지
         self.timer.stop()
@@ -121,73 +123,58 @@ class LoginWindow(QMainWindow):
 
     def handle_guest_login(self):
         # 비회원 로그인 처리
-        if self.face.result_dict["detected"]:
-            self.stop_camera()  # 카메라 동작 중지
-            guest_name = self.create_guest_user()  # 새로운 비회원 사용자 생성
-            if guest_name:
-                self.close()
-                self.go_to_menu_window()
+        self.stop_camera()  # 카메라 동작 중지
+        guest_name = self.create_guest_user()  # 새로운 비회원 사용자 생성
+        if guest_name:
+            self.close()
+            self.go_to_menu_window()
 
     def create_guest_user(self):
-        # 데이터베이스에 새로운 비회원 사용자 추가
         try:
             conn = pymysql.connect(**db_config)
             with conn.cursor() as cursor:
                 cursor.execute("SELECT user_ID FROM user_info_table ORDER BY user_ID")
                 existing_ids = {row['user_ID'] for row in cursor.fetchall()}
-
                 new_user_id = 1
                 while new_user_id in existing_ids:
                     new_user_id += 1
-
                 new_guest_name = f"guest_{new_user_id}"
 
+                # 분석 결과 디버그 문 추가
+                print(f"Analyze result: {self.face.analyze_result}")
 
-                # analyze_result가 None이 아니고 필요한 키가 존재하는지 확인
                 if self.face.analyze_result is not None and 'dominant_gender' in self.face.analyze_result[0] and 'age' in self.face.analyze_result[0]:
-                    # 추정한 성별을 db 형식에 맞게 변환하여 저장
-                    if self.face.analyze_result[0]["dominant_gender"] == "Man":
-                        new_gender = "Male"
-                    elif self.face.analyze_result[0]["dominant_gender"] == "Woman":
-                        new_gender = "Female"
-
-                    # 추정한 나이를 생년월일로 변환하여 YYYY-01-01 형식으로 db에 저장
+                    new_gender = self.face.analyze_result[0]["dominant_gender"]
                     new_age = self.face.analyze_result[0]["age"]
                     current_year = datetime.now().year
                     new_birthday = f"{current_year - new_age}-01-01"
-
                     insert_query = """
                     INSERT INTO user_info_table (user_ID, name, point, gender, birthday)
                     VALUES (%s, %s, %s, %s, %s)
                     """
                     cursor.execute(insert_query, (new_user_id, new_guest_name, 0, new_gender, new_birthday))
                     conn.commit()
-
                     return new_guest_name
-                
                 else:
-                    new_birthday = "19901020"
-                    insert_query = """
-                    INSERT INTO user_info_table (user_ID, name, point, birthday)
-                    VALUES (%s, %s, %s, %s)
-                    """
-                    cursor.execute(insert_query, (new_user_id, new_guest_name, 0, new_birthday))
-                    conn.commit()
+                    print("성별과 나이에 대한 분석 결과를 가져오는 데 실패했습니다.")
 
-                    return new_guest_name
-        
-
-                
-
+                new_birthday = "1990-01-01"
+                insert_query = """
+                INSERT INTO user_info_table (user_ID, name, point, birthday)
+                VALUES (%s, %s, %s, %s)
+                """
+                cursor.execute(insert_query, (new_user_id, new_guest_name, 0, new_birthday))
+                conn.commit()
+                return new_guest_name
         except pymysql.MySQLError as err:
             print(f"데이터베이스 오류 발생: {err}")
             QMessageBox.warning(self, "오류", f"데이터베이스 오류 발생: {err}")
             return None
-
         finally:
             if 'conn' in locals():
                 conn.close()
                 print("데이터베이스 연결을 닫았습니다.")
+
 
     def go_to_menu_window(self):
         # 메뉴 창으로 이동
