@@ -63,11 +63,22 @@ class MenuWindow(QMainWindow):
         self.listView.setModel(self.list_model)  # QListView에 모델 설정
 
         self.add_image_to_graphics_view(ice_cream_images[0], self.graphicsView_1, 'choco')
+        self.graphicsView_1.mousePressEvent = lambda event: self.item_click_event(event, flavor='choco', topping=None)
+
         self.add_image_to_graphics_view(ice_cream_images[1], self.graphicsView_2, 'vanila')
+        self.graphicsView_2.mousePressEvent = lambda event: self.item_click_event(event, flavor='vanila', topping=None)
+
         self.add_image_to_graphics_view(ice_cream_images[2], self.graphicsView_3, 'strawberry')
+        self.graphicsView_3.mousePressEvent = lambda event: self.item_click_event(event, flavor='strawberry', topping=None)
+
         self.add_image_to_graphics_view(topping_images[0], self.graphicsView_4, 'topping1')
+        self.graphicsView_4.mousePressEvent = lambda event: self.item_click_event(event, flavor=None, topping='topping1')
+
         self.add_image_to_graphics_view(topping_images[1], self.graphicsView_5, 'topping2')
+        self.graphicsView_5.mousePressEvent = lambda event: self.item_click_event(event, flavor=None, topping='topping2')
+
         self.add_image_to_graphics_view(topping_images[2], self.graphicsView_6, 'topping3')
+        self.graphicsView_6.mousePressEvent = lambda event: self.item_click_event(event, flavor=None, topping='topping3')
         self.setup_recommendations()
         self.greeting_tts()
          
@@ -426,23 +437,21 @@ class MenuWindow(QMainWindow):
         scene.addItem(item)
         graphics_view.setScene(scene)
 
-        item.mousePressEvent = lambda event: self.item_click_event(event, item_name)
 
     def item_click_event(self, event, flavor, topping):
-        # Reset all item counts to 0
-        for key in self.item_click_count:
-            self.item_click_count[key] = 0
-        
         # Set the clicked item count to 1 based on whether it's a flavor or topping
-        if flavor in ['choco', 'vanilla', 'strawberry']:
+        if flavor in ['choco', 'vanila', 'strawberry']:
+            for key in ['choco', 'vanila', 'strawberry']:
+                self.item_click_count[key] = 0
             self.item_click_count[flavor] = 1
-            self.item_click_count[topping] = 0
-            self.update_list_view(flavor, topping)  # Update list view with selected flavor
+            selected_topping = next((key for key, value in self.item_click_count.items() if key in ['topping1', 'topping2', 'topping3'] and value == 1), None)
+            self.update_list_view(selected_flavor=flavor, selected_topping=selected_topping)  # Update list view with selected flavor
         elif topping in ['topping1', 'topping2', 'topping3']:
+            for key in ['topping1', 'topping2', 'topping3']:
+                self.item_click_count[key] = 0
             self.item_click_count[topping] = 1
-            self.item_click_count[flavor] = 0
-            self.update_list_view(flavor, topping)  # Update list view with selected topping
-
+            selected_flavor = next((key for key, value in self.item_click_count.items() if key in ['choco', 'vanila', 'strawberry'] and value == 1), None)
+            self.update_list_view(selected_flavor=selected_flavor, selected_topping=topping)  # Update list view with selected topping
 
     def recommend_item_click_event(self, event, flavor, topping):
     # 아이스크림 아이템인지 확인
@@ -464,13 +473,19 @@ class MenuWindow(QMainWindow):
         self.update_list_view(flavor, topping)
 
 
-    def update_list_view(self, flavor, topping):
-    # 모델에서 아이템 리스트를 가져옴
+    def update_list_view(self, selected_flavor=None, selected_topping=None):
         item_list = self.list_model.stringList()
+
         # 기존의 아이템을 모두 제거
         item_list.clear()
-        # 새로운 아이스크림과 토핑 추가
-        item_list.append(flavor)
-        item_list.append(topping)
+
+        # 선택된 아이스크림 추가
+        if selected_flavor:
+            item_list.append(selected_flavor)
+
+        # 선택된 토핑 추가
+        if selected_topping:
+            item_list.append(selected_topping)
+
         # 모델을 업데이트
         self.list_model.setStringList(item_list)

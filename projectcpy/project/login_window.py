@@ -140,13 +140,7 @@ class LoginWindow(QMainWindow):
                     new_user_id += 1
                 new_guest_name = f"guest_{new_user_id}"
 
-<<<<<<< HEAD
-                # analyze_result가 None이 아니고 필요한 키가 존재하는지 확인
-=======
-                # 분석 결과 디버그 문 추가
-                print(f"Analyze result: {self.face.analyze_result}")
 
->>>>>>> 3e40a0a6af4a56a708024eb9d3746b33a78d5d3b
                 if self.face.analyze_result is not None and 'dominant_gender' in self.face.analyze_result[0] and 'age' in self.face.analyze_result[0]:
                     new_gender = self.face.analyze_result[0]["dominant_gender"]
                     new_age = self.face.analyze_result[0]["age"]
@@ -160,7 +154,7 @@ class LoginWindow(QMainWindow):
                     conn.commit()
                     return new_guest_name
                 else:
-<<<<<<< HEAD
+
                     new_birthday = "19901020"
                     insert_query = """
                     INSERT INTO user_info_table (user_ID, name, point, birthday)
@@ -172,7 +166,6 @@ class LoginWindow(QMainWindow):
                     return new_guest_name
         
 
-=======
                     print("성별과 나이에 대한 분석 결과를 가져오는 데 실패했습니다.")
 
                 new_birthday = "1990-01-01"
@@ -183,7 +176,6 @@ class LoginWindow(QMainWindow):
                 cursor.execute(insert_query, (new_user_id, new_guest_name, 0, new_birthday))
                 conn.commit()
                 return new_guest_name
->>>>>>> 3e40a0a6af4a56a708024eb9d3746b33a78d5d3b
         except pymysql.MySQLError as err:
             print(f"데이터베이스 오류 발생: {err}")
             QMessageBox.warning(self, "오류", f"데이터베이스 오류 발생: {err}")
