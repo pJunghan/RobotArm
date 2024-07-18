@@ -12,6 +12,7 @@ from config import menu_ui_path, db_config, ice_cream_images, topping_images, us
 from deepface import DeepFace
 import numpy as np
 from datetime import datetime
+from face_emotion_age_gender_detect import FaceRecognition
 
 class GreetingThread(QThread):
     def __init__(self, parent, gender, name):
@@ -41,6 +42,7 @@ class MenuWindow(QMainWindow):
         self.main = main
         self.menu_items = {}
         uic.loadUi(menu_ui_path, self)  # UI 파일 로드
+        self.current_emotion = None
 
         self.db_config = db_config
         self.user_id = self.get_latest_user_id()  # 사용자 ID를 가져옴
@@ -95,9 +97,6 @@ class MenuWindow(QMainWindow):
 
         # self.add_image_to_graphics_view(topping_images[2], self.recommendView_5, 'topping3')
 
-        print("-------------")
-        print("recommend")
-
     def setup_recommendations(self):
         age, gender, _ = self.get_user_info(self.user_id)
         
@@ -122,9 +121,8 @@ class MenuWindow(QMainWindow):
             topping_recommendation
         )
 
+        # 과거 구매 기록을 바탕으로 한 추천 아이스크림 및 토핑 설정
         historical_recommendation, historical_topping_recommendation = self.recommend_based_on_history(self.user_id)
-
-        # 과거 구매 기록을 바탕으로 추천된 아이스크림과 토핑을 추가합니다.
         self.add_image_to_graphics_view(
             ice_cream_images[self.flavors.index(historical_recommendation)],
             self.recommendView_3,
@@ -135,7 +133,41 @@ class MenuWindow(QMainWindow):
             self.recommendView_7,
             historical_topping_recommendation
         )
+        self.process_emotion()
+    def set_emotion(self, emotion):
+        """감정 정보 설정 메서드"""
+        self.current_emotion = emotion
 
+    def process_emotion(self):
+        """감정에 따른 처리 메서드"""
+        emotion_ice, emotion_topping = self.get_emotion_recommendations(self.current_emotion)
+        self.add_image_to_graphics_view(
+            ice_cream_images[self.flavors.index(emotion_ice)],
+            self.recommendView_2,
+            emotion_ice
+        )
+        self.add_image_to_graphics_view(
+            topping_images[self.topping_flavors.index(emotion_topping)],
+            self.recommendView_6,
+            emotion_topping
+        )
+    def get_emotion_recommendations(self, emotion):
+        """감정에 따라 추천 아이스크림 및 토핑 반환 메서드"""
+        emotion_ice = 'choco'
+        emotion_topping = 'topping1'
+
+        if emotion == 'angry':
+            emotion_ice = self.flavors[1]  # '바닐라 아이스크림'
+            emotion_topping = self.topping_flavors[0]  # 'topping1'
+        elif emotion == 'sad':
+            emotion_ice = self.flavors[0]  # '초코 아이스크림'
+            emotion_topping = self.topping_flavors[1]  # 'topping2'
+        elif emotion == 'happy':
+            emotion_ice = self.flavors[2]  # '딸기맛 아이스크림'
+            emotion_topping = self.topping_flavors[2]  # 'topping3'
+
+        return emotion_ice, emotion_topping
+    
     def recommend_based_on_history(self, user_id):
         try:
             conn = pymysql.connect(**self.db_config)
@@ -239,6 +271,7 @@ class MenuWindow(QMainWindow):
 
         flavors = ['choco', 'vanila', 'strawberry']
         return flavors[max_index]
+    
     def recommend_topping(self, age, gender):
         m = np.array([30.0, 40.0, 30.0])  # Male preference
         f = np.array([25.0, 50.0, 25.0])  # Female preference
