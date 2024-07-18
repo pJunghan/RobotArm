@@ -433,12 +433,14 @@ class RobotMain(object):
         # ------------------- receive msg start -----------
         while self.connected:
             try:
-                self.recv_msg = self.clientSocket.recv(1024).decode()
-                print('\n' + self.recv_msg)
-                self.order_list.append({"topping1" : self.recv_msg["topping1"], 
-                                        "topping2" : self.recv_msg["topping2"], 
-                                        "topping3" : self.recv_msg["topping3"]})
-                self.gritting_list.append([self.recv_msg["gender"], self.recv_msg["age"]])
+                self.recv_msg = json.loads(self.clientSocket.recv(1024).decode())
+                print(self.recv_msg)
+                if self.recv_msg["topping1"] != 0 and self.recv_msg["topping2"] != 0 and self.recv_msg["topping3"] != 0:
+                    self.order_list.append({"topping1" : self.recv_msg["topping1"], 
+                                            "topping2" : self.recv_msg["topping2"], 
+                                            "topping3" : self.recv_msg["topping3"]})
+                if self.recv_msg["gender"] != "":
+                    self.gritting_list.append([self.recv_msg["gender"], int(self.recv_msg["age"])])
             except Exception as e:
                 print(e)
                 continue
@@ -1973,7 +1975,7 @@ class RobotMain(object):
             if self.order_list != []:
                 self.MODE = 'icecreaming'
                 raw_order = self.order_list.pop(0)
-                order = json.loads(raw_order)
+                order = raw_order
 
             elif self.gritting_list != []:
                 self.MODE = 'gritting'
@@ -2043,7 +2045,6 @@ if __name__ == '__main__':
     robot_thread = threading.Thread(target=robot_main.run_robot)
     # yolo_thread = threading.Thread(target=yolo_main.segmentation)
     socket_thread = threading.Thread(target=robot_main.socket_connect)
-
 
     robot_thread.start()
     # yolo_thread.start()

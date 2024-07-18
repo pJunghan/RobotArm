@@ -29,15 +29,6 @@ tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클�
 
 
 # 데이터베이스 연결 설정
-# db_config = {
-#     'host': 'localhost',      # 데이터베이스 호스트 주소
-#     'user': 'junghan',        # 사용자 이름
-#     'password': '6488',       # 비밀번호
-#     'database': 'order_db',   # 데이터베이스 이름
-#     'charset': 'utf8',        # 문자셋 설정
-#     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
-# }
-
 db_config = {
     'user': 'junghan',
     'password': '6488',
@@ -48,10 +39,29 @@ db_config = {
 }
 
 # db_config = {
+#     'host': 'localhost',      # 데이터베이스 호스트 주소
+#     'user': 'junghan',        # 사용자 이름
+#     'password': '6488',       # 비밀번호
+#     'database': 'order_db',   # 데이터베이스 이름
+#     'charset': 'utf8',        # 문자셋 설정
+#     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
+# }
+
+
+# db_config = {
 #     'host': '172.30.1.53',      # 데이터베이스 호스트 주소
 #     'user': 'user3',        # 사용자 이름
 #     'password': 'test1234',       # 비밀번호
 #     'database': 'order_db',   # 데이터베이스 이름
+#     'charset': 'utf8',        # 문자셋 설정
+#     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
+# }
+
+# db_config = {
+#     'host': 'localhost',      # 데이터베이스 호스트 주소
+#     'user': 'root',        # 사용자 이름
+#     'password': '8470',       # 비밀번호
+#     'database': 'ARIS',   # 데이터베이스 이름
 #     'charset': 'utf8',        # 문자셋 설정
 #     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
 # }

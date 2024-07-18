@@ -67,7 +67,6 @@ class MainWindow(QMainWindow):
         if hasattr(self, 'login_window'):
             del self.login_window
 
-
     def socket_run(self):
         # self.HOST = '192.168.1.167'
         self.HOST = '127.0.0.1'
@@ -75,7 +74,7 @@ class MainWindow(QMainWindow):
         self.BUFSIZE = 1024
         self.ADDR = (self.HOST, self.PORT)
         
-        msg = json.dumps(self.data)
+        
         clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         while True:
             try:
@@ -86,16 +85,14 @@ class MainWindow(QMainWindow):
                 continue
 
         while True:
-            time.sleep(0.1)
-            # print("send")
             if self.data == self.none_data:
                 continue
             else:
                 print(f"send data{str(self.data)}")
+                msg = json.dumps(self.data)
                 clientSocket.send(msg.encode())
-                self.data = self.none_data
+                self.data = self.none_data.copy()
     
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = MainWindow()
