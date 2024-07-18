@@ -106,18 +106,17 @@ class YOLOMain:
             'capsule_label': (255, 255, 0),  # 캡슐 라벨: 노란색
             'capsule_not_label': (0, 255, 255),  # 캡슐 비라벨: 청록색
             'robot': (0, 165, 255),  # 로봇: 오렌지색
-            'human': (255, 0, 0)  # 인간: 파란색
+            'human': (255, 0, 0),  # 인간: 파란색
+            'hand': (0, 255, 255)  # 손: 노란색
         }
 
         # 영구적으로 설정된 ROI 구역
-        rois = [(455, 65, 95, 95), (360, 65, 95, 95), (265, 65, 95, 95)]  # self.A_ZONE, self.B_ZONE, self.C_ZONE 순서
+        rois = [(455, 65, 95, 95), (360, 65, 95, 95), (265, 65, 95, 95)]  # A_ZONE, B_ZONE, C_ZONE 순서
         specific_roi = (450, 230, 110, 110)  # Seal check ROI 구역
 
         # 변수 초기화
-        self.A_ZONE = False  # 첫 번째 ROI 내에서 capsule 객체가 인식되었는지 여부
-        self.B_ZONE = False  # 두 번째 ROI 내에서 capsule 객체가 인식되었는지 여부
-        self.C_ZONE = False  # 세 번째 ROI 내에서 capsule 객체가 인식되었는지 여부
-        self.NOT_SEAL = False  # 특정 ROI 내에서 capsule_not_label 객체가 인식되었는지 여부
+        self.robot.A_ZONE, self.robot.B_ZONE, self.robot.C_ZONE, self.robot.NOT_SEAL = False, False, False, False
+        self.robot.A_ZONE_start_time, self.robot.B_ZONE_start_time, self.robot.C_ZONE_start_time = None, None, None
 
         while True:
             ret, frame = self.webcam.read()  # 웹캠에서 프레임 읽기
@@ -136,6 +135,10 @@ class YOLOMain:
 
             for box, mask, class_id, prob in zip(boxes, masks, cls, probs):  # 각 객체에 대해
                 label = self.model.names[int(class_id)]  # 클래스 라벨 가져오기
+
+                if label == 'hand':  # 'hand' 객체를 'human' 객체로 변경
+                    label = 'human'
+
                 color = colors.get(label, (255, 255, 255))  # 클래스에 해당하는 색상 가져오기
                 
                 if mask is not None and len(mask) > 0:
@@ -169,14 +172,53 @@ class YOLOMain:
                         # 바운딩 박스의 면적 계산
                         box_area = (x2 - x1) * (y2 - y1)
 
-                        # 교차 영역이 바운딩 박스 면적의 80% 이상일 때만 True로 설정
-                        if intersection_area >= 0.8 * box_area:
-                            if i == 0 and not self.A_ZONE:
-                                self.A_ZONE = True
-                            elif i == 1 and not self.B_ZONE:
-                                self.B_ZONE = True
-                            elif i == 2 and not self.C_ZONE:
-                                self.C_ZONE = True
+                        # 교차 영역이 바운딩 박스 면적의 80% 이상인지 여부 출력
+                        is_condition_met = intersection_area >= 0.8 * box_area
+                        # print(f'Condition met (intersection_area >= 0.8 * box_area): {is_condition_met}')
+                        
+                        # 교차 영역이 바운딩 박스 면적의 80% 이상일 때, 2초 동안 유지하면 True로 설정
+                        if is_condition_met:
+                            current_time = time.time()  # 현재 시간 기록
+
+                            if i == 0:  # 첫 번째 ROI는 A_ZONE
+                                if not self.robot.A_ZONE:
+                                    if self.robot.A_ZONE_start_time is None:
+                                        self.robot.A_ZONE_start_time = current_time
+                                    elif current_time - self.robot.A_ZONE_start_time >= 2: # 2초 이상 캡슐 인식 시 A_ZONE = True
+                                        self.robot.A_ZONE = True
+                                    else:
+                                        print(f'Waiting for 2 seconds: {current_time - self.robot.A_ZONE_start_time:.2f} seconds elapsed')
+                                else:
+                                    self.robot.A_ZONE_start_time = current_time  # 상태가 이미 True인 경우, 시작 시간을 현재 시간으로 갱신
+
+                            elif i == 1:  # 두 번째 ROI는 B_ZONE
+                                if not self.robot.B_ZONE:
+                                    if self.robot.B_ZONE_start_time is None:
+                                        self.robot.B_ZONE_start_time = current_time
+                                    elif current_time - self.robot.B_ZONE_start_time >= 2: # 2초 이상 캡슐 인식 시 B_ZONE = True
+                                        self.robot.B_ZONE = True
+                                    else:
+                                        print(f'Waiting for 2 seconds: {current_time - self.robot.B_ZONE_start_time:.2f} seconds elapsed')
+                                else:
+                                    self.robot.B_ZONE_start_time = current_time  # 상태가 이미 True인 경우, 시작 시간을 현재 시간으로 갱신
+
+                            elif i == 2:  # 세 번째 ROI는 C_ZONE
+                                if not self.robot.C_ZONE:
+                                    if self.robot.C_ZONE_start_time is None:
+                                        self.robot.C_ZONE_start_time = current_time
+                                    elif current_time - self.robot.C_ZONE_start_time >= 2: # 2초 이상 캡슐 인식 시 C_ZONE = True
+                                        self.robot.C_ZONE = True
+                                    else:
+                                        print(f'Waiting for 2 seconds: {current_time - self.robot.C_ZONE_start_time:.2f} seconds elapsed')
+                                else:
+                                    self.robot.C_ZONE_start_time = current_time  # 상태가 이미 True인 경우, 시작 시간을 현재 시간으로 갱신
+                        else:
+                            if i == 0:
+                                self.robot.A_ZONE_start_time = None
+                            elif i == 1:
+                                self.robot.B_ZONE_start_time = None
+                            elif i == 2:
+                                self.robot.C_ZONE_start_time = None
 
                 # 특정 ROI 내 capsule_not_label 객체 인식 확인
                 if label == 'capsule_not_label':
@@ -195,7 +237,7 @@ class YOLOMain:
 
                     # 교차 영역이 바운딩 박스 면적의 80% 이상일 때만 True로 설정
                     if intersection_area >= 0.8 * box_area:
-                        self.NOT_SEAL = True
+                        self.robot.NOT_SEAL = True
 
             # 최단 거리 계산 및 시각화
             if robot_contours and human_contours:
@@ -236,7 +278,7 @@ class YOLOMain:
             cv2.putText(image_with_masks, f'Distance: {min_distance:.2f}, state: {self.robot.robot_state}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
             # 화면 왼쪽 위에 ROI 상태 표시
-            cv2.putText(image_with_masks, f'self.A_ZONE: {self.A_ZONE}, self.B_ZONE: {self.B_ZONE}, self.C_ZONE: {self.C_ZONE}, self.NOT_SEAL: {self.NOT_SEAL}', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            cv2.putText(image_with_masks, f'A_ZONE: {self.robot.A_ZONE}, B_ZONE: {self.robot.B_ZONE}, C_ZONE: {self.robot.C_ZONE}, NOT_SEAL: {self.robot.NOT_SEAL}', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
             # 마스크가 적용된 프레임 표시
             # cv2.imshow("Webcam with Segmentation Masks and Detection Boxes", image_with_masks)
@@ -1501,8 +1543,6 @@ class RobotMain(object):
                 
                 code = self._arm.set_pause_time(self.toppingAmount - 1)
                 if not self._check_code(code, 'set_servo_angle'): return
-
-                
                 
                 code = self._arm.set_pause_time(0)
                 if not self._check_code(code, 'set_pause_time'):
@@ -2026,6 +2066,7 @@ class RobotMain(object):
                 if not self._check_code(code, 'stop_lite6_gripper'):
                     return
                 self.A_ZONE, self.B_ZONE, self.C_ZONE, self.NOT_SEAL = False, False, False, False
+                self.A_ZONE_start_time, self.B_ZONE_start_time, self.C_ZONE_start_time = None, None, None
                 time.sleep(3)   
             elif self.MODE == 'gritting':
                 self.gritting(gender)
@@ -2035,12 +2076,12 @@ if __name__ == '__main__':
     RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
     arm = XArmAPI('192.168.1.167', baud_checkset=False)
     robot_main = RobotMain(arm)
-    # yolo_main = YOLOMain(robot_main)
+    yolo_main = YOLOMain(robot_main)
 
     robot_thread = threading.Thread(target=robot_main.run_robot)
-    # yolo_thread = threading.Thread(target=yolo_main.segmentation)
+    yolo_thread = threading.Thread(target=yolo_main.segmentation)
     socket_thread = threading.Thread(target=robot_main.socket_connect)
 
     robot_thread.start()
-    # yolo_thread.start()
+    yolo_thread.start()
     socket_thread.start()
