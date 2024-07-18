@@ -61,7 +61,7 @@ class LoginWindow(QMainWindow):
             print("Error: Failed to get frame from camera or frame is None.")
 
     def check_user(self):
-        # 얼굴 인식된 사용자가 있으면 로그인 처리
+    # 얼굴 인식된 사용자가 있으면 로그인 처리
         if self.face.known_person:
             self.stop_camera()  # 카메라 동작 중지
             user_id = self.face.known_person
@@ -75,6 +75,8 @@ class LoginWindow(QMainWindow):
             else:
                 print(f"Error: Image file {user_image_path} does not exist.")
         elif self.face.failed_attempts >= 5:  # 5회 이상 인식 실패 시 비회원 로그인 처리
+            self.handle_guest_login()
+        elif self.face.result_dict["detected"]:  # 비회원 얼굴 인식
             self.handle_guest_login()
         
 

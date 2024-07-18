@@ -79,7 +79,7 @@ class MainWindow(QMainWindow):
         while True:
             try:
                 clientSocket.connect(self.ADDR)
-                break
+                break 
 
             except:
                 continue

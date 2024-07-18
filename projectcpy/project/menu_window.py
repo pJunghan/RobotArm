@@ -13,6 +13,8 @@ import numpy as np
 from datetime import datetime
 
 class MenuWindow(QMainWindow):
+    flavors = ['choco', 'vanila', 'strawberry']
+    topping_flavors = ['topping1', 'topping2', 'topping3']
     def __init__(self, db_config, main):
         super().__init__()
         self.main = main
@@ -23,7 +25,7 @@ class MenuWindow(QMainWindow):
         self.user_id = self.get_latest_user_id()  # 사용자 ID를 가져옴
         self.Home_Button.clicked.connect(self.go_to_main_window)  # Home_Button 클릭 시 메인 창으로 이동
         self.Next_Button.clicked.connect(self.go_to_purchase_window)  # Next_Button 클릭 시 결제 창으로 이동
-
+        
         self.item_click_count = {
             'choco': 0,
             'vanila': 0,
@@ -45,31 +47,47 @@ class MenuWindow(QMainWindow):
         self.add_image_to_graphics_view(topping_images[2], self.graphicsView_6, 'topping3')
         self.setup_recommendations()
 
+        # self.add_image_to_graphics_view(topping_images[2], self.recommendView_5, 'topping3')
+
+        print("-------------")
+        print("recommend")
+
     def setup_recommendations(self):
         age, gender = self.get_user_info(self.user_id)
         
         if age is None or gender is None:
             recommended_flavor = 'choco'  # 기본값으로 'choco' 설정
+            topping_recommendation = 'topping1'
         else:
             recommended_flavor = self.recommend_flavor(age, gender)  # 추천 아이스크림 가져오기
+            topping_recommendation = self.recommend_topping(age, gender)
         
         # 추천 아이스크림을 각 recommendView에 추가
         self.add_image_to_graphics_view(
-            ice_cream_images[['choco', 'vanila', 'strawberry'].index(recommended_flavor)],
+            ice_cream_images[self.flavors.index(recommended_flavor)],
             self.recommendView_1,
             recommended_flavor
         )
 
-        historical_recommendation, topping_recommendation = self.recommend_based_on_history(self.user_id)
+        # 토핑 추천을 위한 이미지를 추가합니다.
         self.add_image_to_graphics_view(
-            ice_cream_images[['choco', 'vanila', 'strawberry'].index(historical_recommendation)],
+            topping_images[self.topping_flavors.index(topping_recommendation)],  # Use topping_flavors here
+            self.recommendView_5,
+            topping_recommendation
+        )
+
+        historical_recommendation, historical_topping_recommendation = self.recommend_based_on_history(self.user_id)
+
+        # 과거 구매 기록을 바탕으로 추천된 아이스크림과 토핑을 추가합니다.
+        self.add_image_to_graphics_view(
+            ice_cream_images[self.flavors.index(historical_recommendation)],
             self.recommendView_3,
             historical_recommendation
         )
         self.add_image_to_graphics_view(
-            topping_images[['topping1', 'topping2', 'topping3'].index(topping_recommendation)],
+            topping_images[self.topping_flavors.index(historical_topping_recommendation)],  # Use topping_flavors here
             self.recommendView_7,
-            topping_recommendation
+            historical_topping_recommendation
         )
 
     def recommend_based_on_history(self, user_id):
@@ -174,6 +192,32 @@ class MenuWindow(QMainWindow):
 
         flavors = ['choco', 'vanila', 'strawberry']
         return flavors[max_index]
+    def recommend_topping(self, age, gender):
+        m = np.array([30.0, 40.0, 30.0])  # Male preference
+        f = np.array([25.0, 50.0, 25.0])  # Female preference
+        y10 = np.array([50.0, 30.0, 20.0])  # Age < 20
+        y20 = np.array([40.0, 35.0, 25.0])  # Age < 30
+        y30 = np.array([30.0, 40.0, 30.0])  # Age < 40
+        y40 = np.array([25.0, 50.0, 25.0])  # Age < 50
+        y50 = np.array([20.0, 55.0, 25.0])  # Age >= 50
+
+        if age < 20:
+            age_group_value = y10
+        elif age < 30:
+            age_group_value = y20
+        elif age < 40:
+            age_group_value = y30
+        elif age < 50:
+            age_group_value = y40
+        else:
+            age_group_value = y50
+
+        male_female_value = m if gender == 'Male' else f
+        result = male_female_value + age_group_value
+        max_index = np.argmax(result)
+
+        toppings = ['topping1', 'topping2', 'topping3']
+        return toppings[max_index]
     
     def get_latest_user_id(self):
         try:
