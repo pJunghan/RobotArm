@@ -18,7 +18,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         uic.loadUi(main_ui_path, self)
 
-        self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0}
+        self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0}
+        self.none_data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0}
 
         self.orderButton.clicked.connect(self.go_to_login_window)
         self.autoButton.clicked.connect(self.go_to_auto_order_window)
@@ -66,7 +67,6 @@ class MainWindow(QMainWindow):
         if hasattr(self, 'login_window'):
             del self.login_window
 
-
     def socket_run(self):
         # self.HOST = '192.168.1.167'
         self.HOST = '127.0.0.1'
@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
         self.BUFSIZE = 1024
         self.ADDR = (self.HOST, self.PORT)
         
-        msg = json.dumps(self.data)
+        
         clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         while True:
             try:
@@ -85,15 +85,14 @@ class MainWindow(QMainWindow):
                 continue
 
         while True:
-            time.sleep(0.1)
-            # print("send")
-            if self.data == {"topping1" : 0, "topping2" : 0, "topping3" : 0}:
+            if self.data == self.none_data:
                 continue
             else:
-                print("send data")
+                print(f"send data{str(self.data)}")
+                msg = json.dumps(self.data)
                 clientSocket.send(msg.encode())
-                self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0}
-
+                self.data = self.none_data.copy()
+    
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = MainWindow()

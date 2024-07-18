@@ -13,7 +13,6 @@ class CheckAccountWindow(QDialog):
         self.db_config = db_config
         self.parent = parent
         self.main = main  # main 속성 추가
-        
         self.checkBtn.clicked.connect(self.check_account)
 
     def check_account(self):

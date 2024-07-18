@@ -2,8 +2,9 @@ import sys
 import os
 import cv2
 import pymysql
+import tts
 from PyQt5 import uic, QtCore
-from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel
+from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox
 from purchase import ConfirmWindow  # ConfirmWindow import 추가
@@ -11,6 +12,26 @@ from config import menu_ui_path, db_config, ice_cream_images, topping_images, us
 from deepface import DeepFace
 import numpy as np
 from datetime import datetime
+
+class GreetingThread(QThread):
+    def __init__(self, parent, gender, name):
+        QThread.__init__(self)
+        self.parent = parent
+        self.gender = gender
+        self.name = name
+
+    def run(self):
+        if self.name.startswith("guest"):
+            if self.gender == "Male":
+                tts.google_tts_and_play("남성 회원님 안녕하세요.")
+            elif self.gender == "Female":
+                tts.google_tts_and_play("여성 회원님 안녕하세요.")
+            else:
+                tts.google_tts_and_play("게스트 회원님 안녕하세요.")
+        else:
+            first_name = self.name.split(maxsplit=1)[-1]
+            tts.google_tts_and_play(f"{first_name}님 안녕하세요.")
+
 
 class MenuWindow(QMainWindow):
     flavors = ['choco', 'vanila', 'strawberry']
@@ -46,6 +67,31 @@ class MenuWindow(QMainWindow):
         self.add_image_to_graphics_view(topping_images[1], self.graphicsView_5, 'topping2')
         self.add_image_to_graphics_view(topping_images[2], self.graphicsView_6, 'topping3')
         self.setup_recommendations()
+        self.greeting_tts()
+         
+
+    # 0.05초 후에 tts.google_tts_and_play("안녕하세요.") 호출
+    def greeting_tts(self):
+        age, gender, name = self.get_user_info(self.user_id)
+        self.greeting_thread = GreetingThread(self, gender, name)
+        self.greeting_thread.start()
+        self.main.data["gender"] = gender
+        self.main.data["age"] = age
+
+        # if name.startswith("guest"):
+        #     if gender == "Male":
+        #         QTimer.singleShot(50, lambda: tts.google_tts_and_play("남성 회원님 안녕하세요."))
+
+        #     elif gender == "Female":
+        #         QTimer.singleShot(50, lambda: tts.google_tts_and_play("여성 회원님 안녕하세요."))
+
+        #     else:
+        #         QTimer.singleShot(50, lambda: tts.google_tts_and_play("게스트 회원님 안녕하세요."))
+
+        # else:
+        #     # 이름이 공백으로 구분되어 있는 경우를 처리 및 성 제외하고 이름만 출력
+        #     first_name = name.split(maxsplit=1)[-1]
+        #     QTimer.singleShot(50, lambda: tts.google_tts_and_play(f"{first_name}님 안녕하세요."))
 
         # self.add_image_to_graphics_view(topping_images[2], self.recommendView_5, 'topping3')
 
@@ -53,7 +99,7 @@ class MenuWindow(QMainWindow):
         print("recommend")
 
     def setup_recommendations(self):
-        age, gender = self.get_user_info(self.user_id)
+        age, gender, _ = self.get_user_info(self.user_id)
         
         if age is None or gender is None:
             recommended_flavor = 'choco'  # 기본값으로 'choco' 설정
@@ -139,24 +185,25 @@ class MenuWindow(QMainWindow):
         try:
             conn = pymysql.connect(**self.db_config)
             with conn.cursor() as cursor:
-                query = "SELECT gender, birthday FROM user_info_table WHERE user_ID = %s"
+                query = "SELECT gender, birthday, name FROM user_info_table WHERE user_ID = %s"
                 cursor.execute(query, (user_id,))
                 result = cursor.fetchone()
                 if result:
                     gender = result['gender']
                     birthday = result['birthday']
+                    name = result['name']
                     if birthday is not None:  # birthday가 None인지 확인
                         age = self.calculate_age(birthday)
                     else:
                         QMessageBox.warning(self, "생년월일 없음", "사용자의 생년월일이 등록되어 있지 않습니다.")
                         return None, gender  # 생년월일이 없으면 나이를 None으로 반환
-                    return age, gender
+                    return age, gender, name
                 else:
                     QMessageBox.warning(self, "사용자 정보 없음", "등록된 사용자 정보가 없습니다.")
-                    return None, None
+                    return None, None, None
         except pymysql.MySQLError as err:
             print(f"데이터베이스 오류 발생: {err}")
-            return None, None
+            return None, None, None
         finally:
             if 'conn' in locals():
                 conn.close()
