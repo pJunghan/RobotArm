@@ -21,34 +21,34 @@ class EmotionAnalyzer:
         return self.current_emotion
 
 class FaceRecognition:
-    def __init__(self, db_path = db_path, model_path = model_path, age_prototxt = age_prototxt, age_model = age_model, gender_prototxt = gender_prototxt, gender_model = gender_model):
+    def __init__(self, db_path=db_path, model_path=model_path, age_prototxt=age_prototxt, age_model=age_model, gender_prototxt=gender_prototxt, gender_model=gender_model):
         self.db_path = db_path
         self.emotion_analyzer = EmotionAnalyzer()
         self.cap = cv2.VideoCapture(0)
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.detected = False
-        self.visualization = True
         self.last_check = time.time()
         self.check_interval = 0.5
-        self.failed_attempts = 0
         self.frame_queue = Queue(maxsize=1)
         self.result_queue = Queue(maxsize=1)
         self.member_id = None
         self.phone_number = None
-        self.frame = None
-        self.known_person = None
         self.labels = ['angry', 'happy', 'sad']
         self.model = tf.keras.models.load_model(model_path)
         self.age_net = cv2.dnn.readNetFromCaffe(age_prototxt, age_model)
         self.gender_net = cv2.dnn.readNetFromCaffe(gender_prototxt, gender_model)
         self.MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
-        self.age_list = ['(0-10)', '(10-15)' '(15-20)', '(20-25)', '(25-30)', '(30-35)' '(35-40)', '(40-45)','(45-50)', '(50-55)','(55-60)', '(60-70)', '(70-80)', '(80-90)', '(90-100)']
+        self.age_list = ['(0, 10)','(10, 20)','(20, 30)','(30, 40)','(40, 50)','(50, 60)','(60, 70)','(70, 100)']
         self.gender_list = ['Male', 'Female']
         self.app = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
         self.app.prepare(ctx_id=0, det_size=(640, 640))
-        self.result_dict = {"detected" : False, "member_id" : None, "emotion" : None, "age" : None, "gender" : None}
-        self.cam_to_info_deamon = True
-        self.cam_deamon = True
+        self.frame = None  # 초기화 추가
+        self.cam_deamon = True  # 초기화 추가
+        self.cam_to_info_deamon = True  # 초기화 추가
+        self.known_person = None  # 초기화 추가
+        self.result_dict = {"detected": False, "member_id": None, "emotion": None, "age": None, "gender": None}  # 초기화 추가
+        self.failed_attempts = 0
+        self.analyze_result = None 
         self.current_emotion = 'happy'  # 초기 감정 설정
         self.emotion_analyzer = None 
 
@@ -72,7 +72,6 @@ class FaceRecognition:
             display_frame = self.frame.copy()
             if self.detected:
                 cv2.putText(display_frame, f"ID: {self.member_id}", (10, 30), self.font, 1, (0, 255, 0), 2, cv2.LINE_AA)
-                # cv2.putText(display_frame, f"Phone: {self.phone_number}", (10, 60), self.font, 1, (0, 255, 0), 2, cv2.LINE_AA)
                 cv2.putText(display_frame, f"Emotion: {emotion}", (10, 90), self.font, 1, (0, 255, 0), 2, cv2.LINE_AA)
                 cv2.putText(display_frame, f"Age: {age}", (10, 120), self.font, 1, (0, 255, 0), 2, cv2.LINE_AA)
                 cv2.putText(display_frame, f"Gender: {gender}", (10, 150), self.font, 1, (0, 255, 0), 2, cv2.LINE_AA)
@@ -122,7 +121,6 @@ class FaceRecognition:
         """얼굴 이미지에서 나이와 성별 예측"""
         face_img_resized = cv2.resize(face_img, (227, 227))  # 크기 조정
         blob = cv2.dnn.blobFromImage(face_img_resized, 1.0, (227, 227), self.MODEL_MEAN_VALUES, swapRB=False)
-
         self.gender_net.setInput(blob)
         gender_preds = self.gender_net.forward()
         gender = self.gender_list[gender_preds[0].argmax()]
@@ -163,6 +161,9 @@ class FaceRecognition:
 
                     try:
                         member_image = cv2.imread(photo_path)
+                        if member_image is None or member_image.size == 0:
+                            print(f"Skipping member {member_id} due to empty image.")
+                            continue
                         member_embedding, _ = self.extract_face_embedding(member_image)
                         if member_embedding is None:
                             continue
@@ -188,8 +189,12 @@ class FaceRecognition:
                         print(f"Error verifying member {member_id}: {str(e)}")
 
                 if not detected:
+                    emotion = self.predict_emotion(frame_embedding)  # 감정 예측
+                    age, gender = self.predict_age_and_gender(face_img)  # 나이 및 성별 예측
+                    self.analyze_result = [{"dominant_gender": gender, "age": int(age[1:-1].split(',')[0].strip())}]
                     self.result_queue.put((False, None, None, None, None))
                     self.result_to_dict()
+    
 
     def get_frame(self):  # 현재 프레임을 반환
         if self.frame is None:
@@ -197,18 +202,32 @@ class FaceRecognition:
         else:
             return True, self.frame
         
-    def result_to_dict(self, detected = False, member_id = None, emotion = None, age = None, gender = None):
+    def result_to_dict(self, detected=False, member_id=None, emotion=None, age=None, gender=None):
         self.result_dict["detected"] = detected
         self.result_dict["member_id"] = member_id
         self.result_dict["emotion"] = emotion
         self.result_dict["age"] = age
         self.result_dict["gender"] = gender
-        if detected :
+        if detected:
             self.known_person = member_id.split(".")[0]
             self.failed_attempts = 0
         else:
             self.known_person = None
-            self.failed_attempts +=1
+            self.failed_attempts += 1
+            print(f"회원인식 실패 횟수 {self.failed_attempts}")
+
+    def transfer_emotion(self, result_dict):
+        """result_dict에서 감정 정보를 가져와 저장하는 메서드"""
+        detected = result_dict.get("detected", False)
+        emotion = result_dict.get("emotion", "happy")
+
+        if detected:
+            self.current_emotion = emotion
+            print(f"Detected emotion: {emotion}")
+            # 여기서 다른 모듈에 감정 정보를 전달할 수 있는 코드 추가
+        else:
+            print("No person detected.")
+            # 감정 정보를 초기화하거나 다른 처리를 수행할 수 있는 코드 추가
 
     def transfer_emotion(self, result_dict):
         """result_dict에서 감정 정보를 가져와 저장하는 메서드"""
