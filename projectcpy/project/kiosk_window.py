@@ -85,3 +85,5 @@ class KioskWindow(QDialog):
             self.menu_window.show()
         except Exception as e:
             print(f"메뉴 창을 열던 중 에러 발생: {e}")
+
+            

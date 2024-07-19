@@ -73,7 +73,8 @@ class MainWindow(QMainWindow):
         self.PORT = 10002
         self.BUFSIZE = 1024
         self.ADDR = (self.HOST, self.PORT)
-             
+        
+        
         clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         while True:
             try:
@@ -91,6 +92,11 @@ class MainWindow(QMainWindow):
                 msg = json.dumps(self.data)
                 clientSocket.send(msg.encode())
                 self.data = self.none_data.copy()
+
+
+    def set_data(self, gender = "", age = 20):
+        self.data["gender"] = gender
+        self.data["age"] = age
     
 if __name__ == "__main__":
     app = QApplication(sys.argv)

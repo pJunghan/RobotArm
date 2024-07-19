@@ -289,3 +289,7 @@ class ConfirmWindow(QMainWindow):
     def go_to_main_window(self):
         self.main.home()
         self.close()
+
+    def closeEvent(self, event):
+        event.accept()
+        self.main.home()

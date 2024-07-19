@@ -80,3 +80,6 @@ class SelfOrder(QMainWindow):
         self.close()  # Hide current window
         self.auto_order_window = OrderManager(self.main)  # Return to OrderManager
         self.auto_order_window.show() 
+
+    def closeEvent(self, event):
+        self.go_back()

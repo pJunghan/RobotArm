@@ -25,4 +25,5 @@ class ManagerWindow(QMainWindow):
         QMessageBox.information(self, "알림", "발주 되었습니다.")
         self.go_to_main_window()
     
-    
+    def closeEvent(self, event):
+        self.go_to_main_window()
