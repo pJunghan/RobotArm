@@ -12,11 +12,10 @@ confirm_ui_path = os.path.join(ui_base_path, "purchase.ui")
 manager_ui_path = os.path.join(ui_base_path, "manager.ui")
 order_manage_ui_path = os.path.join(ui_base_path,"manager.ui")
 self_manage_ui_path = os.path.join(ui_base_path, "self_manage.ui")
-<<<<<<< HEAD
+
 image_folder = "flavor"
 
-=======
->>>>>>> 0595d535887283b1721d9f9fa039e0feb08dd32b
+
 check_ui_path = os.path.join(ui_base_path, "check_login.ui")
 check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
 
@@ -37,7 +36,7 @@ tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클�
 db_config = {
     'user': 'junghan',
     'password': '6488',
-    'host': '172.30.1.29',  # 변경된 IP 주소
+    'host': '172.30.1.6',  # 변경된 IP 주소
     'database': 'order_db',
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor
