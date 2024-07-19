@@ -18,7 +18,7 @@ image_folder = "flavor"
 
 check_ui_path = os.path.join(ui_base_path, "check_login.ui")
 check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
-
+image_folder = os.path.join("projectcpy/flavor")
 
 model_file_path = "projectcpy/project/linear_regression_model.pkl"
 user_img_path = "projectcpy/user_pic"
