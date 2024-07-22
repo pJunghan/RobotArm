@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
 
         self.setFixedSize(self.size())  # 현재 창 크기로 고정
 
-        self.orderButton.setGeometry(350, 500, 200, 50)
+        # self.orderButton.setGeometry(350, 500, 200, 50)
 
         self.orderButton.setStyleSheet("""
             QPushButton {

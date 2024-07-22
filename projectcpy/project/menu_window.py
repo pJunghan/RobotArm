@@ -4,7 +4,7 @@ import cv2
 import pymysql
 import tts
 from PyQt5 import uic, QtCore
-from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot, QSize
+from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot, QSize, QRectF
 from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox, QDialog
 from purchase import ConfirmWindow  # ConfirmWindow import 추가
@@ -445,11 +445,20 @@ class MenuWindow(QMainWindow):
 
     def add_image_to_graphics_view(self, image_path, graphics_view, item_name):
         pixmap = QPixmap(image_path)
-        pixmap_resized = pixmap.scaled(200, 200, Qt.KeepAspectRatio)
+        
+        # graphics_view의 크기에 맞게 pixmap 크기 조정
+        graphics_view_size = graphics_view.size()
+        pixmap_resized = pixmap.scaled(graphics_view_size.width(), graphics_view_size.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        
         item = QGraphicsPixmapItem(pixmap_resized)
         scene = QGraphicsScene()
         scene.addItem(item)
         graphics_view.setScene(scene)
+        
+        # 스크롤바 비활성화
+        graphics_view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        graphics_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        graphics_view.setSceneRect(QRectF(pixmap_resized.rect()))
 
 
     def item_click_event(self, event, flavor, topping):

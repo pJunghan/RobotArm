@@ -64,15 +64,21 @@ db_config = {
 #     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
 # }
 
+# ice_cream_images = [
+#     os.path.join(image_folder, "choco.jpeg"),
+#     os.path.join(image_folder, "vanila.jpeg"),
+#     os.path.join(image_folder, "strawberry.jpeg")
+# ]
+
 ice_cream_images = [
-    os.path.join(image_folder, "choco.jpeg"),
-    os.path.join(image_folder, "vanila.jpeg"),
-    os.path.join(image_folder, "strawberry.jpeg")
+    os.path.join(image_folder, "choco2.png"),
+    os.path.join(image_folder, "vanila2.png"),
+    os.path.join(image_folder, "strawberry2.png")
 ]
 
 # 토핑 이미지 경로
 topping_images = [
-    os.path.join(image_folder, "topping1.jpeg"),
-    os.path.join(image_folder, "topping2.jpeg"),
-    os.path.join(image_folder, "topping3.jpeg")
+    os.path.join(image_folder, "topping1.png"),
+    os.path.join(image_folder, "topping2.png"),
+    os.path.join(image_folder, "topping3.png")
 ]

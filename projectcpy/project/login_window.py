@@ -51,7 +51,7 @@ class LoginWindow(QMainWindow):
     def set_background_image(self):
         # 배경 이미지 경로 설정 (상대 경로를 사용)
         ui_image_path = "ui/pic"
-        image_path = os.path.join(ui_image_path, "background.png")
+        image_path = os.path.join(ui_image_path, "login_background.png")
         if os.path.exists(image_path):
             self.setStyleSheet(f"QMainWindow {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
         else:
@@ -67,7 +67,7 @@ class LoginWindow(QMainWindow):
 
         # 아이콘 이미지 경로 설정 (상대 경로를 사용)
         ui_image_path = "ui/pic"
-        image_path = os.path.join(ui_image_path, "sign_up.png")
+        image_path = os.path.join(ui_image_path, "login_sign_up.png")
         if os.path.exists(image_path):
             icon = QIcon(image_path)
             self.memberBtn.setIcon(icon)
