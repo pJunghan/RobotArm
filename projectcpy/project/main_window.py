@@ -77,6 +77,7 @@ class MainWindow(QMainWindow):
             conn = pymysql.connect(**db_config)
             cursor = conn.cursor()
 
+
             # 실행할 SQL 쿼리문
             sql_query = """
                 UPDATE purchase_record_table
