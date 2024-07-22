@@ -30,7 +30,8 @@ gender_prototxt = "projectcpy/project/deploy_gender.prototxt"  # 성별 예측 �
 gender_model = "projectcpy/project/gender_net.caffemodel"  # 성별 예측 모델 caffemodel 경로
 tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클라우드 로그인 계정
 
-# # 데이터베이스 연결 설정
+
+
 db_config = {
     'user': 'junghan',
     'password': '6488',
