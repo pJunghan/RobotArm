@@ -57,7 +57,6 @@ class MainWindow(QMainWindow):
         self.autoButton.setIconSize(QSize(80,80))
         self.orderButton.clicked.connect(self.go_to_login_window)
         self.autoButton.clicked.connect(self.go_to_auto_order_window)
-        # main.ui가 불려올 때마다 데이터 초기화 함수 실행
         self.update_purchase_count(db_config)
 
     def go_to_login_window(self):
@@ -132,6 +131,9 @@ class MainWindow(QMainWindow):
     def set_data(self, gender = "", age = 20):
         self.data["gender"] = gender
         self.data["age"] = age
+
+    def closeEvent(self, event):
+        pass # 
     
 if __name__ == "__main__":
     app = QApplication(sys.argv)

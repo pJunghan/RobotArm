@@ -3,6 +3,7 @@ import os
 
 # UI 파일 경로
 ui_base_path = "ui"
+gui_img_path = "ui/pic"
 main_ui_path = os.path.join(ui_base_path, "main.ui")
 login_ui_path = os.path.join(ui_base_path, "login.ui")
 menu_ui_path = os.path.join(ui_base_path, "ice_cream_window2.ui")
@@ -26,11 +27,10 @@ gender_prototxt = "projectcpy/project/deploy_gender.prototxt"  # 성별 예측 �
 gender_model = "projectcpy/project/gender_net.caffemodel"  # 성별 예측 모델 caffemodel 경로
 tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클라우드 로그인 계정
 
-
 db_config = {
     'user': 'junghan',
     'password': '6488',
-    'host': '172.30.1.6',  # 변경된 IP 주소
+    'host': '172.30.1.29',  # 변경된 IP 주소
     'database': 'order_db',
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor

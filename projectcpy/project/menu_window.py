@@ -4,8 +4,8 @@ import cv2
 import pymysql
 import tts
 from PyQt5 import uic, QtCore
-from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot, QSize
+from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox, QDialog
 from purchase import ConfirmWindow  # ConfirmWindow import 추가
 from config import menu_ui_path, db_config, ice_cream_images, topping_images, user_img_path # user_img_path 추가
@@ -22,16 +22,19 @@ class GreetingThread(QThread):
         self.name = name
 
     def run(self):
-        if self.name.startswith("guest"):
-            if self.gender == "Male":
-                tts.google_tts_and_play("남성 회원님 안녕하세요.")
-            elif self.gender == "Female":
-                tts.google_tts_and_play("여성 회원님 안녕하세요.")
+        try:
+            if self.name.startswith("guest"):
+                if self.gender == "Male":
+                    tts.google_tts_and_play("남성 회원님 안녕하세요.")
+                elif self.gender == "Female":
+                    tts.google_tts_and_play("여성 회원님 안녕하세요.")
+                else:
+                    tts.google_tts_and_play("게스트 회원님 안녕하세요.")
             else:
-                tts.google_tts_and_play("게스트 회원님 안녕하세요.")
-        else:
-            first_name = self.name.split(maxsplit=1)[-1]
-            tts.google_tts_and_play(f"{first_name}님 안녕하세요.")
+                first_name = self.name.split(maxsplit=1)[-1]
+                tts.google_tts_and_play(f"{first_name}님 안녕하세요.")
+        except:
+            pass
 
 
 class MenuWindow(QMainWindow):
@@ -43,6 +46,14 @@ class MenuWindow(QMainWindow):
         self.menu_items = {}
         uic.loadUi(menu_ui_path, self)  # UI 파일 로드
         self.current_emotion = None
+        
+        self.setStyleSheet("""
+            QMainWindow {
+                background-image: url('ui/pic/back_ground_menu.png'); 
+                background-repeat: no-repeat;
+                background-position: center; 
+            }
+        """)
 
         self.db_config = db_config
         self.user_id = self.get_latest_user_id()  # 사용자 ID를 가져옴
@@ -57,6 +68,8 @@ class MenuWindow(QMainWindow):
             'topping2': 0,
             'topping3': 0
         }
+        self.Home_Button.setIcon(QIcon("ui/pic/home.png"))
+        self.Home_Button.setIconSize(QSize(80,80))
 
         # QStringListModel 초기화
         self.list_model = QStringListModel()
