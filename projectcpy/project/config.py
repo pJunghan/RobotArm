@@ -27,6 +27,7 @@ gender_model = "projectcpy/project/gender_net.caffemodel"  # 성별 예측 모�
 tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클라우드 로그인 계정
 
 
+<<<<<<< HEAD
 # 데이터베이스 연결 설정
 # db_config = {
 #     'user': 'junghan',
@@ -37,14 +38,26 @@ tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클�
 #     'cursorclass': pymysql.cursors.DictCursor
 # }
 
+=======
+# # 데이터베이스 연결 설정
+>>>>>>> 38e6881da3b619a4f81510b3a783177dd1650882
 db_config = {
-    'host': 'localhost',      # 데이터베이스 호스트 주소
-    'user': 'junghan',        # 사용자 이름
-    'password': '6488',       # 비밀번호
-    'database': 'order_db',   # 데이터베이스 이름
-    'charset': 'utf8',        # 문자셋 설정
-    'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
+    'user': 'junghan',
+    'password': '6488',
+    'host': '172.30.1.6',  # 변경된 IP 주소
+    'database': 'order_db',
+    'charset': 'utf8',
+    'cursorclass': pymysql.cursors.DictCursor
 }
+
+# db_config = {
+#     'host': 'localhost',      # 데이터베이스 호스트 주소
+#     'user': 'junghan',        # 사용자 이름
+#     'password': '6488',       # 비밀번호
+#     'database': 'order_db',   # 데이터베이스 이름
+#     'charset': 'utf8',        # 문자셋 설정
+#     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
+# }
 
 
 # db_config = {

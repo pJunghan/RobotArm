@@ -150,6 +150,12 @@ class FaceRecognition:
 
                 x1, y1, x2, y2 = map(int, bbox)
                 face_img = frame[y1:y2, x1:x2]
+                
+                try:
+                    if face_img == None:
+                        continue
+                except:
+                    pass
 
                 for member_id in members:
                     # member_folder = os.path.join(self.db_path, member_id)

@@ -4,6 +4,7 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QDialog, QMessageBox
 from config import check_account_ui_path, db_config
 from menu_window import MenuWindow
+from PyQt5.QtWidgets import QApplication
 
 class CheckAccountWindow(QDialog):
     def __init__(self, parent=None, main=None):
@@ -60,3 +61,11 @@ class CheckAccountWindow(QDialog):
         self.parent.close()  # LoginWindow를 닫음
         self.next_window = MenuWindow(self.db_config, self.main)  # user_id를 전달
         self.next_window.show()
+
+
+    def closeEvent(self, event):
+        event.accept()
+        gui_windows = QApplication.allWidgets()
+        main_windows = [win for win in gui_windows if isinstance(win, (MenuWindow)) and win.isVisible()]
+        if not main_windows:
+            self.main.home()

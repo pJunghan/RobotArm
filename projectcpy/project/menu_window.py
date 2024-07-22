@@ -6,7 +6,7 @@ import tts
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox, QDialog
 from purchase import ConfirmWindow  # ConfirmWindow import 추가
 from config import menu_ui_path, db_config, ice_cream_images, topping_images, user_img_path # user_img_path 추가
 from deepface import DeepFace
@@ -88,8 +88,8 @@ class MenuWindow(QMainWindow):
         age, gender, name = self.get_user_info(self.user_id)
         self.greeting_thread = GreetingThread(self, gender, name)
         self.greeting_thread.start()
-        self.main.data["gender"] = gender
-        self.main.data["age"] = age
+
+        self.main.set_data(gender = gender, age = age)
 
         # if name.startswith("guest"):
         #     if gender == "Male":
@@ -491,3 +491,10 @@ class MenuWindow(QMainWindow):
 
         # 모델을 업데이트
         self.list_model.setStringList(item_list)
+    
+    def closeEvent(self, event):
+        event.accept()
+        gui_windows = QApplication.allWidgets()
+        main_windows = [win for win in gui_windows if isinstance(win, (ConfirmWindow)) and win.isVisible()]
+        if not main_windows:
+            self.main.home()

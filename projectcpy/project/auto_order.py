@@ -171,4 +171,4 @@ class OrderManager(QMainWindow):
         self.self_order_window = SelfOrder(self.main)  # Pass main to SelfOrder
         self.self_order_window.show()
 
-
+    

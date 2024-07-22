@@ -68,7 +68,7 @@ class LoginWindow(QMainWindow):
             user_image_path = os.path.join(user_img_path, f"{user_id}.jpeg")
 
             if os.path.exists(user_image_path):
-                check_window = CheckLoginWindow(user_image_path, user_info, self)
+                check_window = CheckLoginWindow(user_image_path, user_info, self, self.main)
                 if check_window.exec_() == QDialog.Rejected:
                     self.start_camera()  # 로그인 실패 시 카메라 재시작
             else:
@@ -166,16 +166,16 @@ class LoginWindow(QMainWindow):
                     return new_guest_name
         
 
-                    print("성별과 나이에 대한 분석 결과를 가져오는 데 실패했습니다.")
+                    # print("성별과 나이에 대한 분석 결과를 가져오는 데 실패했습니다.")
 
-                new_birthday = "1990-01-01"
-                insert_query = """
-                INSERT INTO user_info_table (user_ID, name, point, birthday)
-                VALUES (%s, %s, %s, %s)
-                """
-                cursor.execute(insert_query, (new_user_id, new_guest_name, 0, new_birthday))
-                conn.commit()
-                return new_guest_name
+                # new_birthday = "1990-01-01"
+                # insert_query = """
+                # INSERT INTO user_info_table (user_ID, name, point, birthday)
+                # VALUES (%s, %s, %s, %s)
+                # """
+                # cursor.execute(insert_query, (new_user_id, new_guest_name, 0, new_birthday))
+                # conn.commit()
+                # return new_guest_name
         except pymysql.MySQLError as err:
             print(f"데이터베이스 오류 발생: {err}")
             QMessageBox.warning(self, "오류", f"데이터베이스 오류 발생: {err}")
@@ -191,13 +191,23 @@ class LoginWindow(QMainWindow):
         self.stop_camera()
         self.next_window = MenuWindow(db_config, self.main)
         self.next_window.show()
+        self.close()
 
     def go_to_new_account_window(self):
         # 새로운 계정 생성 창으로 이동
         self.stop_camera()
-        self.close()
         self.next_window = NewAccountWindow(new_account_ui_path, db_config, self.main)
         self.next_window.show()
+        self.close()
+
+    def closeEvent(self, event):
+        event.accept()
+        gui_windows = QApplication.allWidgets()
+        main_windows = [win for win in gui_windows if isinstance(win, (MenuWindow, NewAccountWindow, CheckLoginWindow)) and win.isVisible()]
+        if not main_windows:
+            self.stop_camera()
+            self.main.home()
+            
 
     def __del__(self):
         del(self.face)
