@@ -207,6 +207,7 @@ class MenuWindow(QMainWindow):
             emotion_topping = self.topping_flavors[2]  # 'topping3'
 
         return emotion_ice, emotion_topping
+    
     def recommend_by_inventory(self):
         try:
             conn = pymysql.connect(**self.db_config)
@@ -325,9 +326,9 @@ class MenuWindow(QMainWindow):
     def recommend_flavor(self, age, gender):
         m = np.array([35.6, 38.8, 25.6])  # Male preference
         F = np.array([48.8, 36.8, 16.4])  # Female preference
-        y10 = np.array([67, 20, 13])      # Age < 20
+        y10 = np.array([31, 43, 26])      # Age < 20
         y20 = np.array([51, 27, 22])      # Age < 30
-        y30 = np.array([31, 43, 26])      # Age < 40
+        y30 = np.array([67, 20, 13])      # Age < 40
         y40 = np.array([26, 51, 23])      # Age < 50
         y50 = np.array([31, 48, 21])      # Age >= 50
 
@@ -453,24 +454,25 @@ class MenuWindow(QMainWindow):
             selected_flavor = next((key for key, value in self.item_click_count.items() if key in ['choco', 'vanila', 'strawberry'] and value == 1), None)
             self.update_list_view(selected_flavor=selected_flavor, selected_topping=topping)  # Update list view with selected topping
 
-    def recommend_item_click_event(self, event, flavor, topping):
-    # 아이스크림 아이템인지 확인
-        if flavor in ['choco', 'vanila', 'strawberry']:
-            # 모든 아이스크림 아이템의 선택 개수를 0으로 초기화
-            for key in ['choco', 'vanila', 'strawberry']:
-                self.item_click_count[key] = 0
-        # 토핑 아이템인지 확인
-        elif topping in ['topping1', 'topping2', 'topping3']:
-            # 모든 토핑 아이템의 선택 개수를 0으로 초기화
-            for key in ['topping1', 'topping2', 'topping3']:
-                self.item_click_count[key] = 0
+    def recommend_item_click_event(self, event, flavor=None, topping=None):
+        # 이전 선택을 초기화합니다.
+        for key in ['choco', 'vanila', 'strawberry']:
+            self.item_click_count[key] = 0
+        for key in ['topping1', 'topping2', 'topping3']:
+            self.item_click_count[key] = 0
 
-        # 클릭된 아이템의 선택 개수를 1로 설정
-        self.item_click_count[flavor] = 1
-        self.item_click_count[topping] = 1
+        # 새로 클릭된 아이템을 업데이트합니다.
+        if flavor in ['choco', 'vanila', 'strawberry']:
+            self.item_click_count[flavor] = 1
+        if topping in ['topping1', 'topping2', 'topping3']:
+            self.item_click_count[topping] = 1
         
-        # listView에 선택된 아이스크림과 토핑 추가
-        self.update_list_view(flavor, topping)
+        # 선택된 아이스크림과 토핑을 리스트 뷰에 추가합니다.
+        selected_flavor = next((key for key, value in self.item_click_count.items() if key in ['choco', 'vanila', 'strawberry'] and value == 1), None)
+        selected_topping = next((key for key, value in self.item_click_count.items() if key in ['topping1', 'topping2', 'topping3'] and value == 1), None)
+        
+        self.update_list_view(selected_flavor=selected_flavor, selected_topping=selected_topping)
+
 
 
     def update_list_view(self, selected_flavor=None, selected_topping=None):
