@@ -9,13 +9,12 @@ from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QTimer, QRectF
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QGraphicsScene, QDialog
-
 from face_emotion_age_gender_detect import FaceRecognition
 from menu_window import MenuWindow
 from threading import Thread
 from new_account_window import NewAccountWindow
 from check_login_window import CheckLoginWindow
-from config import login_ui_path, db_config, new_account_ui_path, user_img_path, check_ui_path
+from config import login_ui_path, db_config, new_account_ui_path, user_img_path, check_ui_path, background_ui_path
 
 class LoginWindow(QMainWindow):
     def __init__(self, main):
@@ -39,6 +38,14 @@ class LoginWindow(QMainWindow):
 
         self.scene = QGraphicsScene(self)  # 그래픽 씬 설정
         self.graphicsView.setScene(self.scene)
+        
+        self.set_background_image() # MainWindow에 배경 이미지 설정
+
+
+    def set_background_image(self):
+        # 배경 이미지 경로 설정 (이미지 파일 경로가 정확한지 확인)
+        self.setStyleSheet("MainWindow {background-image: url('ui_images/background.png'); background-repeat: no-repeat; background-position: center;}")
+
 
     def update_frame(self):
         # 카메라에서 프레임을 가져와서 그래픽 뷰에 업데이트
