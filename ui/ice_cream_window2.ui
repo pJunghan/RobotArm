@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1172</width>
-    <height>722</height>
+    <width>1200</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="tabWidget">
@@ -24,10 +27,23 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true"/>
+     <string notr="true">QTabWidget::pane {
+                background: transparent;  /* 탭 위젯의 배경을 투명하게 설정 */
+            }
+            QTabWidget::tab-bar {
+                background: transparent;  /* 탭 바의 배경을 투명하게 설정 */
+            }
+            QTabBar::tab {
+                background: rgba(255, 255, 255, 200); /* 탭의 배경 색상 설정 (약간의 투명도) */
+                border: 1px solid #ccc;
+                padding: 5px;
+            }
+            QTabBar::tab:selected {
+                background: rgba(255, 255, 255, 255); /* 선택된 탭의 배경 색상 설정 (투명도 없음) */
+            }</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -42,6 +58,9 @@
         <height>191</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
+      </property>
      </widget>
      <widget class="QGraphicsView" name="recommendView_6">
       <property name="geometry">
@@ -51,6 +70,9 @@
         <width>256</width>
         <height>192</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
       </property>
      </widget>
      <widget class="QGraphicsView" name="recommendView_2">
@@ -62,6 +84,9 @@
         <height>192</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
+      </property>
      </widget>
      <widget class="QGraphicsView" name="recommendView_7">
       <property name="geometry">
@@ -71,6 +96,9 @@
         <width>256</width>
         <height>192</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
       </property>
      </widget>
      <widget class="QGraphicsView" name="recommendView_3">
@@ -82,6 +110,9 @@
         <height>192</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
+      </property>
      </widget>
      <widget class="QGraphicsView" name="recommendView_8">
       <property name="geometry">
@@ -91,6 +122,9 @@
         <width>256</width>
         <height>192</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
       </property>
      </widget>
      <widget class="QGraphicsView" name="recommendView_4">
@@ -102,6 +136,9 @@
         <height>192</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
+      </property>
      </widget>
      <widget class="QGraphicsView" name="recommendView_5">
       <property name="geometry">
@@ -111,6 +148,9 @@
         <width>256</width>
         <height>191</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
       </property>
      </widget>
     </widget>
@@ -155,6 +195,9 @@
         <height>192</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
+      </property>
      </widget>
      <widget class="QGraphicsView" name="graphicsView_6">
       <property name="geometry">
@@ -164,6 +207,9 @@
         <width>321</width>
         <height>192</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
       </property>
      </widget>
      <widget class="QGraphicsView" name="graphicsView_5">
@@ -175,6 +221,9 @@
         <height>192</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
+      </property>
      </widget>
      <widget class="QGraphicsView" name="graphicsView_2">
       <property name="geometry">
@@ -184,6 +233,9 @@
         <width>321</width>
         <height>192</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
       </property>
      </widget>
      <widget class="QGraphicsView" name="graphicsView_4">
@@ -195,6 +247,9 @@
         <height>192</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
+      </property>
      </widget>
      <widget class="QGraphicsView" name="graphicsView_1">
       <property name="geometry">
@@ -205,6 +260,9 @@
         <height>192</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
+      </property>
      </widget>
     </widget>
    </widget>
@@ -212,7 +270,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>550</y>
+      <y>580</y>
       <width>717</width>
       <height>131</height>
      </rect>
@@ -221,11 +279,16 @@
    <widget class="QPushButton" name="Next_Button">
     <property name="geometry">
      <rect>
-      <x>910</x>
-      <y>560</y>
+      <x>980</x>
+      <y>590</y>
       <width>139</width>
       <height>91</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>22</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>결제</string>
@@ -234,14 +297,14 @@
    <widget class="QPushButton" name="Home_Button">
     <property name="geometry">
      <rect>
-      <x>760</x>
-      <y>560</y>
+      <x>830</x>
+      <y>590</y>
       <width>138</width>
       <height>91</height>
      </rect>
     </property>
     <property name="text">
-     <string>홈</string>
+     <string/>
     </property>
    </widget>
   </widget>
@@ -250,7 +313,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1172</width>
+     <width>1200</width>
      <height>22</height>
     </rect>
    </property>
