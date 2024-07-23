@@ -4,9 +4,9 @@ import cv2
 import pymysql
 import tts
 from PyQt5 import uic, QtCore
-from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox
+from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot, QSize, QRectF
+from PyQt5.QtGui import QImage, QPixmap, QIcon
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox, QDialog
 from purchase import ConfirmWindow  # ConfirmWindow import 추가
 from config import menu_ui_path, db_config, ice_cream_images, topping_images, user_img_path # user_img_path 추가
 from deepface import DeepFace
@@ -22,16 +22,19 @@ class GreetingThread(QThread):
         self.name = name
 
     def run(self):
-        if self.name.startswith("guest"):
-            if self.gender == "Male":
-                tts.google_tts_and_play("남성 회원님 안녕하세요.")
-            elif self.gender == "Female":
-                tts.google_tts_and_play("여성 회원님 안녕하세요.")
+        try:
+            if self.name.startswith("guest"):
+                if self.gender == "Male":
+                    tts.google_tts_and_play("남성 회원님 안녕하세요.")
+                elif self.gender == "Female":
+                    tts.google_tts_and_play("여성 회원님 안녕하세요.")
+                else:
+                    tts.google_tts_and_play("게스트 회원님 안녕하세요.")
             else:
-                tts.google_tts_and_play("게스트 회원님 안녕하세요.")
-        else:
-            first_name = self.name.split(maxsplit=1)[-1]
-            tts.google_tts_and_play(f"{first_name}님 안녕하세요.")
+                first_name = self.name.split(maxsplit=1)[-1]
+                tts.google_tts_and_play(f"{first_name}님 안녕하세요.")
+        except:
+            pass
 
 
 class MenuWindow(QMainWindow):
@@ -43,6 +46,14 @@ class MenuWindow(QMainWindow):
         self.menu_items = {}
         uic.loadUi(menu_ui_path, self)  # UI 파일 로드
         self.current_emotion = None
+        
+        self.setStyleSheet("""
+            QMainWindow {
+                background-image: url('ui/pic/back_ground_menu.png'); 
+                background-repeat: no-repeat;
+                background-position: center; 
+            }
+        """)
 
         self.db_config = db_config
         self.user_id = self.get_latest_user_id()  # 사용자 ID를 가져옴
@@ -57,6 +68,8 @@ class MenuWindow(QMainWindow):
             'topping2': 0,
             'topping3': 0
         }
+        self.Home_Button.setIcon(QIcon("ui/pic/home.png"))
+        self.Home_Button.setIconSize(QSize(80,80))
 
         # QStringListModel 초기화
         self.list_model = QStringListModel()
@@ -88,8 +101,8 @@ class MenuWindow(QMainWindow):
         age, gender, name = self.get_user_info(self.user_id)
         self.greeting_thread = GreetingThread(self, gender, name)
         self.greeting_thread.start()
-        self.main.data["gender"] = gender
-        self.main.data["age"] = age
+
+        self.main.set_data(gender = gender, age = age)
 
         # if name.startswith("guest"):
         #     if gender == "Male":
@@ -207,6 +220,7 @@ class MenuWindow(QMainWindow):
             emotion_topping = self.topping_flavors[2]  # 'topping3'
 
         return emotion_ice, emotion_topping
+    
     def recommend_by_inventory(self):
         try:
             conn = pymysql.connect(**self.db_config)
@@ -325,9 +339,9 @@ class MenuWindow(QMainWindow):
     def recommend_flavor(self, age, gender):
         m = np.array([35.6, 38.8, 25.6])  # Male preference
         F = np.array([48.8, 36.8, 16.4])  # Female preference
-        y10 = np.array([67, 20, 13])      # Age < 20
+        y10 = np.array([31, 43, 26])      # Age < 20
         y20 = np.array([51, 27, 22])      # Age < 30
-        y30 = np.array([31, 43, 26])      # Age < 40
+        y30 = np.array([67, 20, 13])      # Age < 40
         y40 = np.array([26, 51, 23])      # Age < 50
         y50 = np.array([31, 48, 21])      # Age >= 50
 
@@ -431,11 +445,20 @@ class MenuWindow(QMainWindow):
 
     def add_image_to_graphics_view(self, image_path, graphics_view, item_name):
         pixmap = QPixmap(image_path)
-        pixmap_resized = pixmap.scaled(200, 200, Qt.KeepAspectRatio)
+        
+        # graphics_view의 크기에 맞게 pixmap 크기 조정
+        graphics_view_size = graphics_view.size()
+        pixmap_resized = pixmap.scaled(graphics_view_size.width(), graphics_view_size.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        
         item = QGraphicsPixmapItem(pixmap_resized)
         scene = QGraphicsScene()
         scene.addItem(item)
         graphics_view.setScene(scene)
+        
+        # 스크롤바 비활성화
+        graphics_view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        graphics_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        graphics_view.setSceneRect(QRectF(pixmap_resized.rect()))
 
 
     def item_click_event(self, event, flavor, topping):
@@ -453,24 +476,25 @@ class MenuWindow(QMainWindow):
             selected_flavor = next((key for key, value in self.item_click_count.items() if key in ['choco', 'vanila', 'strawberry'] and value == 1), None)
             self.update_list_view(selected_flavor=selected_flavor, selected_topping=topping)  # Update list view with selected topping
 
-    def recommend_item_click_event(self, event, flavor, topping):
-    # 아이스크림 아이템인지 확인
-        if flavor in ['choco', 'vanila', 'strawberry']:
-            # 모든 아이스크림 아이템의 선택 개수를 0으로 초기화
-            for key in ['choco', 'vanila', 'strawberry']:
-                self.item_click_count[key] = 0
-        # 토핑 아이템인지 확인
-        elif topping in ['topping1', 'topping2', 'topping3']:
-            # 모든 토핑 아이템의 선택 개수를 0으로 초기화
-            for key in ['topping1', 'topping2', 'topping3']:
-                self.item_click_count[key] = 0
+    def recommend_item_click_event(self, event, flavor=None, topping=None):
+        # 이전 선택을 초기화합니다.
+        for key in ['choco', 'vanila', 'strawberry']:
+            self.item_click_count[key] = 0
+        for key in ['topping1', 'topping2', 'topping3']:
+            self.item_click_count[key] = 0
 
-        # 클릭된 아이템의 선택 개수를 1로 설정
-        self.item_click_count[flavor] = 1
-        self.item_click_count[topping] = 1
+        # 새로 클릭된 아이템을 업데이트합니다.
+        if flavor in ['choco', 'vanila', 'strawberry']:
+            self.item_click_count[flavor] = 1
+        if topping in ['topping1', 'topping2', 'topping3']:
+            self.item_click_count[topping] = 1
         
-        # listView에 선택된 아이스크림과 토핑 추가
-        self.update_list_view(flavor, topping)
+        # 선택된 아이스크림과 토핑을 리스트 뷰에 추가합니다.
+        selected_flavor = next((key for key, value in self.item_click_count.items() if key in ['choco', 'vanila', 'strawberry'] and value == 1), None)
+        selected_topping = next((key for key, value in self.item_click_count.items() if key in ['topping1', 'topping2', 'topping3'] and value == 1), None)
+        
+        self.update_list_view(selected_flavor=selected_flavor, selected_topping=selected_topping)
+
 
 
     def update_list_view(self, selected_flavor=None, selected_topping=None):
@@ -489,3 +513,10 @@ class MenuWindow(QMainWindow):
 
         # 모델을 업데이트
         self.list_model.setStringList(item_list)
+    
+    def closeEvent(self, event):
+        event.accept()
+        gui_windows = QApplication.allWidgets()
+        main_windows = [win for win in gui_windows if isinstance(win, (ConfirmWindow)) and win.isVisible()]
+        if not main_windows:
+            self.main.home()

@@ -3,6 +3,7 @@ import os
 
 # UI 파일 경로
 ui_base_path = "ui"
+gui_img_path = "ui/pic"
 main_ui_path = os.path.join(ui_base_path, "main.ui")
 login_ui_path = os.path.join(ui_base_path, "login.ui")
 menu_ui_path = os.path.join(ui_base_path, "ice_cream_window2.ui")
@@ -30,13 +31,10 @@ gender_prototxt = "projectcpy/project/deploy_gender.prototxt"  # 성별 예측 �
 gender_model = "projectcpy/project/gender_net.caffemodel"  # 성별 예측 모델 caffemodel 경로
 tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클라우드 로그인 계정
 
-
-
-# 데이터베이스 연결 설정
 db_config = {
     'user': 'junghan',
     'password': '6488',
-    'host': '172.30.1.6',  # 변경된 IP 주소
+    'host': '172.30.1.12',  # 변경된 IP 주소
     'database': 'order_db',
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor
@@ -70,15 +68,21 @@ db_config = {
 #     'cursorclass': pymysql.cursors.DictCursor  # 결과를 딕셔너리 형태로 반환하는 커서 설정
 # }
 
+# ice_cream_images = [
+#     os.path.join(image_folder, "choco.jpeg"),
+#     os.path.join(image_folder, "vanila.jpeg"),
+#     os.path.join(image_folder, "strawberry.jpeg")
+# ]
+
 ice_cream_images = [
-    os.path.join(image_folder, "choco.jpeg"),
-    os.path.join(image_folder, "vanila.jpeg"),
-    os.path.join(image_folder, "strawberry.jpeg")
+    os.path.join(image_folder, "choco2.png"),
+    os.path.join(image_folder, "vanila2.png"),
+    os.path.join(image_folder, "strawberry2.png")
 ]
 
 # 토핑 이미지 경로
 topping_images = [
-    os.path.join(image_folder, "topping1.jpeg"),
-    os.path.join(image_folder, "topping2.jpeg"),
-    os.path.join(image_folder, "topping3.jpeg")
+    os.path.join(image_folder, "topping1.png"),
+    os.path.join(image_folder, "topping2.png"),
+    os.path.join(image_folder, "topping3.png")
 ]

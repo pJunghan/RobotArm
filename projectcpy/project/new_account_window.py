@@ -5,6 +5,7 @@ import pymysql
 from kiosk_window import KioskWindow
 import re
 from datetime import datetime
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
 class NewAccountWindow(QDialog):  # Inherit from QDialog
     def __init__(self, ui_path, db_config, main):
@@ -110,3 +111,9 @@ class NewAccountWindow(QDialog):  # Inherit from QDialog
         self.close()
 
 
+    def closeEvent(self, event):
+        event.accept()
+        gui_windows = QApplication.allWidgets()
+        main_windows = [win for win in gui_windows if isinstance(win, (KioskWindow)) and win.isVisible()]
+        if not main_windows:
+            self.main.home()

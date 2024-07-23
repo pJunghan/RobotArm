@@ -119,7 +119,7 @@ class FaceRecognition:
 
     def predict_age_and_gender(self, face_img):
         """얼굴 이미지에서 나이와 성별 예측"""
-        face_img_resized = cv2.resize(face_img, (227, 227))  # 크기 조정
+        face_img_resized = cv2.resize(face_img, (200,200))  # 크기 조정
         blob = cv2.dnn.blobFromImage(face_img_resized, 1.0, (227, 227), self.MODEL_MEAN_VALUES, swapRB=False)
         self.gender_net.setInput(blob)
         gender_preds = self.gender_net.forward()
@@ -150,6 +150,12 @@ class FaceRecognition:
 
                 x1, y1, x2, y2 = map(int, bbox)
                 face_img = frame[y1:y2, x1:x2]
+                
+                try:
+                    if face_img == None:
+                        continue
+                except:
+                    pass
 
                 for member_id in members:
                     # member_folder = os.path.join(self.db_path, member_id)
