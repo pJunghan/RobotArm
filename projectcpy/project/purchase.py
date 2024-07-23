@@ -34,19 +34,6 @@ class ConfirmWindow(QMainWindow):
 
         # 가장 최근에 수정된 사용자의 user_ID 가져오기
         self.get_latest_user_info()
-<<<<<<< HEAD
-    #     self.set_background_image('~/RobotArm/ui/pic/purchase_background.png')  # Set your background image path here
-
-    # def set_background_image(self):
-    #     # 배경 이미지 경로 설정 (상대 경로를 사용)
-    #     ui_image_path = "ui/pic"
-    #     image_path = os.path.join(ui_image_path, "purchase_background.png")
-    #     if os.path.exists(image_path):
-    #         self.setStyleSheet(f"QMainWindow {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
-    #     else:
-    #         print(f"Error: Image file {image_path} does not exist.")
-
-=======
         self.set_background_image()  # Set your background image path here
 
     def set_background_image(self):
@@ -67,7 +54,6 @@ class ConfirmWindow(QMainWindow):
     def resizeEvent(self, event):
         self.set_background_image()
         super().resizeEvent(event)
->>>>>>> 7daf2167484861fef4e146b47d7a01fe1e74fb16
 
     def load_purchase_record(self):
         try:

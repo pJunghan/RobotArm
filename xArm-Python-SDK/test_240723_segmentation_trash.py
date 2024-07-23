@@ -49,7 +49,12 @@ import logging
 class YOLOMain:
     def __init__(self, robot_main):
         # 모델 로드
-        self.model = YOLO('/home/beakhongha/collision avoidance/train18/weights/best.pt')
+        self.model = YOLO('/home/beakhongha/collision_avoidance/train18/weights/best.pt')
+
+        # 캘리브레이션 데이터 로드
+        calibration_data = np.load('/home/pjh/RobotArm/camera_calibration/calibration_data.npz')
+        self.mtx = calibration_data['mtx']
+        self.dist = calibration_data['dist']
 
         # 카메라 열기
         self.webcam = cv2.VideoCapture(0)  # 웹캠 장치 열기
@@ -60,6 +65,14 @@ class YOLOMain:
         if not self.webcam.isOpened():  # 웹캠이 열리지 않은 경우
             print("웹캠을 열 수 없습니다. 프로그램을 종료합니다.")  # 오류 메시지 출력
             exit()  # 프로그램 종료
+
+    def get_object_coordinates(self, image_points):
+        # 물체의 이미지 좌표를 undistort
+        undistorted_image_points = cv2.undistortPoints(np.expand_dims(image_points, axis=1), self.mtx, self.dist)
+        # Z=0으로 가정하고 실세계 좌표로 변환
+        object_points_3D = cv2.convertPointsToHomogeneous(undistorted_image_points)[:, 0, :]
+
+        return object_points_3D[:, :2]  # X, Y 좌표만 반환
 
     def predict_on_image(self, img, conf):
         result = self.model(img, conf=conf)[0]
@@ -165,18 +178,16 @@ class YOLOMain:
                     center_x_pixel = (x2 - x1) / 2 + x1
                     center_y_pixel = (y2 - y1) / 2 + y1
 
-                    # center 좌표 변환(pixel to mm)
-                    center_x = -1 * ((center_x_pixel * (1 + (38/474) * (center_y_pixel/194)) - 19 * (center_y_pixel/194) - 62) * 800 / (474 * (1 + (38/474) * (center_y_pixel/194)))) + 400
-                    center_y = ((center_y_pixel - 171) * (315/194)) - 170
-
-                    # 최종 center 좌표(mm)
-                    center_x_mm = center_x
-                    center_y_mm = center_y * 0.915
+                    # 이미지 좌표로 실세계 좌표 계산
+                    image_points = np.array([[center_x_pixel, center_y_pixel]], dtype=np.float32)
+                    world_points = self.get_object_coordinates(image_points)
+                    
+                    center_x_mm, center_y_mm = world_points[0]
                     
                     print(f"center point : ({center_x_mm:.3f}, {center_y_mm:.3f})")
-                    cv2.putText(image_with_masks, f'Center: ({int(center_x_mm)}, {int(center_y_mm)})', (x1, y1 + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                    cv2.putText(image_with_masks, f'Center: ({int(center_x_mm)}, {int(center_y_mm)})', (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 캡슐 중심 좌표 표시
 
-                cv2.putText(image_with_masks, f'{label}: {prob:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 라벨 및 신뢰도 표시
+                cv2.putText(image_with_masks, f'{label} {prob:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 라벨 및 신뢰도 점수 표시
 
 
                 # ROI 내 capsule 객체 인식 확인
@@ -1905,7 +1916,6 @@ class RobotMain(object):
         time.sleep(0.5)
         code = self._arm.set_servo_angle(angle=[169.6, -8.7, 13.8, 85.8, 93.7, 19.0], speed=self._angle_speed,
                                          mvacc=self._angle_acc, wait=True, radius=10.0)
-        if not self._check_code(code, 'set_servo_angle'): return
 
         self._tcp_speed = 100
         self._tcp_acc = 1000
@@ -2230,15 +2240,13 @@ class RobotMain(object):
 
             time.sleep(1000000)
 
-            code = self._arm.set_servo_angle(angle=[134.5, 4.9, 14.1, 92.9, -80.5, -1.9], speed=self._angle_speed,
-                                            mvacc=self._angle_acc, relative=False, wait=False, radius=0.0)
+            code = self._arm.set_servo_angle(angle=[180, 54.5, 117.5, 180, -77.5, 180], speed=self._angle_speed,
+                                            mvacc=self._angle_acc, relative=True, wait=False, radius=0.0)
             if not self._check_code(code, 'set_servo_angle'): return
 
 
-
-
-            code = self._arm.set_servo_angle(angle=[180, 54.5, 117.5, 180, -77.5, 180], speed=self._angle_speed,
-                                            mvacc=self._angle_acc, relative=True, wait=False, radius=0.0)
+            code = self._arm.set_servo_angle(angle=[178.6, -28.4, 12.3, 95.1, -62.8, -17.8], speed=self._angle_speed,
+                                            mvacc=self._angle_acc, relative=False, wait=False, radius=0.0)
             if not self._check_code(code, 'set_servo_angle'): return
 
             
