@@ -4,7 +4,7 @@ import cv2
 import pymysql
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QStringListModel
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QListView
 from datetime import datetime, timedelta
 from config import confirm_ui_path
@@ -34,6 +34,16 @@ class ConfirmWindow(QMainWindow):
 
         # 가장 최근에 수정된 사용자의 user_ID 가져오기
         self.get_latest_user_info()
+        self.set_background_image('~/RobotArm/ui/pic/purchase_background.png')  # Set your background image path here
+
+    def set_background_image(self, image_path):
+        self.setAutoFillBackground(True)
+        palette = self.palette()
+        pixmap = QPixmap(image_path)
+        scaled_pixmap = pixmap.scaled(self.size(), Qt.IgnoreAspectRatio)
+        palette.setBrush(QPalette.Window, QBrush(scaled_pixmap))
+        self.setPalette(palette)
+
     def load_purchase_record(self):
         try:
             conn = pymysql.connect(**self.db_config)
