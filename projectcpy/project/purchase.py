@@ -4,7 +4,7 @@ import cv2
 import pymysql
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QStringListModel
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QListView
 from datetime import datetime, timedelta
 from config import confirm_ui_path
@@ -34,6 +34,27 @@ class ConfirmWindow(QMainWindow):
 
         # 가장 최근에 수정된 사용자의 user_ID 가져오기
         self.get_latest_user_info()
+        self.set_background_image()  # Set your background image path here
+
+    def set_background_image(self):
+        ui_image_path = "ui/pic"
+        image_path = os.path.join(ui_image_path, "purchase_background.png")
+        if os.path.exists(image_path):
+            # Load the image and resize it to fit the window size
+            pixmap = QPixmap(image_path)
+            scaled_pixmap = pixmap.scaled(self.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+
+            # Set the scaled pixmap as the background
+            palette = QPalette()
+            palette.setBrush(QPalette.Background, QBrush(scaled_pixmap))
+            self.setPalette(palette)
+        else:
+            print(f"Error: Image file {image_path} does not exist.")
+
+    def resizeEvent(self, event):
+        self.set_background_image()
+        super().resizeEvent(event)
+
     def load_purchase_record(self):
         try:
             conn = pymysql.connect(**self.db_config)
