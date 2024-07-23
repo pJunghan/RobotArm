@@ -6,10 +6,9 @@ import tts
 import time
 from datetime import datetime
 from PyQt5 import uic, QtCore
-from PyQt5.QtCore import Qt, QTimer, QRectF
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtCore import Qt, QTimer, QRectF, QSize
+from PyQt5.QtGui import QPixmap, QImage, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QGraphicsScene, QDialog
-
 from face_emotion_age_gender_detect import FaceRecognition
 from menu_window import MenuWindow
 from threading import Thread
@@ -34,11 +33,49 @@ class LoginWindow(QMainWindow):
         self.timer.timeout.connect(self.update_frame)
         self.timer.start(1000 // 30)  # 매 33 밀리초마다 프레임 업데이트 (30 fps)
 
+        # Hide the mileagebtn and orderbtn
+        self.mileagebtn.setVisible(False)
+        self.orderbtn.setVisible(False)
+
         self.orderbtn.clicked.connect(self.handle_guest_login)  # 비회원 로그인 버튼 클릭 시 처리
         self.memberBtn.clicked.connect(self.go_to_new_account_window)  # 회원 가입 버튼 클릭 시 처리
-
+        
         self.scene = QGraphicsScene(self)  # 그래픽 씬 설정
         self.graphicsView.setScene(self.scene)
+        
+        self.set_background_image() # MainWindow에 배경 이미지 설정
+        self.set_member_button_background()  # memberBtn에 배경 이미지 설정
+
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+
+    def set_background_image(self):
+        # 배경 이미지 경로 설정 (상대 경로를 사용)
+        ui_image_path = "ui/pic"
+        image_path = os.path.join(ui_image_path, "login_background.png")
+        if os.path.exists(image_path):
+            self.setStyleSheet(f"QMainWindow {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
+        else:
+            print(f"Error: Image file {image_path} does not exist.")
+
+    def set_member_button_background(self):
+        # 버튼의 hover 상태에서 배경색 변경 및 padding 설정
+        self.memberBtn.setStyleSheet("""
+            QPushButton { padding: 0px; border: none; }
+            QPushButton:hover { background-color: rgba(0, 0, 0, 30); }
+            QPushButton::icon { padding: 0px; }
+        """)
+
+        # 아이콘 이미지 경로 설정 (상대 경로를 사용)
+        ui_image_path = "ui/pic"
+        image_path = os.path.join(ui_image_path, "login_sign_up.png")
+        if os.path.exists(image_path):
+            icon = QIcon(image_path)
+            self.memberBtn.setIcon(icon)
+            button_size = self.memberBtn.size()  # 버튼 크기를 가져옴
+            # 버튼 크기보다 약간 작게 아이콘 크기 설정
+            self.memberBtn.setIconSize(QSize(button_size.width() - 2, button_size.height() - 2))
+        else:
+            print(f"Error: Image file {image_path} does not exist.")
 
     def update_frame(self):
         # 카메라에서 프레임을 가져와서 그래픽 뷰에 업데이트
@@ -52,15 +89,19 @@ class LoginWindow(QMainWindow):
             
             if not pixmap.isNull():
                 self.scene.clear()
-                pixmap = pixmap.scaled(self.graphicsView.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                # graphicsView의 크기를 가져와서 QPixmap 크기를 설정
+                graphicsView_size = self.graphicsView.size()
+                pixmap = pixmap.scaled(graphicsView_size, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
                 pixmap_item = self.scene.addPixmap(pixmap)
                 self.graphicsView.setSceneRect(QRectF(pixmap.rect()))
+                self.graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+                self.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
                 self.check_user()
         else:
             print("Error: Failed to get frame from camera or frame is None.")
 
     def check_user(self):
-    # 얼굴 인식된 사용자가 있으면 로그인 처리
+        # 얼굴 인식된 사용자가 있으면 로그인 처리
         if self.face.known_person:
             self.stop_camera()  # 카메라 동작 중지
             user_id = self.face.known_person
@@ -211,3 +252,10 @@ class LoginWindow(QMainWindow):
 
     def __del__(self):
         del(self.face)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    main = QMainWindow()
+    window = LoginWindow(main)
+    window.show()
+    sys.exit(app.exec_())

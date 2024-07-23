@@ -5,11 +5,12 @@ import socket
 import json
 import time
 from PyQt5 import uic, QtCore
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from threading import Thread
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from login_window import LoginWindow
 from menu_window import MenuWindow
+from PyQt5.QtGui import QMovie, QIcon
 from new_account_window import NewAccountWindow
 from config import main_ui_path, db_config
 
@@ -20,10 +21,44 @@ class MainWindow(QMainWindow):
 
         self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0}
         self.none_data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0}
+        self.movie = QMovie("ui/pic/aris_main.gif")
+        self.label.setMovie(self.movie)
+        self.movie.setScaledSize(self.label.size())
+        self.movie.start()
 
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+
+        # self.orderButton.setGeometry(350, 500, 200, 50)
+
+        self.orderButton.setStyleSheet("""
+            QPushButton {
+                border: 1px solid black;
+                border-radius: 25px; 
+                background-color: #4CAF50;  
+                color: yellow;  
+                padding: 10px; 
+                font-size: 25px; 
+            }
+            QPushButton:hover {
+                background-color: #45a049;  
+            }
+        """)
+        self.autoButton.setStyleSheet("""
+            QPushButton {
+                background-color: transparent; 
+                border: 0px solid black; 
+                color: black; 
+                font-size: 16px; 
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 30); 
+            }
+        """)
+
+        self.autoButton.setIcon(QIcon("ui/pic/aris.png"))
+        self.autoButton.setIconSize(QSize(80,80))
         self.orderButton.clicked.connect(self.go_to_login_window)
         self.autoButton.clicked.connect(self.go_to_auto_order_window)
-        # main.ui가 불려올 때마다 데이터 초기화 함수 실행
         self.update_purchase_count(db_config)
 
     def go_to_login_window(self):
@@ -98,6 +133,9 @@ class MainWindow(QMainWindow):
     def set_data(self, gender = "", age = 20):
         self.data["gender"] = gender
         self.data["age"] = age
+
+    def closeEvent(self, event):
+        pass # 
     
 if __name__ == "__main__":
     app = QApplication(sys.argv)

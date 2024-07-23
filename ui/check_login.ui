@@ -47,14 +47,14 @@
        <string notr="true"/>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600;&quot;&gt;멤버 확인&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600;&quot;&gt;회원 확인&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QGraphicsView" name="user_photo">
       <property name="geometry">
        <rect>
         <x>80</x>
-        <y>60</y>
+        <y>50</y>
         <width>256</width>
         <height>221</height>
        </rect>
@@ -66,14 +66,14 @@
      <widget class="QTextBrowser" name="Name">
       <property name="geometry">
        <rect>
-        <x>85</x>
+        <x>80</x>
         <y>310</y>
         <width>251</width>
         <height>41</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(222, 221, 218);</string>
+       <string notr="true"/>
       </property>
       <property name="html">
        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -86,14 +86,14 @@ p, li { white-space: pre-wrap; }
      <widget class="QTextBrowser" name="Birth">
       <property name="geometry">
        <rect>
-        <x>85</x>
-        <y>380</y>
+        <x>80</x>
+        <y>390</y>
         <width>251</width>
         <height>41</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(222, 221, 218);</string>
+       <string notr="true"/>
       </property>
       <property name="html">
        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -130,6 +130,32 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="text">
        <string>아니요</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>290</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>이름</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>370</y>
+        <width>67</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>연락처</string>
       </property>
      </widget>
     </widget>
