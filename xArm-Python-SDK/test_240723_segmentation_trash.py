@@ -57,6 +57,7 @@ class YOLOMain:
         self.dist = calibration_data['dist']
         self.center_x_mm = None
         self.center_y_mm = None
+        self.cup_detected = False
         # 카메라 열기
         self.webcam = cv2.VideoCapture(0)  # 웹캠 장치 열기
         self.webcam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
@@ -67,9 +68,9 @@ class YOLOMain:
             print("웹캠을 열 수 없습니다. 프로그램을 종료합니다.")  # 오류 메시지 출력
             exit()  # 프로그램 종료
 
-    def update_coordinates(self, x_mm, y_mm):
+    def update_coordinates(self, center_x_mm, center_y_mm):
         # 로봇 인스턴스의 좌표를 설정
-        self.robot.set_center_coordinates(x_mm, y_mm)
+        self.robot.set_center_coordinates(center_x_mm, center_y_mm)
 
     def get_object_coordinates(self, image_points):
         # 물체의 이미지 좌표를 undistort
@@ -150,6 +151,8 @@ class YOLOMain:
             # 원본 이미지에 마스크 오버레이 및 디텍션 박스 표시
             image_with_masks = np.copy(frame)  # 원본 이미지 복사
 
+            self.cup_detected = False  # 매 루프마다 초기화
+
             robot_contours = []
             human_contours = []
 
@@ -177,7 +180,7 @@ class YOLOMain:
                 cv2.rectangle(image_with_masks, (x1, y1), (x2, y2), color, 2)  # 경계 상자 그리기
 
                 # trash mode에 사용
-                self.center_x_mm, self.center_y_mm = world_points[0]
+                
                 if label == 'capsule':  # 'capsule' 객체에 대해서만 중심 좌표 계산 및 출력
                     # center 좌표(pixel)
                     center_x_pixel = (x2 - x1) / 2 + x1
@@ -187,11 +190,11 @@ class YOLOMain:
                     image_points = np.array([[center_x_pixel, center_y_pixel]], dtype=np.float32)
                     world_points = self.get_object_coordinates(image_points)
                     
-                    center_x_mm, center_y_mm = world_points[0]
+                    self.center_x_mm, self.center_y_mm = world_points[0]
                     
-                    print(f"center point : ({center_x_mm:.3f}, {center_y_mm:.3f})")
-                    cv2.putText(image_with_masks, f'Center: ({int(center_x_mm)}, {int(center_y_mm)})', (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 캡슐 중심 좌표 표시
-                    self.robot.set_center_coordinates(self.center_x_mm, self.center_y_mm)
+                    print(f"center point : ({self.center_x_mm:.3f}, {self.center_y_mm:.3f})")
+                    cv2.putText(image_with_masks, f'Center: ({int(self.center_x_mm)}, {int(self.center_y_mm)})', (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 캡슐 중심 좌표 표시
+                    self.robot.set_center_coordinates(self,self.center_x_mm, self.center_y_mm)
                 cv2.putText(image_with_masks, f'{label} {prob:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 라벨 및 신뢰도 점수 표시
 
 
@@ -2156,8 +2159,6 @@ class RobotMain(object):
         center_y_mm = self.center_y_mm
         
         trash_mode_initial = [180, -27.2, 1.8, 180, 48.1, 180] #angle
-        trash_mode_ReadyToTrash = [180, -35, 1, 180, 53, 180] #angle
-        trash_mode_Trashing = [60, -35, 1, 180, 33, 180] #angle
         
         
         self._angle_speed = 100
@@ -2408,14 +2409,27 @@ if __name__ == '__main__':
     robot_main = RobotMain(arm)
     yolo_main = YOLOMain(robot_main)
 
-    # 스레드 생성
-    robot_thread = threading.Thread(target=robot_main.trash_mode)
-    yolo_thread = threading.Thread(target=yolo_main.segmentation)
+    def run_yolo_and_control_robot():
+        # YOLO 스레드 실행
+        yolo_thread = threading.Thread(target=yolo_main.segmentation)
+        yolo_thread.start()
 
-    # 스레드 시작
-    robot_thread.start()
-    yolo_thread.start()
+        # YOLO 스레드가 감지 결과를 반환할 때까지 대기
+        yolo_thread.join() 
 
-    # 스레드가 끝날 때까지 대기
-    robot_thread.join()
-    yolo_thread.join()
+        # 감지 결과에 따라 적절한 모드 선택
+        if yolo_main.is_cup_detected():
+            # 컵 감지 시 trash_mode 실행
+            robot_thread = threading.Thread(target=robot_main.trash_mode)
+        else:
+            # 컵 미감지 시 icecreaming_mode 실행
+            robot_thread = threading.Thread(target=robot_main.icecreaming_mode)
+
+        # 로봇 스레드 시작 및 대기
+        robot_thread.start()
+        robot_thread.join()
+
+    # run_yolo_and_control_robot 함수 실행
+    run_yolo_and_control_robot()
+
+    
