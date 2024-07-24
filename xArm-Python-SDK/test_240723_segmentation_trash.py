@@ -49,17 +49,22 @@ import logging
 class YOLOMain:
     def __init__(self, robot_main):
         # 모델 로드
-        self.model = YOLO('/home/beakhongha/collision_avoidance/train18/weights/best.pt')
+        self.model = YOLO('/home/beakhongha/collision avoidance/train18/weights/best.pt')
 
         # 캘리브레이션 데이터 로드
-        calibration_data = np.load('/home/pjh/RobotArm/camera_calibration/calibration_data.npz')
+        calibration_data = np.load('/home/beakhongha/RobotArm/camera_calibration/calibration_data.npz')
         self.mtx = calibration_data['mtx']
         self.dist = calibration_data['dist']
+<<<<<<< HEAD
         self.center_x_mm = None
         self.center_y_mm = None
         self.cup_detected = False
+=======
+        self.center_x_mm = None ##1
+        self.center_y_mm = None##1
+>>>>>>> 1baea13f7c159059661c834a86a29d2b501ef4b2
         # 카메라 열기
-        self.webcam = cv2.VideoCapture(0)  # 웹캠 장치 열기
+        self.webcam = cv2.VideoCapture(2)  # 웹캠 장치 열기
         self.webcam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
         self.webcam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  # 프레임 높이 설정
         self.robot = robot_main
@@ -68,7 +73,11 @@ class YOLOMain:
             print("웹캠을 열 수 없습니다. 프로그램을 종료합니다.")  # 오류 메시지 출력
             exit()  # 프로그램 종료
 
+<<<<<<< HEAD
     def update_coordinates(self, center_x_mm, center_y_mm):
+=======
+    def update_coordinates(self, x_mm, y_mm):##1
+>>>>>>> 1baea13f7c159059661c834a86a29d2b501ef4b2
         # 로봇 인스턴스의 좌표를 설정
         self.robot.set_center_coordinates(center_x_mm, center_y_mm)
 
@@ -2159,7 +2168,10 @@ class RobotMain(object):
         center_y_mm = self.center_y_mm
         
         trash_mode_initial = [180, -27.2, 1.8, 180, 48.1, 180] #angle
+<<<<<<< HEAD
         
+=======
+>>>>>>> 1baea13f7c159059661c834a86a29d2b501ef4b2
         
         self._angle_speed = 100
         self._angle_acc = 100

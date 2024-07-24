@@ -61,8 +61,9 @@ class YOLOMain:
             print("웹캠을 열 수 없습니다. 프로그램을 종료합니다.")  # 오류 메시지 출력
             exit()  # 프로그램 종료
 
+    """이미지를 입력 받아서 YOLO 모델로 예측 수행"""
     def predict_on_image(self, img, conf):
-        result = self.model(img, conf=conf)[0]
+        result = self.model(img, conf=conf)[0]  # 모델로 예측 수행, 첫 번째 결과만 사용
 
         # Detection
         cls = result.boxes.cls.cpu().numpy() if result.boxes else []  # 클래스, (N, 1)
@@ -74,8 +75,8 @@ class YOLOMain:
         
         return boxes, masks, cls, probs  # 예측 결과 반환
 
+    """이미지에 세그멘테이션 마스크를 오버레이하여 결합된 이미지를 반환"""
     def overlay(self, image, mask, color, alpha=0.5):
-        """이미지와 세그멘테이션 마스크를 결합하여 하나의 이미지를 만듭니다."""
         mask = cv2.resize(mask, (image.shape[1], image.shape[0]))  # 마스크를 이미지 크기로 리사이즈
         colored_mask = np.zeros_like(image, dtype=np.uint8)  # 이미지와 같은 크기의 색 마스크 생성
         for c in range(3):  # BGR 각 채널에 대해
@@ -89,11 +90,12 @@ class YOLOMain:
         else:
             return image  # 유효하지 않으면 원본 이미지 반환
 
+    """마스크에서 외곽선을 찾습니다."""
     def find_contours(self, mask):
-        """마스크에서 외곽선을 찾습니다."""
-        contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        return contours
+        contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # 외곽선 찾기
+        return contours # 외곽선 배열 반환
 
+    # ==================== main ====================
     def segmentation(self):
 
         # YOLO 모델의 로깅 레벨 설정
@@ -1873,9 +1875,7 @@ class RobotMain(object):
 
     def run_robot_test(self):
 
-
-
-        # --------------모드 설정 변수(나중에 방식 변경)--------------
+        # -------------- 모드 설정 --------------
         self.Toping = True
         self.MODE = 'icecreaming'
 
@@ -2063,9 +2063,12 @@ class RobotMain(object):
                 code = self._arm.stop_lite6_gripper()
                 if not self._check_code(code, 'stop_lite6_gripper'):
                     return
+                
+                # -------------- 아이스크림 동작 종류 후 변수 초기화 --------------
                 self.A_ZONE, self.B_ZONE, self.C_ZONE, self.NOT_SEAL = False, False, False, False
                 self.A_ZONE_start_time, self.B_ZONE_start_time, self.C_ZONE_start_time = None, None, None
-                time.sleep(3)   
+                time.sleep(3)
+
             elif self.MODE == 'gritting':
                 self.gritting(gender)
            
