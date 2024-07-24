@@ -53,9 +53,6 @@ class YOLOMain:
         self.model = YOLO('/home/beakhongha/collision avoidance/train18/weights/best.pt')
 
         # 캘리브레이션 데이터 로드
-        calibration_data = np.load('/home/beakhongha/RobotArm/camera_calibration/calibration_data.npz')
-        self.mtx = calibration_data['mtx']
-        self.dist = calibration_data['dist']
         self.detection_duration = 0
         # 변수 초기화
         self.center_x_mm = None
@@ -74,17 +71,40 @@ class YOLOMain:
             print("웹캠을 열 수 없습니다. 프로그램을 종료합니다.")  # 오류 메시지 출력
             exit()  # 프로그램 종료
 
-    def update_coordinates(self, center_x_mm, center_y_mm):##1
-        # 로봇 인스턴스의 좌표를 설정
-        self.robot.set_center_coordinates(center_x_mm, center_y_mm)
+        self.camera_points =  np.array([
+            [118, 210],  # 기준점 1의 카메라 좌표
+            [114, 271],  # 기준점 2의 카메라 좌표
+            [110, 333],  # 기준점 3의 카메라 좌표
+            [480, 210],  # 기준점 4의 카메라 좌표
+            [486, 268],  # 기준점 5의 카메라 좌표
+            [490, 330],  # 기준점 6의 카메라 좌표
+            [424, 267],  # 기준점 7의 카메라 좌표
+            ], dtype=np.float32)
+        
+        self.robot_points = np.array([
+            [300, -101],  # 기준점 1의 로봇 좌표
+            [296, 0.1],  # 기준점 2의 로봇 좌표
+            [298.6, 99.6],  # 기준점 3의 로봇 좌표
+            [-295.4, -96.6],  # 기준점 4의 로봇 좌표
+            [-296, 0.8],  # 기준점 5의 로봇 좌표
+            [-301.5, 96.8],  # 기준점 6의 로봇 좌표
+            [-198, -2.5],  # 기준점 7의 로봇 좌표
+            ], dtype=np.float32)
+        
+        self.H = self.compute_homography_matrix()
 
-    def get_object_coordinates(self, image_points):
-        # 물체의 이미지 좌표를 undistort
-        undistorted_image_points = cv2.undistortPoints(np.expand_dims(image_points, axis=1), self.mtx, self.dist)
-        # Z=0으로 가정하고 실세계 좌표로 변환
-        object_points_3D = cv2.convertPointsToHomogeneous(undistorted_image_points)[:, 0, :]
+    def compute_homography_matrix(self):
+        H, _ = cv2.findHomography(self.camera_points, self.robot_points)
+        print("호모그래피 변환 행렬 H:\n", H)
+        return H
 
-        return object_points_3D[:, :2]  # X, Y 좌표만 반환
+    def transform_to_robot_coordinates(self, image_points):
+        camera_coords = np.array([image_points], dtype=np.float32)
+        camera_coords = np.array([camera_coords])
+        robot_coords = cv2.perspectiveTransform(camera_coords, self.H)
+        # 좌표를 소수점 한 자리로 반올림
+        robot_coords = [round(float(coord), 1) for coord in robot_coords[0][0]]
+        return robot_coords
 
     def predict_on_image(self, img, conf):
         result = self.model(img, conf=conf)[0]
@@ -195,7 +215,7 @@ class YOLOMain:
 
                     # 이미지 좌표로 실세계 좌표 계산
                     image_points = np.array([[center_x_pixel, center_y_pixel]], dtype=np.float32)
-                    world_points = self.get_object_coordinates(image_points)
+                    world_points = self.transform_to_robot_coordinates(image_points)
 
                     self.center_x_mm, self.center_y_mm = world_points[0]
 
@@ -242,8 +262,6 @@ class YOLOMain:
                                 print(f"Capsule detected for {current_time - self.start_time:.2f} seconds")
                                 self.robot.state = "t"
                                 self.start_time = None
-
-
                             else:
                                 # 인식된 시간을 초 단위로 출력
                                 print(f"Capsule detected for {current_time - self.start_time:.2f} seconds")
@@ -405,6 +423,7 @@ class YOLOMain:
 
 
 class RobotMain(object):
+    import 
     """Robot Main Class"""
 
     def __init__(self, robot, **kwargs):
@@ -1707,7 +1726,7 @@ class RobotMain(object):
         print('motion_topping start')
         print('send')
 
-        if Toping:
+        if self.Toping:
             code = self._arm.set_servo_angle(angle=[36.6, -36.7, 21.1, 85.6, 59.4, 44.5], speed=self._angle_speed,
                                                 mvacc=self._angle_acc, wait=True, radius=0.0)
             if not self._check_code(code, 'set_servo_angle'): return
@@ -1851,7 +1870,7 @@ class RobotMain(object):
 
         print('motion_make_icecream start')
 
-        if Toping:
+        if self.Toping:
             time.sleep(4)
         else:
             time.sleep(7)
@@ -2140,9 +2159,9 @@ class RobotMain(object):
         global A_ZONE, B_ZONE, C_ZONE, NOT_SEAL
 
         # --------------모드 설정 변수(나중에 방식 변경)--------------
-        global Toping, MODE
-        Toping = True
-        MODE = 'icecreaming'
+
+        self.Toping = True
+        self.MODE = 'icecreaming'
 
         # --------------카메라 없이 테스트할 때 변수--------------
         A_ZONE = True
@@ -2178,7 +2197,7 @@ class RobotMain(object):
         print('motion_topping start')
         print('send')
 
-        if Toping:
+        if self.Toping:
             code = self._arm.set_position(*self.position_icecream_with_topping, speed=self._tcp_speed,
                                             mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'): return
@@ -2193,7 +2212,7 @@ class RobotMain(object):
 
         print('motion_make_icecream start')
 
-        if Toping:
+        if self.Toping:
             time.sleep(5)
         else:
             time.sleep(8)
@@ -2235,23 +2254,22 @@ class RobotMain(object):
         code = self._arm.set_servo_angle(angle=[180, -95, 25, 186.7, 100, -1.6], speed=self._angle_speed,
                                             mvacc=self._angle_acc, wait=False, radius=0.0)
         if not self._check_code(code, 'set_servo_angle'): return
-
-        # if self.cup_trash_detected == True:
-        #     center_x_mm = self.center_x_mm
-        #     center_y_mm = self.center_y_mm
-        
-
         time.sleep(3)
-
-
+        if self.cup_trash_detected == True:
+            self.trash_mode()
+        else:
+            pass
+            
         # ---------- 오른쪽 탐지 ----------
         code = self._arm.set_servo_angle(angle=[180, 10, 25, 186.7, 75, -1.6], speed=self._angle_speed,
                                             mvacc=self._angle_acc, wait=False, radius=0.0)
         if not self._check_code(code, 'set_servo_angle'): return
-
         time.sleep(3)
-
-        print('trash_check_mode finish')
+        
+        if self.cup_trash_detected == True:
+            self.trash_mode()
+        else:
+            pass
 
 
     def trash_mode(self):
@@ -2513,29 +2531,29 @@ class RobotMain(object):
     # ============================= main =============================
     def run_robot(self):
 
-        global A_ZONE, B_ZONE, C_ZONE, NOT_SEAL                         # ROI 내에서 capsule/capsule_not_label 객체가 인식되었는지 여부
-        global A_ZONE_start_time, B_ZONE_start_time, C_ZONE_start_time  # ROI 내에서 capsule 객체가 몇 초 동안 인식되었는지 여부 확인
-
         # --------------모드 설정 변수(나중에 방식 변경)--------------
-        global Toping, MODE
-        Toping = True
-        MODE = 'icecreaming'
-
+        self.Toping = True
         while self.is_alive:
-            # --------------카메라 없이 테스트할 때 변수--------------
-            # A_ZONE = False
-            # B_ZONE = True
-            # C_ZONE = False
-            # NOT_SEAL = True
+            if self.order_list != []:
+                self.MODE = 'icecreaming'
+                raw_order = self.order_list.pop(0)
+                order = raw_order
 
+            elif self.gritting_list != []:
+                self.MODE = 'gritting'
+                data = self.gritting_list.pop(0)
+                gender = data[0]
+                age = data[1]
+            else:
+                self.MODE = 'ready'
             # Joint Motion
-            if MODE == 'icecreaming':
+            if self.MODE == 'icecreaming':
                 # --------------icecream start--------------------
                 print('icecream start')
                 time.sleep(4)
                 self.motion_home_test()
 
-                while not (A_ZONE or B_ZONE or C_ZONE):  # 캡슐 인식 대기
+                while not (self.A_ZONE or self.B_ZONE or self.C_ZONE):  # 캡슐 인식 대기
                     time.sleep(0.2)
                     print('캡슐 인식 대기중...')
                 time.sleep(2)
@@ -2546,36 +2564,37 @@ class RobotMain(object):
                 count = 0
                 while True:
                     # if sealing_check request arrives or 5sec past
-                    if NOT_SEAL or count >= 3:      # 3초 간 씰 인식
+                    if self.NOT_SEAL or count >= 5:      # 5초 간 씰 인식
                         print('seal check complete')
                         break
                     time.sleep(0.2)
                     count += 0.2
 
-                if NOT_SEAL:
+                if self.NOT_SEAL:
                     self.motion_place_capsule_test()
                     self.motion_grab_cup_test()
-                    self.motion_topping_test()
+                    self.motion_topping_test(order)
                     self.motion_make_icecream_test()
                     self.motion_serve_test()
                     self.motion_trash_capsule_test()
                     self.motion_home_test()
                     print('icecream finish')
-
+                    self.trash_check_mode()
+                    self.motion_home_test()
                 else:
                     self.motion_place_fail_capsule_test()
                     self.motion_home_test()
+                    self.order_list.insert(0, raw_order)
                     print('please take off the seal')
 
                 code = self._arm.stop_lite6_gripper()
                 if not self._check_code(code, 'stop_lite6_gripper'):
                     return
-                
-                # -------------- 동작 종류 후 변수 초기화 --------------
-                A_ZONE, B_ZONE, C_ZONE, NOT_SEAL = False, False, False, False
-                A_ZONE_start_time, B_ZONE_start_time, C_ZONE_start_time = None, None, None
-                time.sleep(2)
-
+                self.A_ZONE, self.B_ZONE, self.C_ZONE, self.NOT_SEAL = False, False, False, False
+                self.A_ZONE_start_time, self.B_ZONE_start_time, self.C_ZONE_start_time = None, None, None
+                time.sleep(3)   
+            elif self.MODE == 'gritting':
+                self.gritting(gender)
 
 if __name__ == '__main__':
     RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
