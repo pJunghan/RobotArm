@@ -57,7 +57,6 @@ class YOLOMain:
         # 변수 초기화
         self.center_x_mm = None
         self.center_y_mm = None
-        self.cup_trash_detected = False
         self.last_cup_center = None
         self.stable_duration = 2 
 
@@ -97,7 +96,10 @@ class YOLOMain:
         H, _ = cv2.findHomography(self.camera_points, self.robot_points)
         print("호모그래피 변환 행렬 H:\n", H)
         return H
-
+    
+    def update_coordinates(self, center_x_mm, center_y_mm):
+        self.robot.set_center_coordinates(center_x_mm,center_y_mm)
+                                          
     def transform_to_robot_coordinates(self, image_points):
         camera_coords = np.array([image_points], dtype=np.float32)
         camera_coords = np.array([camera_coords])
@@ -150,6 +152,7 @@ class YOLOMain:
         A_ZONE, B_ZONE, C_ZONE, NOT_SEAL = False, False, False, False
         A_ZONE_start_time, B_ZONE_start_time, C_ZONE_start_time = None, None, None
         self.start_time = None
+        self.robot.cup_trash_detected = False
 
         # YOLO 모델의 로깅 레벨 설정
         logging.getLogger('ultralytics').setLevel(logging.ERROR)
@@ -176,7 +179,7 @@ class YOLOMain:
                 break  # 루프 종료
 
             # 현재 프레임 예측
-            boxes, masks, cls, probs = self.predict_on_image(frame, conf=0.7)
+            boxes, masks, cls, probs = self.predict_on_image(frame, conf=0.5)
 
             # 원본 이미지에 마스크 오버레이 및 디텍션 박스 표시
             image_with_masks = np.copy(frame)  # 원본 이미지 복사
@@ -214,18 +217,19 @@ class YOLOMain:
                     center_y_pixel = (y2 - y1) / 2 + y1
 
                     # 이미지 좌표로 실세계 좌표 계산
-                    image_points = np.array([[center_x_pixel, center_y_pixel]], dtype=np.float32)
+                    image_points = [center_x_pixel, center_y_pixel]
                     world_points = self.transform_to_robot_coordinates(image_points)
+                    # print(world_points, "::", image_points)
+                    self.center_x_mm = world_points[0]
+                    self.center_y_mm = world_points[1]
 
-                    self.center_x_mm, self.center_y_mm = world_points[0]
-
-                    print(f"center point : ({self.center_x_mm:.3f}, {self.center_y_mm:.3f})")
+                    # print(f"center point : ({self.center_x_mm:.3f}, {self.center_y_mm:.3f})")
                     cv2.putText(image_with_masks, f'Center: ({int(self.center_x_mm)}, {int(self.center_y_mm)})', (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 캡슐 중심 좌표 표시
                     self.update_coordinates(self.center_x_mm, self.center_y_mm)
 
                     # ROI 영역 내에 있는지 확인
-                    roi_x1, roi_y1 = -0.4, -0.17
-                    roi_x2, roi_y2 = 0.4, 0.145
+                    roi_x1, roi_y1 = -400.0, -170.0
+                    roi_x2, roi_y2 = 400.0, 145.0
 
                     # current_time = time.time()
                     
@@ -255,25 +259,33 @@ class YOLOMain:
                             roi_x1 <= self.center_x_mm <= roi_x2 and roi_y1 <= self.center_y_mm <= roi_y2 and 
                             self.distance_between_points((self.center_x_mm, self.center_y_mm), self.last_cup_center) < 10):
 
-                            if self.start_time is None and self.robot.state == "ready":
+
+
+                            if self.start_time is None and self.robot.MODE == "icecreaming":
+                                print("1")
                                 self.start_time = current_time
-                            elif current_time - self.start_time >= self.stable_duration:
-                                self.cup_trash_detected = True
-                                print(f"Capsule detected for {current_time - self.start_time:.2f} seconds")
-                                self.robot.state = "t"
+
+                            elif self.start_time is None:
+                                print("2")
+                                pass
+
+                            elif current_time - self.start_time >= self.stable_duration :
+                                print("3")
+                                self.robot.cup_trash_detected = True
+                                # print(f"Capsule detected for {current_time - self.start_time:.2f} seconds")
                                 self.start_time = None
-                            else:
-                                # 인식된 시간을 초 단위로 출력
-                                print(f"Capsule detected for {current_time - self.start_time:.2f} seconds")
+                                # self.robot.MODE == "icecreaming"
+                            
+                            # else:
+                            #     # 인식된 시간을 초 단위로 출력
+                            #     print(f"Capsule detected for {current_time - self.start_time:.2f} seconds")
                         else:
-                            self.cup_trash_detected = False
                             test = (self.distance_between_points((self.center_x_mm, self.center_y_mm), self.last_cup_center) < 10)
-                            print(f'조건 충족 안함1 {self.center_x_mm is not None} and {self.center_y_mm is not None} and {roi_x1 <= self.center_x_mm <= roi_x2} and {roi_y1 <= self.center_y_mm <= roi_y2} and {test}')
-                            print(roi_x1, self.center_x_mm, roi_x2)
+                            # print(f'조건 충족 안함1 {self.center_x_mm is not None} and {self.center_y_mm is not None} and {roi_x1 <= self.center_x_mm <= roi_x2} and {roi_y1 <= self.center_y_mm <= roi_y2} and {test}')
+                            # print(roi_x1, self.center_x_mm, roi_x2)
                     else:
-                        self.cup_trash_detected = False
                         self.detection_duration = 0  # 인식되지 않으면 시간 초기화
-                        print('조건 충족 안함2')
+                        # print('조건 충족 안함2')
 
                     self.last_cup_center = (self.center_x_mm, self.center_y_mm)
                     # self.last_detection_time = current_time
@@ -423,7 +435,6 @@ class YOLOMain:
 
 
 class RobotMain(object):
-    import 
     """Robot Main Class"""
 
     def __init__(self, robot, **kwargs):
@@ -437,6 +448,7 @@ class RobotMain(object):
         self._funcs = {}
         self._robot_init()
         self.state = 'stopped'
+        self.MODE = "ready"
         self.pressing = False
         self.center_x_mm = None
         self.center_y_mm = None
@@ -464,7 +476,7 @@ class RobotMain(object):
         # 좌표 값을 업데이트
         self.center_x_mm = x_mm
         self.center_y_mm = y_mm
-        print(f"RobotMain received coordinates: ({self.center_x_mm}, {self.center_y_mm})")   # Robot init
+        # print(f"RobotMain received coordinates: ({self.center_x_mm}, {self.center_y_mm})")
 
         # Robot init
     def _robot_init(self):
@@ -2250,30 +2262,47 @@ class RobotMain(object):
 
         print('trash_check_mode start')
 
+        self._angle_speed = 50
+        self._angle_acc = 50
+
+        self._tcp_speed = 50
+        self._tcp_acc = 50
+
         # ---------- 왼쪽 탐지 ----------
         code = self._arm.set_servo_angle(angle=[180, -95, 25, 186.7, 100, -1.6], speed=self._angle_speed,
                                             mvacc=self._angle_acc, wait=False, radius=0.0)
         if not self._check_code(code, 'set_servo_angle'): return
-        time.sleep(3)
+        time.sleep(6)
         if self.cup_trash_detected == True:
+            self.cup_trash_detected = False
             self.trash_mode()
         else:
+            print(self.cup_trash_detected)
             pass
             
+        self._angle_speed = 50
+        self._angle_acc = 50
+
+        self._tcp_speed = 50
+        self._tcp_acc = 50
+        
         # ---------- 오른쪽 탐지 ----------
         code = self._arm.set_servo_angle(angle=[180, 10, 25, 186.7, 75, -1.6], speed=self._angle_speed,
                                             mvacc=self._angle_acc, wait=False, radius=0.0)
         if not self._check_code(code, 'set_servo_angle'): return
-        time.sleep(3)
+        time.sleep(6)
         
         if self.cup_trash_detected == True:
+            self.cup_trash_detected = False
             self.trash_mode()
         else:
+            print(self.cup_trash_detected)
             pass
 
+        
+        
 
     def trash_mode(self):
-
         print('trash_mode start')
 
         # 테스트용 변수선언
@@ -2528,32 +2557,41 @@ class RobotMain(object):
         print('trash_mode finish')
 
 
+
     # ============================= main =============================
     def run_robot(self):
 
         # --------------모드 설정 변수(나중에 방식 변경)--------------
         self.Toping = True
-        while self.is_alive:
-            if self.order_list != []:
-                self.MODE = 'icecreaming'
-                raw_order = self.order_list.pop(0)
-                order = raw_order
+        self.MODE = 'icecreaming'
+        global A_ZONE, B_ZONE, C_ZONE
+        self.A_ZONE, self.B_ZONE, self.C_ZONE = False, False, False
 
-            elif self.gritting_list != []:
-                self.MODE = 'gritting'
-                data = self.gritting_list.pop(0)
-                gender = data[0]
-                age = data[1]
-            else:
-                self.MODE = 'ready'
+        while self.is_alive:
+            # if self.order_list != []:
+            #     self.MODE = 'icecreaming'
+            #     raw_order = self.order_list.pop(0)
+            #     order = raw_order
+
+            # elif self.gritting_list != []:
+            #     self.MODE = 'gritting'
+            #     data = self.gritting_list.pop(0)
+            #     gender = data[0]
+            #     age = data[1]
+            # else:
+            #     self.MODE = 'ready'
             # Joint Motion
             if self.MODE == 'icecreaming':
                 # --------------icecream start--------------------
                 print('icecream start')
                 time.sleep(4)
                 self.motion_home_test()
+                time.sleep(1)
+                self.trash_check_mode()
+                time.sleep(1)
+                self.motion_home_test()
 
-                while not (self.A_ZONE or self.B_ZONE or self.C_ZONE):  # 캡슐 인식 대기
+                while not (A_ZONE or B_ZONE or C_ZONE):  # 캡슐 인식 대기
                     time.sleep(0.2)
                     print('캡슐 인식 대기중...')
                 time.sleep(2)
@@ -2579,8 +2617,6 @@ class RobotMain(object):
                     self.motion_trash_capsule_test()
                     self.motion_home_test()
                     print('icecream finish')
-                    self.trash_check_mode()
-                    self.motion_home_test()
                 else:
                     self.motion_place_fail_capsule_test()
                     self.motion_home_test()
@@ -2592,9 +2628,11 @@ class RobotMain(object):
                     return
                 self.A_ZONE, self.B_ZONE, self.C_ZONE, self.NOT_SEAL = False, False, False, False
                 self.A_ZONE_start_time, self.B_ZONE_start_time, self.C_ZONE_start_time = None, None, None
+                self.start_time = None
                 time.sleep(3)   
             elif self.MODE == 'gritting':
-                self.gritting(gender)
+                self.gritting(gender)           
+
 
 if __name__ == '__main__':
     RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
@@ -2603,7 +2641,7 @@ if __name__ == '__main__':
     yolo_main = YOLOMain(robot_main)
 
     # 스레드 생성
-    robot_thread = threading.Thread(target=robot_main.trash_mode)
+    robot_thread = threading.Thread(target=robot_main.run_robot)
     yolo_thread = threading.Thread(target=yolo_main.segmentation)
 
     # 스레드 시작
