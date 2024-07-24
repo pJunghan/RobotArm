@@ -101,6 +101,10 @@ class YOLOMain:
         # YOLO 모델의 로깅 레벨 설정
         logging.getLogger('ultralytics').setLevel(logging.ERROR)
 
+        # 변수 초기화
+        self.robot.A_ZONE, self.robot.B_ZONE, self.robot.C_ZONE, self.robot.NOT_SEAL = False, False, False, False
+        self.robot.A_ZONE_start_time, self.robot.B_ZONE_start_time, self.robot.C_ZONE_start_time = None, None, None
+
         # 라벨별 색상 정의 (BGR 형식)
         colors = {
             'cup': (0, 255, 0),  # 컵: 녹색
@@ -115,10 +119,6 @@ class YOLOMain:
         # 영구적으로 설정된 ROI 구역
         rois = [(455, 65, 95, 95), (360, 65, 95, 95), (265, 65, 95, 95)]  # A_ZONE, B_ZONE, C_ZONE 순서
         specific_roi = (450, 230, 110, 110)  # Seal check ROI 구역
-
-        # 변수 초기화
-        self.robot.A_ZONE, self.robot.B_ZONE, self.robot.C_ZONE, self.robot.NOT_SEAL = False, False, False, False
-        self.robot.A_ZONE_start_time, self.robot.B_ZONE_start_time, self.robot.C_ZONE_start_time = None, None, None
 
         while True:
             ret, frame = self.webcam.read()  # 웹캠에서 프레임 읽기
