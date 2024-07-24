@@ -116,6 +116,9 @@ class YOLOMain:
         contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         return contours
 
+    def distance_between_points(p1, p2):
+        return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+    
     def segmentation(self):
 
         global A_ZONE, B_ZONE, C_ZONE, NOT_SEAL                         # ROI 내에서 capsule/capsule_not_label 객체가 인식되었는지 여부
@@ -198,7 +201,7 @@ class YOLOMain:
                     current_time = time.time()
                     
                     if self.last_cup_center is not None:
-                        if (center_x_mm, center_y_mm) == self.last_cup_center:
+                        if self.distance_between_points((center_x_mm, center_y_mm), self.last_cup_center) < 1:
                             if self.last_detection_time is not None and (current_time - self.last_detection_time) >= self.stable_duration:
                                 self.cup_trash_detected = True
                         else:
