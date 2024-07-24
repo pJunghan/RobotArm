@@ -17,9 +17,28 @@ import cv2 as cv
 
 
 class CameraRobotTransformer:
-    def __init__(self, camera_points, robot_points):
-        self.camera_points = camera_points
-        self.robot_points = robot_points
+    def __init__(self):
+        # (카메라 좌표계와 로봇 좌표계에서 각각 측정된 좌표)
+        self.camera_points =  np.array([
+            [118, 210],  # 기준점 1의 카메라 좌표
+            [114, 271],  # 기준점 2의 카메라 좌표
+            [110, 333],  # 기준점 3의 카메라 좌표
+            [480, 210],  # 기준점 4의 카메라 좌표
+            [486, 268],  # 기준점 5의 카메라 좌표
+            [490, 330],  # 기준점 6의 카메라 좌표
+            [424, 267],  # 기준점 7의 카메라 좌표
+            ], dtype=np.float32)
+        
+        self.robot_points = np.array([
+        [300, -101],  # 기준점 1의 로봇 좌표
+        [296, 0.1],  # 기준점 2의 로봇 좌표
+        [298.6, 99.6],  # 기준점 3의 로봇 좌표
+        [-295.4, -96.6],  # 기준점 4의 로봇 좌표
+        [-296, 0.8],  # 기준점 5의 로봇 좌표
+        [-301.5, 96.8],  # 기준점 6의 로봇 좌표
+        [-198, -2.5],  # 기준점 7의 로봇 좌표
+            ], dtype=np.float32)
+        
         self.H = self.compute_homography_matrix()
 
     def compute_homography_matrix(self):
@@ -36,28 +55,8 @@ class CameraRobotTransformer:
         return robot_coords
 
 def main():
-    # 예제 기준점 좌표 (카메라 좌표계와 로봇 좌표계에서 각각 측정된 좌표)
-    camera_points = np.array([
-        [118, 210],  # 기준점 1의 카메라 좌표
-        [114, 271],  # 기준점 2의 카메라 좌표
-        [110, 333],  # 기준점 3의 카메라 좌표
-        [480, 210],  # 기준점 4의 카메라 좌표
-        [486, 268],  # 기준점 5의 카메라 좌표
-        [490, 330],  # 기준점 6의 카메라 좌표
-        [424, 267],  # 기준점 7의 카메라 좌표
-    ], dtype=np.float32)
 
-    robot_points = np.array([
-        [300, -101],  # 기준점 1의 로봇 좌표
-        [296, 0.1],  # 기준점 2의 로봇 좌표
-        [298.6, 99.6],  # 기준점 3의 로봇 좌표
-        [-295.4, -96.6],  # 기준점 4의 로봇 좌표
-        [-296, 0.8],  # 기준점 5의 로봇 좌표
-        [-301.5, 96.8],  # 기준점 6의 로봇 좌표
-        [-198, -2.5],  # 기준점 7의 로봇 좌표
-    ], dtype=np.float32)
-
-    transformer = CameraRobotTransformer(camera_points, robot_points)
+    transformer = CameraRobotTransformer()
 
     cap = cv.VideoCapture(0)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
@@ -74,6 +73,7 @@ def main():
             break
 
         # 이미지 좌표를 예시로 설정 (실제로는 물체 검출 알고리즘 필요)
+        # 여기에 카메라로 감지된 바운딩 박스 중심 좌표 설정
         image_points = [500, 300]
 
         # 로봇 좌표계로 변환
