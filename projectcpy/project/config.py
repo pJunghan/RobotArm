@@ -13,6 +13,10 @@ confirm_ui_path = os.path.join(ui_base_path, "purchase.ui")
 manager_ui_path = os.path.join(ui_base_path, "manager.ui")
 order_manage_ui_path = os.path.join(ui_base_path,"manager.ui")
 self_manage_ui_path = os.path.join(ui_base_path, "self_manage.ui")
+
+image_folder = "flavor"
+
+
 check_ui_path = os.path.join(ui_base_path, "check_login.ui")
 check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
 image_folder = os.path.join("projectcpy/flavor")

@@ -167,8 +167,8 @@ class LoginWindow(QMainWindow):
         self.stop_camera()  # 카메라 동작 중지
         guest_name = self.create_guest_user()  # 새로운 비회원 사용자 생성
         if guest_name:
-            self.close()
             self.go_to_menu_window()
+            self.close()
 
     def create_guest_user(self):
         try:

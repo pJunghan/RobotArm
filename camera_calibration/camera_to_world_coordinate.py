@@ -12,12 +12,12 @@ def get_object_coordinates(image_points, mtx, dist):
 
     # 실세계 좌표를 계산
     object_points_3D = cv.convertPointsToHomogeneous(object_points)
-    object_points_3D[:, :, 2] = 0  # Z 값을 0으로 설정
+    object_points_3D[:, :, 2] = -180  # Z 값을 0으로 설정
 
     return object_points_3D
 
 # 웹캠에서 실시간으로 물체 좌표 변환
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(2)
 
 if not cap.isOpened():
     print("웹캠을 열 수 없습니다.")
