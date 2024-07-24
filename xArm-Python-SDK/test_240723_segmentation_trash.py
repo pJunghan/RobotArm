@@ -49,15 +49,15 @@ import logging
 class YOLOMain:
     def __init__(self, robot_main):
         # 모델 로드
-        self.model = YOLO('/home/beakhongha/collision_avoidance/train18/weights/best.pt')
+        self.model = YOLO('/home/beakhongha/collision avoidance/train18/weights/best.pt')
 
         # 캘리브레이션 데이터 로드
-        calibration_data = np.load('/home/pjh/RobotArm/camera_calibration/calibration_data.npz')
+        calibration_data = np.load('/home/beakhongha/RobotArm/camera_calibration/calibration_data.npz')
         self.mtx = calibration_data['mtx']
         self.dist = calibration_data['dist']
 
         # 카메라 열기
-        self.webcam = cv2.VideoCapture(0)  # 웹캠 장치 열기
+        self.webcam = cv2.VideoCapture(2)  # 웹캠 장치 열기
         self.webcam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
         self.webcam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  # 프레임 높이 설정
         self.robot = robot_main
