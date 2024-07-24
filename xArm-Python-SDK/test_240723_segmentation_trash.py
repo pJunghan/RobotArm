@@ -55,8 +55,8 @@ class YOLOMain:
         calibration_data = np.load('/home/beakhongha/RobotArm/camera_calibration/calibration_data.npz')
         self.mtx = calibration_data['mtx']
         self.dist = calibration_data['dist']
-        self.center_x_mm = None
-        self.center_y_mm = None
+        self.center_x_mm = None ##1
+        self.center_y_mm = None##1
         # 카메라 열기
         self.webcam = cv2.VideoCapture(2)  # 웹캠 장치 열기
         self.webcam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
@@ -67,7 +67,7 @@ class YOLOMain:
             print("웹캠을 열 수 없습니다. 프로그램을 종료합니다.")  # 오류 메시지 출력
             exit()  # 프로그램 종료
 
-    def update_coordinates(self, x_mm, y_mm):
+    def update_coordinates(self, x_mm, y_mm):##1
         # 로봇 인스턴스의 좌표를 설정
         self.robot.set_center_coordinates(x_mm, y_mm)
 
@@ -2156,9 +2156,6 @@ class RobotMain(object):
         center_y_mm = self.center_y_mm
         
         trash_mode_initial = [180, -27.2, 1.8, 180, 48.1, 180] #angle
-        trash_mode_ReadyToTrash = [180, -35, 1, 180, 53, 180] #angle
-        trash_mode_Trashing = [60, -35, 1, 180, 33, 180] #angle
-        
         
         self._angle_speed = 100
         self._angle_acc = 100
