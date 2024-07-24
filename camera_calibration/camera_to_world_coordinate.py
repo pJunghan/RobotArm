@@ -17,7 +17,7 @@ def get_object_coordinates(image_points, mtx, dist):
     return object_points_3D
 
 # 웹캠에서 실시간으로 물체 좌표 변환
-cap = cv.VideoCapture(2)
+cap = cv.VideoCapture(0)
 
 if not cap.isOpened():
     print("웹캠을 열 수 없습니다.")
