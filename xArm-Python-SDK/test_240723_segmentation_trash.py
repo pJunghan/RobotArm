@@ -55,7 +55,8 @@ class YOLOMain:
         calibration_data = np.load('/home/pjh/RobotArm/camera_calibration/calibration_data.npz')
         self.mtx = calibration_data['mtx']
         self.dist = calibration_data['dist']
-
+        self.center_x_mm = None
+        self.center_y_mm = None
         # 카메라 열기
         self.webcam = cv2.VideoCapture(0)  # 웹캠 장치 열기
         self.webcam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
@@ -65,6 +66,10 @@ class YOLOMain:
         if not self.webcam.isOpened():  # 웹캠이 열리지 않은 경우
             print("웹캠을 열 수 없습니다. 프로그램을 종료합니다.")  # 오류 메시지 출력
             exit()  # 프로그램 종료
+            
+    def update_coordinates(self, x_mm, y_mm):
+        # 로봇 인스턴스의 좌표를 설정
+        self.robot.set_center_coordinates(x_mm, y_mm)
 
     def get_object_coordinates(self, image_points):
         # 물체의 이미지 좌표를 undistort
@@ -172,7 +177,7 @@ class YOLOMain:
                 cv2.rectangle(image_with_masks, (x1, y1), (x2, y2), color, 2)  # 경계 상자 그리기
 
                 # trash mode에 사용
-                global center_x_mm, center_y_mm
+                self.center_x_mm, self.center_y_mm = world_points[0]
                 if label == 'capsule':  # 'capsule' 객체에 대해서만 중심 좌표 계산 및 출력
                     # center 좌표(pixel)
                     center_x_pixel = (x2 - x1) / 2 + x1
@@ -186,7 +191,7 @@ class YOLOMain:
                     
                     print(f"center point : ({center_x_mm:.3f}, {center_y_mm:.3f})")
                     cv2.putText(image_with_masks, f'Center: ({int(center_x_mm)}, {int(center_y_mm)})', (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 캡슐 중심 좌표 표시
-
+                    self.robot.set_center_coordinates(self.center_x_mm, self.center_y_mm)
                 cv2.putText(image_with_masks, f'{label} {prob:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 라벨 및 신뢰도 점수 표시
 
 
@@ -334,7 +339,6 @@ class YOLOMain:
 
 class RobotMain(object):
     """Robot Main Class"""
-
     def __init__(self, robot, **kwargs):
         self.alive = True
         self._arm = robot
@@ -347,7 +351,8 @@ class RobotMain(object):
         self._robot_init()
         self.state = 'stopped'
         self.pressing = False
-
+        self.center_x_mm = None
+        self.center_y_mm = None
 
         self.position_home = [179.2, -42.1, 7.4, 186.7, 41.5, -1.6] #angle
         self.position_jig_A_grab = [-257.3, -138.3, 198, 68.3, 86.1, -47.0] #linear
@@ -368,7 +373,12 @@ class RobotMain(object):
         self.position_jig_C_serve = [-63.1, -138.2, 199.5, -45.5, 88.1, -112.1] #Linear
         self.position_capsule_grab = [234.2, 129.8, 464.5, -153.7, 87.3, -68.7] #Linear
 
-        # Robot init
+    def set_center_coordinates(self, x_mm, y_mm):
+        # 좌표 값을 업데이트
+        self.center_x_mm = x_mm
+        self.center_y_mm = y_mm
+        print(f"RobotMain received coordinates: ({self.center_x_mm}, {self.center_y_mm})")   # Robot init
+
     def _robot_init(self):
         self._arm.clean_warn()
         self._arm.clean_error()
@@ -742,10 +752,7 @@ class RobotMain(object):
             return
 
     def motion_dance_c(self):  # designed '빙글빙글'
-        try:
-            self.clientSocket.send('dance_c_start'.encode('utf-8'))
-        except:
-            print('socket error')
+        print('socket error')
 
         self._angle_speed = 150
         self._angle_acc = 700
@@ -1542,12 +1549,7 @@ class RobotMain(object):
         if not self._check_code(code, 'set_servo_angle'): return
                 
         code = self._arm.set_servo_angle(angle=[8.4, -32.1, 55.1, 96.6, 29.5, 81.9], speed=self._angle_speed,
-                                         mvacc=self._angle_acc, wait=True, radius=0.0)
-        if not self._check_code(code, 'set_servo_angle'): return
-        
-        code = self._arm.set_position(*self.position_before_capsule_place, speed=self._tcp_speed,
-                                      mvacc=self._tcp_acc, radius=0.0, wait=True)
-        if not self._check_code(code, 'set_position'): return
+                                         mvacc=self._angle_acc, wait=Tru
                 
         code = self._arm.set_position(*self.position_capsule_place, speed=self._tcp_speed,
                                       mvacc=self._tcp_acc, radius=0.0, wait=True)
@@ -2149,10 +2151,9 @@ class RobotMain(object):
     # ==================== trash mode ====================
     def trash_mode(self):
 
-        global center_x_mm, center_y_mm
         # 테스트용 변수선언
-        center_x_mm = -290
-        center_y_mm = -109
+        center_x_mm = self.center_x_mm
+        center_y_mm = self.center_y_mm
         
         trash_mode_initial = [180, -27.2, 1.8, 180, 48.1, 180] #angle
         trash_mode_ReadyToTrash = [180, -35, 1, 180, 53, 180] #angle
