@@ -57,6 +57,25 @@ print("왜곡 계수:\n", dist)
 print("회전 벡터:\n", rvecs)
 print("이동 벡터:\n", tvecs)
 
+# 재프로젝션 에러 계산 및 시각적 확인
+mean_error = 0
+for i in range(len(objpoints)):
+    imgpoints2, _ = cv.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
+    error = cv.norm(imgpoints[i], imgpoints2, cv.NORM_L2) / len(imgpoints2)
+    mean_error += error
+
+    # 실제 이미지와 재프로젝션된 이미지를 비교하여 시각적으로 표시
+    img = cv.imread(images[i])
+    for j in range(len(imgpoints[i])):
+        cv.circle(img, (int(imgpoints[i][j][0][0]), int(imgpoints[i][j][0][1])), 5, (0, 0, 255), -1)  # 실제 이미지 포인트
+        cv.circle(img, (int(imgpoints2[j][0][0]), int(imgpoints2[j][0][1])), 3, (0, 255, 0), -1)  # 재프로젝션된 이미지 포인트
+
+    cv.imshow(f'Reprojection Error - Image {i+1}', img)
+    cv.waitKey(0)
+
+mean_error /= len(objpoints)
+print(f"재프로젝션 에러: {mean_error}")
+
 # 결과 저장
 np.savez('camera_calibration/calibration_data.npz', mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
 
