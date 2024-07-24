@@ -49,27 +49,31 @@ import logging
 class YOLOMain:
     def __init__(self, robot_main):
         # 모델 로드
-        self.model = YOLO('/home/beakhongha/collision avoidance/train18/weights/best.pt')
+        self.model = YOLO('/home/beakhongha/collision_avoidance/train18/weights/best.pt')
 
         # 캘리브레이션 데이터 로드
-        calibration_data = np.load('/home/beakhongha/RobotArm/camera_calibration/calibration_data.npz')
+        calibration_data = np.load('/home/pjh/RobotArm/camera_calibration/calibration_data.npz')
         self.mtx = calibration_data['mtx']
         self.dist = calibration_data['dist']
-        self.center_x_mm = None ##1
-        self.center_y_mm = None##1
+        self.center_x_mm = None
+        self.center_y_mm = None
+        self.cup_trash_detected = False
         # 카메라 열기
-        self.webcam = cv2.VideoCapture(2)  # 웹캠 장치 열기
+        self.webcam = cv2.VideoCapture(0)  # 웹캠 장치 열기
         self.webcam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
         self.webcam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  # 프레임 높이 설정
         self.robot = robot_main
-
+        self.last_cup_center = None
+        self.last_detection_time = None
+        self.stable_duration = 3 
+        
         if not self.webcam.isOpened():  # 웹캠이 열리지 않은 경우
             print("웹캠을 열 수 없습니다. 프로그램을 종료합니다.")  # 오류 메시지 출력
             exit()  # 프로그램 종료
 
-    def update_coordinates(self, x_mm, y_mm):##1
+    def update_coordinates(self, center_x_mm, center_y_mm):
         # 로봇 인스턴스의 좌표를 설정
-        self.robot.set_center_coordinates(x_mm, y_mm)
+        self.robot.set_center_coordinates(center_x_mm, center_y_mm)
 
     def get_object_coordinates(self, image_points):
         # 물체의 이미지 좌표를 undistort
@@ -112,6 +116,9 @@ class YOLOMain:
         contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         return contours
 
+    def distance_between_points(p1, p2):
+        return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+    
     def segmentation(self):
 
         global A_ZONE, B_ZONE, C_ZONE, NOT_SEAL                         # ROI 내에서 capsule/capsule_not_label 객체가 인식되었는지 여부
@@ -150,6 +157,7 @@ class YOLOMain:
             # 원본 이미지에 마스크 오버레이 및 디텍션 박스 표시
             image_with_masks = np.copy(frame)  # 원본 이미지 복사
 
+            self.cup_detected = False  # 매 루프마다 초기화
             robot_contours = []
             human_contours = []
 
@@ -177,21 +185,30 @@ class YOLOMain:
                 cv2.rectangle(image_with_masks, (x1, y1), (x2, y2), color, 2)  # 경계 상자 그리기
 
                 # trash mode에 사용
-                self.center_x_mm, self.center_y_mm = world_points[0]
-                if label == 'capsule':  # 'capsule' 객체에 대해서만 중심 좌표 계산 및 출력
-                    # center 좌표(pixel)
+                
+                if label == 'capsule':
                     center_x_pixel = (x2 - x1) / 2 + x1
                     center_y_pixel = (y2 - y1) / 2 + y1
 
-                    # 이미지 좌표로 실세계 좌표 계산
                     image_points = np.array([[center_x_pixel, center_y_pixel]], dtype=np.float32)
                     world_points = self.get_object_coordinates(image_points)
-                    
+
                     center_x_mm, center_y_mm = world_points[0]
+
+                    cv2.putText(image_with_masks, f'Center: ({int(center_x_mm)}, {int(center_y_mm)})', (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                    self.update_coordinates(center_x_mm, center_y_mm)
+
+                    current_time = time.time()
                     
-                    print(f"center point : ({center_x_mm:.3f}, {center_y_mm:.3f})")
-                    cv2.putText(image_with_masks, f'Center: ({int(center_x_mm)}, {int(center_y_mm)})', (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 캡슐 중심 좌표 표시
-                    self.robot.set_center_coordinates(self.center_x_mm, self.center_y_mm)
+                    if self.last_cup_center is not None:
+                        if self.distance_between_points((center_x_mm, center_y_mm), self.last_cup_center) < 1:
+                            if self.last_detection_time is not None and (current_time - self.last_detection_time) >= self.stable_duration:
+                                self.cup_trash_detected = True
+                        else:
+                            self.last_detection_time = current_time
+
+                    self.last_cup_center = (center_x_mm, center_y_mm)
+                    self.last_detection_time = current_time
                 cv2.putText(image_with_masks, f'{label} {prob:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 라벨 및 신뢰도 점수 표시
 
 
@@ -2157,6 +2174,7 @@ class RobotMain(object):
         
         trash_mode_initial = [180, -27.2, 1.8, 180, 48.1, 180] #angle
         
+        
         self._angle_speed = 100
         self._angle_acc = 100
 
@@ -2326,11 +2344,6 @@ class RobotMain(object):
             code = self._arm.set_servo_angle(angle=self.position_home, speed=self._angle_speed,
                                                     mvacc=self._angle_acc, wait=True, radius=0.0)
             if not self._check_code(code, 'set_servo_angle'): return
-
-        
-
-
-
 
     # ==================== main ====================
     def run_robot(self):
