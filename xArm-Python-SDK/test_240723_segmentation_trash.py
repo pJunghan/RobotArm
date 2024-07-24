@@ -66,7 +66,7 @@ class YOLOMain:
         if not self.webcam.isOpened():  # 웹캠이 열리지 않은 경우
             print("웹캠을 열 수 없습니다. 프로그램을 종료합니다.")  # 오류 메시지 출력
             exit()  # 프로그램 종료
-            
+
     def update_coordinates(self, x_mm, y_mm):
         # 로봇 인스턴스의 좌표를 설정
         self.robot.set_center_coordinates(x_mm, y_mm)
@@ -1549,7 +1549,7 @@ class RobotMain(object):
         if not self._check_code(code, 'set_servo_angle'): return
                 
         code = self._arm.set_servo_angle(angle=[8.4, -32.1, 55.1, 96.6, 29.5, 81.9], speed=self._angle_speed,
-                                         mvacc=self._angle_acc, wait=Tru
+                                         mvacc=self._angle_acc, wait=True)
                 
         code = self._arm.set_position(*self.position_capsule_place, speed=self._tcp_speed,
                                       mvacc=self._tcp_acc, radius=0.0, wait=True)

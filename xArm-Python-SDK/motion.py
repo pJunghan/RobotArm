@@ -1845,8 +1845,6 @@ class RobotMain(object):
         else:
             self._arm.set_state(0)
 
-
-
     # ==================== pause test motion ====================
     def run_robot_pause_test(self):
         self._angle_speed = 10
