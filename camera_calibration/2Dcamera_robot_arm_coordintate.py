@@ -58,7 +58,7 @@ def main():
 
     transformer = CameraRobotTransformer()
 
-    cap = cv.VideoCapture(0)
+    cap = cv.VideoCapture(2)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)  # 프레임 높이 설정
 
@@ -74,7 +74,7 @@ def main():
 
         # 이미지 좌표를 예시로 설정 (실제로는 물체 검출 알고리즘 필요)
         # 여기에 카메라로 감지된 바운딩 박스 중심 좌표 설정
-        image_points = [500, 300]
+        image_points = [182, 209]
 
         # 로봇 좌표계로 변환
         robot_coords = transformer.transform_to_robot_coordinates(image_points)
