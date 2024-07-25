@@ -6,7 +6,7 @@ import tts
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot, QSize, QRectF
 from PyQt5.QtGui import QImage, QPixmap, QIcon
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox, QDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox, QDialog, QTextBrowser
 from purchase import ConfirmWindow  # ConfirmWindow import 추가
 from config import menu_ui_path, db_config, ice_cream_images, topping_images, user_img_path # user_img_path 추가
 from deepface import DeepFace
@@ -104,7 +104,12 @@ class MenuWindow(QMainWindow):
         self.graphicsView_6.mousePressEvent = lambda event: self.item_click_event(event, flavor=None, topping='topping3')
         self.setup_recommendations()
         self.greeting_tts()
-         
+        
+        # QTextBrowser 위젯 참조
+        self.textBrowser_1 = self.findChild(QTextBrowser, "textBrowser_1")
+        self.textBrowser_2 = self.findChild(QTextBrowser, "textBrowser_2")
+        self.textBrowser_3 = self.findChild(QTextBrowser, "textBrowser_3")
+        self.textBrowser_4 = self.findChild(QTextBrowser, "textBrowser_4")
 
     # 0.05초 후에 tts.google_tts_and_play("안녕하세요.") 호출
     def greeting_tts(self):
@@ -148,6 +153,7 @@ class MenuWindow(QMainWindow):
             recommended_flavor
         )
         self.recommendView_1.mousePressEvent = lambda event: self.recommend_item_click_event(event, recommended_flavor, topping_recommendation)
+        self.textBrowser_1.setText("같은 또래와 성별 이용자들이 제일 많이 선택했어요!")
         
         # 토핑 추천을 위한 이미지를 추가합니다.
         self.add_image_to_graphics_view(
@@ -167,7 +173,8 @@ class MenuWindow(QMainWindow):
             historical_recommendation
         )
         self.recommendView_3.mousePressEvent = lambda event: self.recommend_item_click_event(event, historical_recommendation, historical_topping_recommendation)
-
+        self.textBrowser_2.setText("회원님께서는 이 메뉴를 제일 많이 드셨군요!")
+        
         self.add_image_to_graphics_view(
             topping_images[self.topping_flavors.index(historical_topping_recommendation)],
             self.recommendView_7,
@@ -185,6 +192,7 @@ class MenuWindow(QMainWindow):
             inventory_flavor
         )
         self.recommendView_4.mousePressEvent = lambda event: self.recommend_item_click_event(event, inventory_flavor, inventory_topping)
+        self.textBrowser_3.setText("랜덤 조합을 추천해드릴게요!")
         
         self.add_image_to_graphics_view(
             topping_images[self.topping_flavors.index(inventory_topping)],
@@ -213,6 +221,15 @@ class MenuWindow(QMainWindow):
             emotion_topping
         )
         self.recommendView_6.mousePressEvent = lambda event: self.recommend_item_click_event(event, emotion_ice, emotion_topping)
+
+        # 감정에 따른 멘트 설정
+        if emotion_ice == 'choco':
+            self.textBrowser_4.setText("회원님! 초코는 우울한 기분을 좋아지게 해준다고해요. 드셔보시겠어요?")
+        elif emotion_ice == 'strawberry':
+            self.textBrowser_4.setText("회원님! 상큼한 과일이 기분을 더 상쾌하게 해줄꺼에요. 드셔보시겠어요?")
+        elif emotion_ice == 'vanila':
+            self.textBrowser_4.setText("회원님! 바닐라향이 기분을 편안해지게 해줄꺼에요. 드셔보시겠어요?")
+
 
     def get_emotion_recommendations(self, emotion):
         """감정에 따라 추천 아이스크림 및 토핑 반환 메서드"""
@@ -530,3 +547,4 @@ class MenuWindow(QMainWindow):
         main_windows = [win for win in gui_windows if isinstance(win, (ConfirmWindow)) and win.isVisible()]
         if not main_windows:
             self.main.home()
+            
