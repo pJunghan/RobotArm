@@ -23,7 +23,7 @@
       <x>10</x>
       <y>40</y>
       <width>1156</width>
-      <height>471</height>
+      <height>521</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -43,7 +43,7 @@
             }</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -52,8 +52,8 @@
      <widget class="QGraphicsView" name="recommendView_1">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>20</y>
+        <x>30</x>
+        <y>80</y>
         <width>256</width>
         <height>191</height>
        </rect>
@@ -65,8 +65,8 @@
      <widget class="QGraphicsView" name="recommendView_6">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>230</y>
+        <x>310</x>
+        <y>290</y>
         <width>256</width>
         <height>192</height>
        </rect>
@@ -78,8 +78,8 @@
      <widget class="QGraphicsView" name="recommendView_2">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>20</y>
+        <x>310</x>
+        <y>80</y>
         <width>256</width>
         <height>192</height>
        </rect>
@@ -91,8 +91,8 @@
      <widget class="QGraphicsView" name="recommendView_7">
       <property name="geometry">
        <rect>
-        <x>580</x>
-        <y>230</y>
+        <x>590</x>
+        <y>290</y>
         <width>256</width>
         <height>192</height>
        </rect>
@@ -104,8 +104,8 @@
      <widget class="QGraphicsView" name="recommendView_3">
       <property name="geometry">
        <rect>
-        <x>580</x>
-        <y>20</y>
+        <x>590</x>
+        <y>80</y>
         <width>256</width>
         <height>192</height>
        </rect>
@@ -118,7 +118,7 @@
       <property name="geometry">
        <rect>
         <x>870</x>
-        <y>230</y>
+        <y>290</y>
         <width>256</width>
         <height>192</height>
        </rect>
@@ -131,7 +131,7 @@
       <property name="geometry">
        <rect>
         <x>870</x>
-        <y>20</y>
+        <y>80</y>
         <width>256</width>
         <height>192</height>
        </rect>
@@ -143,14 +143,82 @@
      <widget class="QGraphicsView" name="recommendView_5">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>230</y>
+        <x>30</x>
+        <y>290</y>
         <width>256</width>
         <height>191</height>
        </rect>
       </property>
       <property name="styleSheet">
        <string notr="true">border: 2px solid black;  border-radius: 20px; background: white;   </string>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="textBrowser_1">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>20</y>
+        <width>256</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 100 11pt &quot;Ubuntu Condensed&quot;;
+color: black; 
+background-color: #87CEEB; 
+border: 2px solid black;
+border-radius: 10px;</string>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="textBrowser_2">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>20</y>
+        <width>256</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 100 11pt &quot;Ubuntu Condensed&quot;;
+color: black; 
+background-color: #87CEEB; 
+border: 2px solid black;
+border-radius: 10px;</string>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="textBrowser_3">
+      <property name="geometry">
+       <rect>
+        <x>590</x>
+        <y>20</y>
+        <width>256</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 100 11pt &quot;Ubuntu Condensed&quot;;
+color: black; 
+background-color: #87CEEB; 
+border: 2px solid black;
+border-radius: 10px;</string>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="textBrowser_4">
+      <property name="geometry">
+       <rect>
+        <x>870</x>
+        <y>20</y>
+        <width>256</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 100 11pt &quot;Ubuntu Condensed&quot;;
+color: black; 
+background-color: #87CEEB; 
+border: 2px solid black;
+border-radius: 10px;</string>
       </property>
      </widget>
     </widget>
@@ -248,9 +316,9 @@
     <property name="geometry">
      <rect>
       <x>50</x>
-      <y>520</y>
+      <y>580</y>
       <width>741</width>
-      <height>181</height>
+      <height>121</height>
      </rect>
     </property>
    </widget>

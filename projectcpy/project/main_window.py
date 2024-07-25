@@ -7,7 +7,7 @@ import time
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QSize
 from threading import Thread
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTextBrowser
 from login_window import LoginWindow
 from menu_window import MenuWindow
 from PyQt5.QtGui import QMovie, QIcon
