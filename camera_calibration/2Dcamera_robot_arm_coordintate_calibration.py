@@ -25,10 +25,32 @@ import cv2 as cv
 """
 
 class CameraRobotTransformer:
-    def __init__(self, calibration_file, camera_points, robot_points):
-        self.camera_points = camera_points
-        self.robot_points = robot_points
+    def __init__(self, calibration_file):
+        # 카메라 좌표계와 로봇 좌표계에서 각각 측정된 좌표
+        self.camera_points =  np.array([
+            [118, 210],  # 기준점 1의 카메라 좌표
+            [114, 271],  # 기준점 2의 카메라 좌표
+            [110, 333],  # 기준점 3의 카메라 좌표
+            [480, 210],  # 기준점 4의 카메라 좌표
+            [486, 268],  # 기준점 5의 카메라 좌표
+            [490, 330],  # 기준점 6의 카메라 좌표
+            [424, 267],  # 기준점 7의 카메라 좌표
+        ], dtype=np.float32)
+        
+        self.robot_points = np.array([
+            [300, -101],  # 기준점 1의 로봇 좌표
+            [296, 0.1],  # 기준점 2의 로봇 좌표
+            [298.6, 99.6],  # 기준점 3의 로봇 좌표
+            [-295.4, -96.6],  # 기준점 4의 로봇 좌표
+            [-296, 0.8],  # 기준점 5의 로봇 좌표
+            [-301.5, 96.8],  # 기준점 6의 로봇 좌표
+            [-198, -2.5],  # 기준점 7의 로봇 좌표
+        ], dtype=np.float32)
+        
+        # 카메라 보정 데이터를 로드
         self.load_calibration_data(calibration_file)
+        
+        # 호모그래피 변환 행렬을 계산
         self.H = self.compute_homography_matrix()
 
     def load_calibration_data(self, calibration_file):
@@ -42,43 +64,19 @@ class CameraRobotTransformer:
         return H
 
     def transform_to_robot_coordinates(self, image_points):
-
         camera_coords = np.array([image_points], dtype=np.float32)
         camera_coords = np.array([camera_coords])
         robot_coords = cv.perspectiveTransform(camera_coords, self.H)
         
         # 좌표를 소수점 한 자리로 반올림
-        robot_coords = [round(coord, 1) for coord in robot_coords[0][0]]
+        robot_coords = [round(float(coord), 1) for coord in robot_coords[0][0]]
         return robot_coords
 
     def undistort_frame(self, frame):
         return cv.undistort(frame, self.mtx, self.dist)
 
 def main():
-
-    # 예제 기준점 좌표 (카메라 좌표계와 로봇 좌표계에서 각각 측정된 좌표)
-    camera_points = np.array([
-        [118, 210],  # 기준점 1의 카메라 좌표
-        [114, 271],  # 기준점 2의 카메라 좌표
-        [110, 333],  # 기준점 3의 카메라 좌표
-        [480, 210],  # 기준점 4의 카메라 좌표
-        [486, 268],  # 기준점 5의 카메라 좌표
-        [490, 330],  # 기준점 6의 카메라 좌표
-        [424, 267],  # 기준점 7의 카메라 좌표
-
-    ], dtype=np.float32)
-
-    robot_points = np.array([
-        [300, -101],  # 기준점 1의 로봇 좌표
-        [296, 0.1],  # 기준점 2의 로봇 좌표
-        [298.6, 99.6],  # 기준점 3의 로봇 좌표
-        [-295.4, -96.6],  # 기준점 4의 로봇 좌표
-        [-296, 0.8],  # 기준점 5의 로봇 좌표
-        [-301.5, 96.8],  # 기준점 6의 로봇 좌표
-        [-198, -2.5],  # 기준점 7의 로봇 좌표
-    ], dtype=np.float32)
-
-    transformer = CameraRobotTransformer('camera_calibration/calibration_data.npz', camera_points, robot_points)
+    transformer = CameraRobotTransformer('camera_calibration/calibration_data.npz')
 
     cap = cv.VideoCapture(0)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
@@ -94,12 +92,11 @@ def main():
             print("프레임을 가져올 수 없습니다.")
             break
 
-        # undistorted_frame = transformer.undistort_frame(frame)
-        undistorted_frame = frame
-
+        undistorted_frame = transformer.undistort_frame(frame)
+        # undistorted_frame = frame
 
         # 이미지 좌표를 예시로 설정 (실제로는 물체 검출 알고리즘 필요)
-        image_points = [500, 300]
+        image_points = [486, 268]
 
         # 로봇 좌표계로 변환
         robot_coords = transformer.transform_to_robot_coordinates(image_points)
@@ -121,30 +118,7 @@ def main():
     cap.release()
     cv.destroyAllWindows()
 
-def start_webcam():
-    # 웹캠 객체 생성
-    cap = cv.VideoCapture(2)
-    cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
-    cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)  # 프레임 높이 설정
 
-    if not cap.isOpened():
-        print("웹캠을 열 수 없습니다.")
-        return
-
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            print("프레임을 가져올 수 없습니다.")
-            break
-
-        cv.imshow('Webcam', frame)
-
-        # ESC 키를 누르면 종료
-        if cv.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    cap.release()
-    cv.destroyAllWindows()
 
 if __name__ == "__main__":
     main()

@@ -15,7 +15,6 @@ import cv2 as cv
 수집한 좌표를 사용하여 cv.findHomography를 통해 변환 행렬을 계산합니다.
 """
 
-
 class CameraRobotTransformer:
     def __init__(self):
         # (카메라 좌표계와 로봇 좌표계에서 각각 측정된 좌표)
