@@ -74,10 +74,9 @@ class CheckLoginWindow(QDialog):
             QTextBrowser {
                 border: 2px solid #62A0EA;
                 border-radius: 10px;
-                padding: 10px;
-                font-weight: bold;
-                color: rgb(0,255,0);
-                background-color: white;
+                padding: 7px;
+                color: #62A0EA;
+                background-color: rgb(255,255,255);
             }
         """)
         self.Name.setStyleSheet(textBrowser_style)
@@ -99,6 +98,8 @@ class CheckLoginWindow(QDialog):
                 pixmap = pixmap.scaled(self.user_photo.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 self.scene.addPixmap(pixmap)
                 self.user_photo.setSceneRect(QRectF(pixmap.rect()))
+                self.user_photo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+                self.user_photo.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
             else:
                 print("Error: Pixmap is null after conversion.")
         else:
@@ -108,12 +109,12 @@ class CheckLoginWindow(QDialog):
         if user_info is not None and 'name' in user_info and 'birthday' in user_info:
             self.Name.setHtml(f"""
                 <div style="text-align: center;">
-                    <span style="font-size: 12pt; font-weight: bold;">{user_info['name']}</span>
+                    <span style="font-size: 13pt; font-weight: bold;">{user_info['name']}</span>
                 </div>
             """)
             self.Birth.setHtml(f"""
                 <div style="text-align: center;">
-                    <span style="font-size: 12pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
+                    <span style="font-size: 13pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
                 </div>
             """)
         else:
@@ -146,7 +147,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     # 테스트용 사용자 정보 설정
-    user_image_path = "path_to_test_image.jpg"  # 테스트 이미지 경로 설정
+    user_image_path = "projectcpy/user_pic/1.jpeg"  # 테스트 이미지 경로 설정
     user_info = {
         "name": "Test User",
         "birthday": datetime.strptime("1990-01-01", "%Y-%m-%d")

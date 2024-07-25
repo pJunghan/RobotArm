@@ -155,13 +155,6 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = MainWindow()
-    
-    # 화면 크기를 가져와 창의 중앙 위치를 계산
-    screen_geometry = app.desktop().screenGeometry()
-    x = (screen_geometry.width() - main_window.width()) // 2
-    y = (screen_geometry.height() - main_window.height()) // 2
-    main_window.move(x, y)
-
     socket_thread = Thread(target=main_window.socket_run)
     socket_thread.start()
     main_window.show()
