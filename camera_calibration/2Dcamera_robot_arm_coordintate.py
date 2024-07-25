@@ -15,7 +15,6 @@ import cv2 as cv
 수집한 좌표를 사용하여 cv.findHomography를 통해 변환 행렬을 계산합니다.
 """
 
-
 class CameraRobotTransformer:
     def __init__(self):
         # (카메라 좌표계와 로봇 좌표계에서 각각 측정된 좌표)
@@ -74,7 +73,7 @@ def main():
 
         # 이미지 좌표를 예시로 설정 (실제로는 물체 검출 알고리즘 필요)
         # 여기에 카메라로 감지된 바운딩 박스 중심 좌표 설정
-        image_points = [500, 300]
+        image_points = [486, 268]
 
         # 로봇 좌표계로 변환
         robot_coords = transformer.transform_to_robot_coordinates(image_points)
