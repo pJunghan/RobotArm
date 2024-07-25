@@ -389,15 +389,15 @@ class YOLOMain:
             cv2.putText(image_with_masks, f'A_ZONE: {self.robot.A_ZONE}, B_ZONE: {self.robot.B_ZONE}, C_ZONE: {self.robot.C_ZONE}, NOT_SEAL: {self.robot.NOT_SEAL}', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
             # 마스크가 적용된 프레임 표시
-            cv2.imshow("Webcam with Segmentation Masks and Detection Boxes", image_with_masks)
+            # cv2.imshow("Webcam with Segmentation Masks and Detection Boxes", image_with_masks)
 
             # 'q' 키를 누르면 종료
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     break
 
         # 자원 해제
         self.webcam.release()  # 웹캠 장치 해제
-        cv2.destroyAllWindows()  # 모든 OpenCV 창 닫기
+        # cv2.destroyAllWindows()  # 모든 OpenCV 창 닫기
 
 
 
@@ -881,12 +881,12 @@ class RobotMain(object):
 
         print('motion_topping start')
 
-        if order["topping3"] > 0:
+        if self.Toping:
             code = self._arm.set_servo_angle(angle=[36.6, -36.7, 21.1, 85.6, 59.4, 44.5], speed=self._angle_speed,
                                                 mvacc=self._angle_acc, wait=True, radius=0.0)
             if not self._check_code(code, 'set_servo_angle'): return
             
-            if self.C_ZONE:
+            if order["topping3"] > 0:
                 code = self._arm.set_position(*self.position_topping_C, speed=self._tcp_speed,
                                                 mvacc=self._tcp_acc, radius=0.0, wait=True)
                 if not self._check_code(code, 'set_position'): return
@@ -903,10 +903,10 @@ class RobotMain(object):
                 if not self._check_code(code, 'set_pause_time'):
                     return
                 
-                self.pressing = True
-                code = self._arm.set_cgpio_digital(3, 1, delay_sec=0)
-                if not self._check_code(code, 'set_cgpio_digital'):
-                    return
+                # self.pressing = True
+                # code = self._arm.set_cgpio_digital(3, 1, delay_sec=0)
+                # if not self._check_code(code, 'set_cgpio_digital'):
+                #     return
 
                 code = self._arm.set_pause_time(2)
                 if not self._check_code(code, 'set_pause_time'):
@@ -941,10 +941,10 @@ class RobotMain(object):
                 if not self._check_code(code, 'set_pause_time'):
                     return
                 
-                self.pressing = True
-                code = self._arm.set_cgpio_digital(3, 1, delay_sec=0)
-                if not self._check_code(code, 'set_cgpio_digital'):
-                    return
+                # self.pressing = True
+                # code = self._arm.set_cgpio_digital(3, 1, delay_sec=0)
+                # if not self._check_code(code, 'set_cgpio_digital'):
+                #     return
 
                 code = self._arm.set_pause_time(3)
                 if not self._check_code(code, 'set_pause_time'):
@@ -966,7 +966,7 @@ class RobotMain(object):
                                                 mvacc=self._tcp_acc, radius=10.0, wait=False)
                 if not self._check_code(code, 'set_position'): return
 
-            elif order["topping3"] > 0:
+            elif order["topping1"] > 0:
                 code = self._arm.set_position(*self.position_topping_A, speed=self._tcp_speed,
                                                 mvacc=self._tcp_acc, radius=0.0, wait=True)
                 if not self._check_code(code, 'set_position'): return
@@ -977,15 +977,15 @@ class RobotMain(object):
                 
                 code = self._arm.set_pause_time(self.toppingAmount - 1)
                 if not self._check_code(code, 'set_servo_angle'): return
-
+                
                 code = self._arm.set_pause_time(0)
                 if not self._check_code(code, 'set_pause_time'):
                     return
                 
-                self.pressing = True
-                code = self._arm.set_cgpio_digital(3, 1, delay_sec=0)
-                if not self._check_code(code, 'set_cgpio_digital'):
-                    return
+                # self.pressing = True
+                # code = self._arm.set_cgpio_digital(3, 1, delay_sec=0)
+                # if not self._check_code(code, 'set_cgpio_digital'):
+                #     return
                 
                 code = self._arm.set_cgpio_digital(0, 0, delay_sec=0)
                 if not self._check_code(code, 'set_cgpio_digital'):
@@ -1003,21 +1003,38 @@ class RobotMain(object):
                                                 mvacc=self._tcp_acc, radius=10.0, wait=False)
                 if not self._check_code(code, 'set_position'): return
 
-            code = self._arm.set_position(*self.position_icecream_with_topping, speed=self._tcp_speed,
+            # code = self._arm.set_position(*self.position_icecream_with_topping, speed=self._tcp_speed,
+            #                                 mvacc=self._tcp_acc, radius=0.0, wait=True)
+            # if not self._check_code(code, 'set_position'): return
+
+            code = self._arm.set_position(*[232.7, 134.1, 350.1, -22, 82.2, 61.4], speed=self._tcp_speed,
                                             mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'): return
             
         else:
-            self.pressing = True
-            code = self._arm.set_cgpio_digital(3, 1, delay_sec=0)
-            if not self._check_code(code, 'set_cgpio_digital'):
-                return
             code = self._arm.set_servo_angle(angle=self.position_icecream_no_topping, speed=self._angle_speed,
                                                 mvacc=self._angle_acc, wait=True, radius=0.0)
             if not self._check_code(code, 'set_servo_angle'): return
+        self.pressing = True
+        code = self._arm.set_cgpio_digital(3, 1, delay_sec=0)
+        if not self._check_code(code, 'set_cgpio_digital'):
+            return
 
+        code = self._arm.open_lite6_gripper()
+        if not self._check_code(code, 'open_lite6_gripper'):
+            return
+
+        time.sleep(1)
+        code = self._arm.close_lite6_gripper()
+        if not self._check_code(code, 'open_lite6_gripper'):
+            return
+        
+        time.sleep(1)
+        
+        code = self._arm.set_position(z=15, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
+                                      wait=True)
+        if not self._check_code(code, 'set_position'): return
         print('motion_topping finish')
-        time.sleep(0.5)
 
     def motion_make_icecream(self):
 
@@ -1028,12 +1045,12 @@ class RobotMain(object):
         else:
             time.sleep(7)
 
-        time.sleep(4)
+        time.sleep(3.5)
         code = self._arm.set_position(z=-20, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
                                       wait=True)
         if not self._check_code(code, 'set_position'): return
 
-        time.sleep(4)
+        time.sleep(3.5)
         code = self._arm.set_position(z=-10, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
                                       wait=True)
         if not self._check_code(code, 'set_position'): return
@@ -1041,18 +1058,18 @@ class RobotMain(object):
         if not self._check_code(code, 'set_pause_time'):
             return
 
-        code = self._arm.set_position(z=-50, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
-                                      wait=True)
-        if not self._check_code(code, 'set_position'): return
+        # code = self._arm.set_position(z=-50, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
+        #                               wait=True)
+        # if not self._check_code(code, 'set_position'): return
         
-        time.sleep(1)
+        time.sleep(3)
         self.pressing = False
         code = self._arm.set_cgpio_digital(3, 0, delay_sec=0)
         if not self._check_code(code, 'set_cgpio_digital'):
             return
 
         print('motion_make_icecream finish')
-        time.sleep(0.5)
+        time.sleep(3)
 
     def motion_serve(self):
 
