@@ -21,6 +21,8 @@ class GreetingThread(QThread):
         self.gender = gender
         self.name = name
 
+        
+
     def run(self):
         try:
             if self.name.startswith("guest"):
@@ -46,6 +48,14 @@ class MenuWindow(QMainWindow):
         self.menu_items = {}
         uic.loadUi(menu_ui_path, self)  # UI 파일 로드
         self.current_emotion = None
+
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+
+        # 화면 크기를 가져와 창의 중앙 위치를 계산
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
         
         self.setStyleSheet("""
             QMainWindow {

@@ -22,6 +22,15 @@ class OrderManager(QMainWindow):
         self.setup_weather(city, apikey)
         self.setup_buttons()
 
+
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+
+        # 화면 크기를 가져와 창의 중앙 위치를 계산
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
+
     def setup_weather(self, city, apikey):
         try:
             data = self.fetch_weather_data(city, apikey)

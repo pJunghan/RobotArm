@@ -27,6 +27,59 @@ class CheckLoginWindow(QDialog):
         self.user_photo.setScene(self.scene)
 
         self.display_user_info(user_image_path, user_info)
+        
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+
+        # 화면 크기를 가져와 창의 중앙 위치를 계산
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
+        
+        self.customize_ui()
+
+
+    def customize_ui(self):
+        # QFrame에 배경 이미지 설정
+        ui_image_path = "ui/pic"
+        image_path = os.path.join(ui_image_path, "login_background.png")
+        if os.path.exists(image_path):
+            self.frame_2.setStyleSheet(f"QFrame {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
+        else:
+            print(f"Error: Image file {image_path} does not exist.")
+
+        # QPushButton 스타일 설정
+        button_style = """
+            QPushButton {
+                background-color: #62A0EA;
+                border: 2px solid #62A0EA;
+                border-radius: 15px;
+                color: white;
+                font-size: 16pt;
+                font-weight: bold;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #3B82F6;
+            }
+            QPushButton:pressed {
+                background-color: #1D4ED8;
+            }
+        """
+        self.captureButton.setStyleSheet(button_style)
+        self.yesBtn.setStyleSheet(button_style)
+        self.noBtn.setStyleSheet(button_style)
+
+        # QTextBrowser 스타일 설정
+        self.infoTextBrowser.setStyleSheet("""
+            QTextBrowser {
+                border: 2px solid #62A0EA;
+                border-radius: 10px;
+                padding: 10px;
+                font-size: 14pt;
+                background-color: #F0F0F0;
+            }
+        """)
 
 
     def display_user_info(self, user_image_path, user_info):
@@ -82,3 +135,21 @@ class CheckLoginWindow(QDialog):
         main_windows = [win for win in gui_windows if isinstance(win, (MenuWindow, CheckAccountWindow)) and win.isVisible()]
         if not main_windows:
             self.main.home()
+
+
+if __name__ == "__main__":
+    import sys
+    from datetime import datetime
+
+    app = QApplication(sys.argv)
+
+    # 테스트용 사용자 정보 설정
+    user_image_path = "path_to_test_image.jpg"  # 테스트 이미지 경로 설정
+    user_info = {
+        "name": "Test User",
+        "birthday": datetime.strptime("1990-01-01", "%Y-%m-%d")
+    }
+
+    main_window = CheckLoginWindow(user_image_path, user_info)
+    main_window.show()
+    sys.exit(app.exec_())

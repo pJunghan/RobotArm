@@ -16,6 +16,16 @@ class CheckAccountWindow(QDialog):
         self.main = main  # main 속성 추가
         self.checkBtn.clicked.connect(self.check_account)
 
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+
+        # 화면 크기를 가져와 창의 중앙 위치를 계산
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
+
+
+
     def check_account(self):
         phone_num = self.phoneLineEdit.text()
         

@@ -83,3 +83,4 @@ class SelfOrder(QMainWindow):
 
     def closeEvent(self, event):
         self.go_back()
+

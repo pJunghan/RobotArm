@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>800</height>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>MenuWindow</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -164,28 +164,6 @@
      <attribute name="title">
       <string>전체 메뉴</string>
      </attribute>
-     <widget class="QWidget" name="gridLayoutWidget_2">
-      <property name="geometry">
-       <rect>
-        <x>1133</x>
-        <y>9</y>
-        <width>16</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_2"/>
-     </widget>
-     <widget class="QWidget" name="gridLayoutWidget_3">
-      <property name="geometry">
-       <rect>
-        <x>1141</x>
-        <y>9</y>
-        <width>16</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3"/>
-     </widget>
      <widget class="QGraphicsView" name="graphicsView_3">
       <property name="geometry">
        <rect>
@@ -269,10 +247,10 @@
    <widget class="QListView" name="listView">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>580</y>
-      <width>717</width>
-      <height>131</height>
+      <x>50</x>
+      <y>520</y>
+      <width>741</width>
+      <height>181</height>
      </rect>
     </property>
    </widget>
