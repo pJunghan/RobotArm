@@ -3,7 +3,7 @@ import cv2
 import tts
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QRectF, QTimer
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap, QImage, QFont
 from PyQt5.QtWidgets import QDialog, QGraphicsScene
 from config import check_ui_path, user_img_path
 from check_account_window import CheckAccountWindow
@@ -44,7 +44,7 @@ class CheckLoginWindow(QDialog):
         ui_image_path = "ui/pic"
         image_path = os.path.join(ui_image_path, "login_background.png")
         if os.path.exists(image_path):
-            self.frame_2.setStyleSheet(f"QFrame {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
+            self.frame.setStyleSheet(f"QFrame {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
         else:
             print(f"Error: Image file {image_path} does not exist.")
 
@@ -66,20 +66,22 @@ class CheckLoginWindow(QDialog):
                 background-color: #1D4ED8;
             }
         """
-        self.captureButton.setStyleSheet(button_style)
         self.yesBtn.setStyleSheet(button_style)
         self.noBtn.setStyleSheet(button_style)
 
         # QTextBrowser 스타일 설정
-        self.infoTextBrowser.setStyleSheet("""
+        textBrowser_style = ("""
             QTextBrowser {
                 border: 2px solid #62A0EA;
                 border-radius: 10px;
                 padding: 10px;
-                font-size: 14pt;
-                background-color: #F0F0F0;
+                font-weight: bold;
+                color: rgb(0,255,0);
+                background-color: white;
             }
         """)
+        self.Name.setStyleSheet(textBrowser_style)
+        self.Birth.setStyleSheet(textBrowser_style)
 
 
     def display_user_info(self, user_image_path, user_info):
@@ -106,12 +108,12 @@ class CheckLoginWindow(QDialog):
         if user_info is not None and 'name' in user_info and 'birthday' in user_info:
             self.Name.setHtml(f"""
                 <div style="text-align: center;">
-                    <span style="font-size: 14pt; font-weight: bold;">{user_info['name']}</span>
+                    <span style="font-size: 12pt; font-weight: bold;">{user_info['name']}</span>
                 </div>
             """)
             self.Birth.setHtml(f"""
                 <div style="text-align: center;">
-                    <span style="font-size: 14pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
+                    <span style="font-size: 12pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
                 </div>
             """)
         else:
