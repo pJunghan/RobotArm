@@ -74,23 +74,37 @@ class YOLOMain:
 
         # 좌표 변환
         self.camera_points =  np.array([
-            [118, 210],  # 기준점 1의 카메라 좌표
-            [114, 271],  # 기준점 2의 카메라 좌표
-            [110, 333],  # 기준점 3의 카메라 좌표
-            [480, 210],  # 기준점 4의 카메라 좌표
-            [486, 268],  # 기준점 5의 카메라 좌표
-            [490, 330],  # 기준점 6의 카메라 좌표
-            [424, 267],  # 기준점 7의 카메라 좌표
+            [482, 211],  # 기준점 1의 카메라 좌표
+            [487, 268],  # 기준점 2의 카메라 좌표
+            [501, 327],  # 기준점 3의 카메라 좌표
+            [425, 211],  # 기준점 4의 카메라 좌표
+            [428, 268],  # 기준점 5의 카메라 좌표
+            [429, 325],  # 기준점 6의 카메라 좌표
+            [363, 212],  # 기준점 7의 카메라 좌표
+            [366, 267],  # 기준점 8의 카메라 좌표
+            [364, 325],  # 기준점 9의 카메라 좌표
+            [113, 206],  # 기준점 10의 카메라 좌표
+            [179, 208],  # 기준점 11의 카메라 좌표
+            [242, 205],  # 기준점 12의 카메라 좌표
+            [236, 328],  # 기준점 13의 카메라 좌표
+            [232, 265],  # 기준점 14의 카메라 좌표
             ], dtype=np.float32)
         
         self.robot_points = np.array([
-            [300, -101],      # 기준점 1의 로봇 좌표
-            [296, 0.1],       # 기준점 2의 로봇 좌표
-            [298.6, 99.6],    # 기준점 3의 로봇 좌표
-            [-295.4, -96.6],  # 기준점 4의 로봇 좌표
-            [-296, 0.8],      # 기준점 5의 로봇 좌표
-            [-301.5, 96.8],   # 기준점 6의 로봇 좌표
-            [-198, -2.5],     # 기준점 7의 로봇 좌표
+            [-300, -100],   # 기준점 1의 로봇 좌표
+            [-300, 0],      # 기준점 2의 로봇 좌표
+            [-300, 100],    # 기준점 3의 로봇 좌표
+            [-200, -100],   # 기준점 4의 로봇 좌표
+            [-200, 0],      # 기준점 5의 로봇 좌표
+            [-200, 100],    # 기준점 6의 로봇 좌표
+            [-100, -100],   # 기준점 7의 로봇 좌표
+            [-100, 0],      # 기준점 8의 로봇 좌표
+            [-100, 100],    # 기준점 9의 로봇 좌표
+            [300, -100],    # 기준점 10의 로봇 좌표
+            [200,-100],     # 기준점 11의 로봇 좌표
+            [100, -100],    # 기준점 12의 로봇 좌표
+            [100,100],      # 기준점 13의 로봇 좌표
+            [100,0],        # 기준점 14의 로봇 좌표
             ], dtype=np.float32)
         
         self.H = self.compute_homography_matrix()
@@ -1429,6 +1443,8 @@ class RobotMain(object):
             print(self.cup_trash_detected)
             pass
 
+        print('trash_check_mode finish')
+
 
     def trash_mode(self):
 
@@ -1610,7 +1626,7 @@ class RobotMain(object):
                                                     mvacc=self._angle_acc, wait=True, radius=0.0)
             if not self._check_code(code, 'set_servo_angle'): return
 
-            code = self._arm.set_position(*[self.center_x_mm, -173, 307.5, -173, 13.3, -87.6], speed=self._tcp_speed,
+            code = self._arm.set_position(*[self.center_x_mm-20, -173, 307.5, -173, 13.3, -87.6], speed=self._tcp_speed,
                                         mvacc=self._tcp_acc, radius=0.0, wait=True)
             if not self._check_code(code, 'set_position'): return
 
@@ -1638,7 +1654,7 @@ class RobotMain(object):
                                             wait=True)
             if not self._check_code(code, 'set_position'): return
 
-            if self.center_y_mm >= 0:
+            if self.center_y_mm >= -10:
                 code = self._arm.set_position(y=self.center_y_mm, radius=-1, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
                                             wait=True)
                 if not self._check_code(code, 'set_position'): return
@@ -1704,6 +1720,8 @@ class RobotMain(object):
                 print('icecream start')
                 time.sleep(4)
                 self.motion_home()
+
+                self.trash_check_mode()
 
                 while not (self.A_ZONE or self.B_ZONE or self.C_ZONE):  # 캡슐 인식 대기
                     time.sleep(0.2)
