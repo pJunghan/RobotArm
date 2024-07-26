@@ -78,7 +78,7 @@ class CameraRobotTransformer:
 def main():
     transformer = CameraRobotTransformer('camera_calibration/calibration_data.npz')
 
-    cap = cv.VideoCapture(0)
+    cap = cv.VideoCapture(2)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)  # 프레임 너비 설정
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)  # 프레임 높이 설정
 
