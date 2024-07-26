@@ -6,9 +6,10 @@ import time
 from PyQt5 import uic, QtCore, QtGui
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox, QGraphicsScene
+from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox, QGraphicsScene,  QMainWindow
 from menu_window import MenuWindow
-from config import kiosk_ui_path, user_img_path
+from config import kiosk_ui_path, user_img_path, db_config
+
 
 class KioskWindow(QDialog):
     def __init__(self, db_config, main):
@@ -31,6 +32,44 @@ class KioskWindow(QDialog):
         self.scene = QGraphicsScene()
         self.graphicsView.setScene(self.scene)
 
+        self.customize_ui()
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+
+        # 화면 크기를 가져와 창의 중앙 위치를 계산
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
+
+    def customize_ui(self):
+        # QFrame에 배경 이미지 설정
+        ui_image_path = "ui/pic"
+        image_path = os.path.join(ui_image_path, "login_background.png")
+        if os.path.exists(image_path):
+            self.frame_2.setStyleSheet(f"QFrame {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
+        else:
+            print(f"Error: Image file {image_path} does not exist.")
+
+
+        # QPushButton 스타일 설정
+        self.captureButton.setStyleSheet("""
+            QPushButton {
+                background-color: #62A0EA;
+                border: 2px solid #62A0EA;
+                border-radius: 15px;
+                color: white;
+                font-size: 16pt;
+                font-weight: bold;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #3B82F6;
+            }
+            QPushButton:pressed {
+                background-color: #1D4ED8;
+            }
+        """)
+
     def update_frame(self):
         ret, frame = self.cap.read()
         if ret:
@@ -42,7 +81,11 @@ class KioskWindow(QDialog):
             
             # QGraphicsScene에 pixmap 추가
             self.scene.clear()
-            self.scene.addPixmap(pixmap.scaled(self.graphicsView.size(), Qt.KeepAspectRatio))
+            self.scene.addPixmap(pixmap.scaled(self.graphicsView.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+            self.graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
 
     def capture_image(self):
         try:
@@ -86,4 +129,9 @@ class KioskWindow(QDialog):
         except Exception as e:
             print(f"메뉴 창을 열던 중 에러 발생: {e}")
 
-            
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    main_window = QMainWindow()
+    new_account_window = KioskWindow(db_config, main_window)
+    new_account_window.show()
+    sys.exit(app.exec_())

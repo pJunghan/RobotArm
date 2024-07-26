@@ -35,6 +35,14 @@ class ConfirmWindow(QMainWindow):
         # 가장 최근에 수정된 사용자의 user_ID 가져오기
         self.get_latest_user_info()
         self.set_background_image()  # Set your background image path here
+        
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+
+        # 화면 크기를 가져와 창의 중앙 위치를 계산
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
 
     def set_background_image(self):
         ui_image_path = "ui/pic"
@@ -314,3 +322,35 @@ class ConfirmWindow(QMainWindow):
     def closeEvent(self, event):
         event.accept()
         self.main.home()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    db_config = {
+        'host': 'localhost',
+        'user': 'your_user',
+        'password': 'your_password',
+        'db': 'your_database',
+        'charset': 'utf8mb4',
+        'cursorclass': pymysql.cursors.DictCursor,
+    }
+    item_click_count = {
+        'choco': 1,
+        'vanila': 2,
+        'strawberry': 1,
+        'topping1': 3,
+        'topping2': 2,
+        'topping3': 1
+    }
+    purchase_list = [
+        "choco: 1개 - 3000원",
+        "vanila: 2개 - 6000원",
+        "strawberry: 1개 - 3000원",
+        "topping1: 3개 - 3000원",
+        "topping2: 2개 - 2000원",
+        "topping3: 1개 - 1000원"
+    ]
+
+    main_window = QMainWindow()
+    confirm_window = ConfirmWindow(db_config, item_click_count, purchase_list, main_window)
+    confirm_window.show()
+    sys.exit(app.exec_())

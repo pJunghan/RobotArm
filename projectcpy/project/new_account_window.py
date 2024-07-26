@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QMessageBox
+from PyQt5.QtWidgets import QDialog, QMessageBox, QFrame
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt
 import pymysql
@@ -6,6 +6,8 @@ from kiosk_window import KioskWindow
 import re
 from datetime import datetime
 from PyQt5.QtWidgets import QApplication, QMainWindow
+import sys, os
+from config import db_config, new_account_ui_path, user_img_path, check_ui_path
 
 class NewAccountWindow(QDialog):  # Inherit from QDialog
     def __init__(self, ui_path, db_config, main):
@@ -17,6 +19,87 @@ class NewAccountWindow(QDialog):  # Inherit from QDialog
         self.signupBtn.clicked.connect(self.save_user_info)  # Correct button name
         self.checkMale.stateChanged.connect(self.on_check_gender)
         self.checkFemale.stateChanged.connect(self.on_check_gender)
+        self.customize_ui()
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+        
+        # 화면 크기를 가져와 창의 중앙 위치를 계산
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
+
+    def customize_ui(self):
+
+        # 배경 이미지 설정
+        ui_image_path = "ui/pic"
+        image_path = os.path.join(ui_image_path, "signup_background.png")
+        if os.path.exists(image_path):
+            self.setStyleSheet(f"QDialog {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
+        else:
+            print(f"Error: Image file {image_path} does not exist.")
+
+        # QPushButton 스타일 설정
+        self.signupBtn.setStyleSheet("""
+            QPushButton {
+                background-color: rgb(251, 191, 196);
+                border: 2px solid rgb(251, 191, 196);
+                border-radius: 20px;
+                color: white;
+                font-size: 24px;
+                font-weight: bold;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: rgb(255, 200, 200);
+            }
+            QPushButton:pressed {
+                background-color: rgb(255, 150, 150);
+            }
+        """)
+
+        # QLineEdit 스타일 설정
+        lineedit_style = """
+            QLineEdit {
+                font-size: 12pt;
+                font-weight: bold;
+                padding: 5px;
+                border: 2px solid rgb(160, 207, 198);
+                border-radius: 20px;
+                background-color: white;
+                color: rgb(0, 255, 0);
+            }
+            QLineEdit:focus {
+                border: 2px solid rgb(251, 191, 196);
+            }
+        """
+        self.Name.setStyleSheet(lineedit_style)
+        self.PhoneNumber.setStyleSheet(lineedit_style)
+        self.Birth.setStyleSheet(lineedit_style)
+
+        # QLineEdit 중앙 정렬
+        self.Name.setAlignment(Qt.AlignCenter)
+        self.PhoneNumber.setAlignment(Qt.AlignCenter)
+        self.Birth.setAlignment(Qt.AlignCenter)
+
+        # QCheckBox 스타일 설정
+        checkbox_style = """
+            QCheckBox {
+                font-size: 12pt;
+                color: rgb(255, 255, 0);
+            }
+            QCheckBox::indicator {
+                width: 20px;
+                height: 20px;
+                }
+            }
+        """
+        self.checkMale.setStyleSheet(checkbox_style)
+        self.checkFemale.setStyleSheet(checkbox_style)
+
+
+
+    
+
 
     def on_check_gender(self, state):
         # Update gender based on checkbox state
@@ -117,3 +200,13 @@ class NewAccountWindow(QDialog):  # Inherit from QDialog
         main_windows = [win for win in gui_windows if isinstance(win, (KioskWindow)) and win.isVisible()]
         if not main_windows:
             self.main.home()
+
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    main_window = QMainWindow()
+    ui_path = new_account_ui_path
+    new_account_window = NewAccountWindow(ui_path, db_config, main_window)
+    new_account_window.show()
+    sys.exit(app.exec_())

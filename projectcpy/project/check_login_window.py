@@ -3,7 +3,7 @@ import cv2
 import tts
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QRectF, QTimer
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap, QImage, QFont
 from PyQt5.QtWidgets import QDialog, QGraphicsScene
 from config import check_ui_path, user_img_path
 from check_account_window import CheckAccountWindow
@@ -27,6 +27,60 @@ class CheckLoginWindow(QDialog):
         self.user_photo.setScene(self.scene)
 
         self.display_user_info(user_image_path, user_info)
+        
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+
+        # 화면 크기를 가져와 창의 중앙 위치를 계산
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
+        
+        self.customize_ui()
+
+
+    def customize_ui(self):
+        # QFrame에 배경 이미지 설정
+        ui_image_path = "ui/pic"
+        image_path = os.path.join(ui_image_path, "login_background.png")
+        if os.path.exists(image_path):
+            self.frame.setStyleSheet(f"QFrame {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
+        else:
+            print(f"Error: Image file {image_path} does not exist.")
+
+        # QPushButton 스타일 설정
+        button_style = """
+            QPushButton {
+                background-color: #62A0EA;
+                border: 2px solid #62A0EA;
+                border-radius: 15px;
+                color: white;
+                font-size: 16pt;
+                font-weight: bold;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #3B82F6;
+            }
+            QPushButton:pressed {
+                background-color: #1D4ED8;
+            }
+        """
+        self.yesBtn.setStyleSheet(button_style)
+        self.noBtn.setStyleSheet(button_style)
+
+        # QTextBrowser 스타일 설정
+        textBrowser_style = ("""
+            QTextBrowser {
+                border: 2px solid #62A0EA;
+                border-radius: 10px;
+                padding: 7px;
+                color: #62A0EA;
+                background-color: rgb(255,255,255);
+            }
+        """)
+        self.Name.setStyleSheet(textBrowser_style)
+        self.Birth.setStyleSheet(textBrowser_style)
 
 
     def display_user_info(self, user_image_path, user_info):
@@ -44,6 +98,8 @@ class CheckLoginWindow(QDialog):
                 pixmap = pixmap.scaled(self.user_photo.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 self.scene.addPixmap(pixmap)
                 self.user_photo.setSceneRect(QRectF(pixmap.rect()))
+                self.user_photo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+                self.user_photo.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
             else:
                 print("Error: Pixmap is null after conversion.")
         else:
@@ -53,12 +109,12 @@ class CheckLoginWindow(QDialog):
         if user_info is not None and 'name' in user_info and 'birthday' in user_info:
             self.Name.setHtml(f"""
                 <div style="text-align: center;">
-                    <span style="font-size: 14pt; font-weight: bold;">{user_info['name']}</span>
+                    <span style="font-size: 13pt; font-weight: bold;">{user_info['name']}</span>
                 </div>
             """)
             self.Birth.setHtml(f"""
                 <div style="text-align: center;">
-                    <span style="font-size: 14pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
+                    <span style="font-size: 13pt; font-weight: bold;">{user_info['birthday'].strftime('%Y-%m-%d')}</span>
                 </div>
             """)
         else:
@@ -82,3 +138,21 @@ class CheckLoginWindow(QDialog):
         main_windows = [win for win in gui_windows if isinstance(win, (MenuWindow, CheckAccountWindow)) and win.isVisible()]
         if not main_windows:
             self.main.home()
+
+
+if __name__ == "__main__":
+    import sys
+    from datetime import datetime
+
+    app = QApplication(sys.argv)
+
+    # 테스트용 사용자 정보 설정
+    user_image_path = "projectcpy/user_pic/1.jpeg"  # 테스트 이미지 경로 설정
+    user_info = {
+        "name": "Test User",
+        "birthday": datetime.strptime("1990-01-01", "%Y-%m-%d")
+    }
+
+    main_window = CheckLoginWindow(user_image_path, user_info)
+    main_window.show()
+    sys.exit(app.exec_())

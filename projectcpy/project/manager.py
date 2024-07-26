@@ -16,6 +16,14 @@ class ManagerWindow(QMainWindow):
         self.main = main
         self.mainBtn.clicked.connect(self.go_to_main_window)
         self.orderBtn.clicked.connect(self.show_order_message)  # Connect orderBtn to show_order_message
+        
+        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+
+        # 화면 크기를 가져와 창의 중앙 위치를 계산
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
 
     def go_to_main_window(self):
         self.main.home()
@@ -27,3 +35,5 @@ class ManagerWindow(QMainWindow):
     
     def closeEvent(self, event):
         self.go_to_main_window()
+
+
