@@ -24,6 +24,54 @@ class CheckAccountWindow(QDialog):
         y = (screen_geometry.height() - self.height()) // 2
         self.move(x, y)
 
+        self.customize_ui()
+
+
+
+    def customize_ui(self):
+        # QDialog에 배경 이미지 설정
+        ui_image_path = "ui/pic"
+        image_path = os.path.join(ui_image_path, "check_login_background.png")
+        if os.path.exists(image_path):
+            self.setStyleSheet(f"QDialog {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
+        else:
+            print(f"Error: Image file {image_path} does not exist.")
+
+        # QPushButton 스타일 설정
+        button_style = """
+            QPushButton {
+                background-color: #97d5cd;
+                border: 2px solid #97d5cd;
+                border-radius: 15px;
+                color: white;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #7bc0b9;
+            }
+            QPushButton:pressed {
+                background-color: #68a49f;
+            }
+        """
+        self.checkBtn.setStyleSheet(button_style)
+
+        # QLineEdit 스타일 설정
+        lineedit_style = """
+            QLineEdit {
+                font-size: 11pt;
+                font-weight: bold;
+                padding: 5px;
+                border: 2px solid rgb(160, 207, 198);
+                border-radius: 20px;
+                background-color: white;
+                color: rgb(248,141,164);
+            }
+            QLineEdit:focus {
+                border: 2px solid rgb(251, 191, 196);
+            }
+        """
+        self.phoneLineEdit.setStyleSheet(lineedit_style)
+
 
 
     def check_account(self):
@@ -79,3 +127,11 @@ class CheckAccountWindow(QDialog):
         main_windows = [win for win in gui_windows if isinstance(win, (MenuWindow)) and win.isVisible()]
         if not main_windows:
             self.main.home()
+
+if __name__ == "__main__":
+    import sys
+    app = QApplication(sys.argv)
+    main = None  # main 객체를 None으로 설정
+    window = CheckAccountWindow(main=main)
+    window.show()
+    sys.exit(app.exec_())

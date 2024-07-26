@@ -21,6 +21,14 @@ class ConfirmWindow(QMainWindow):
         self.used_points = 0  # 초기화
         self.db_config = db_config
         self.item_click_count = item_click_count
+
+
+        # 화면 크기를 가져와 창의 중앙 위치를 계산
+        screen_geometry = QApplication.desktop().screenGeometry()
+        x = (screen_geometry.width() - self.width()) // 2
+        y = (screen_geometry.height() - self.height()) // 2
+        self.move(x, y)
+
         
         # Initialize the model and set the list of purchased items
         self.list_model = QStringListModel()
@@ -35,14 +43,11 @@ class ConfirmWindow(QMainWindow):
         # 가장 최근에 수정된 사용자의 user_ID 가져오기
         self.get_latest_user_info()
         self.set_background_image()  # Set your background image path here
+
+        # 커스텀 UI 적용
+        self.customize_ui()
         
         self.setFixedSize(self.size())  # 현재 창 크기로 고정
-
-        # 화면 크기를 가져와 창의 중앙 위치를 계산
-        screen_geometry = QApplication.desktop().screenGeometry()
-        x = (screen_geometry.width() - self.width()) // 2
-        y = (screen_geometry.height() - self.height()) // 2
-        self.move(x, y)
 
     def set_background_image(self):
         ui_image_path = "ui/pic"
@@ -314,6 +319,69 @@ class ConfirmWindow(QMainWindow):
             if 'conn' in locals() and conn.open:
                 conn.close()
                 print("데이터베이스 연결을 닫았습니다.")
+
+
+    def customize_ui(self):
+        # QPushButton 스타일 설정
+        button_style = """
+        QPushButton {
+            background-color: rgb(144, 238, 144);  /* 연두색 배경 */
+            border: 2px solid rgb(144, 238, 144);  /* 연두색 테두리 */
+            border-radius: 15px;
+            color: white;
+            font-size: 20pt;
+            font-weight: bold;
+            padding: 10px;
+        }
+        QPushButton:hover {
+            background-color: rgb(173, 255, 47);  /* 밝은 연두색 배경 */
+        }
+        QPushButton:pressed {
+            background-color: rgb(124, 252, 0);  /* 어두운 연두색 배경 */
+        }
+        """
+        self.UsePointBtn.setStyleSheet(button_style)
+        self.PurchaseBtn.setStyleSheet(button_style)
+        
+        # QTextBrowser 스타일 설정
+        textBrowser_style = ("""
+            QTextBrowser {
+                background-color: rgb(255,255,255);  /* 흰색 배경 */
+                border: 2px solid rgb(255,105,180);  /* 분홍색 테두리 */
+                border-radius: 10px;
+                padding: 7px;
+                font-weight: bold;
+                font-size: 12pt;
+                color: black;
+                text-align: center; /* 가로 정렬을 중앙으로 설정 */
+            }
+            .center-content {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+            }
+        """)
+
+        self.CurrentPoint.setStyleSheet(textBrowser_style)
+        self.DiscountPrice.setStyleSheet(textBrowser_style)
+        self.UsedPoint.setStyleSheet(textBrowser_style)
+        self.TotalPrice.setStyleSheet(textBrowser_style)
+        self.textBrowser_4.setStyleSheet(textBrowser_style)
+
+        # QListView 스타일 설정
+        listView_style = ("""
+            QListView {
+                background-color: rgb(255,255,255);  /* 흰색 배경 */
+                border: 2px solid rgb(255,105,180);  /* 파란색 테두리 */
+                border-radius: 10px;
+                padding: 7px;
+                font-size: 16pt;
+                font-weight: bold;
+                color: black;
+            }
+        """)
+        self.PurchaseList.setStyleSheet(listView_style)
 
     def go_to_main_window(self):
         self.main.home()

@@ -6,13 +6,20 @@ import tts
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import Qt, QThread, QTimer,QStringListModel, pyqtSlot, QSize, QRectF
 from PyQt5.QtGui import QImage, QPixmap, QIcon
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox, QDialog, QTextBrowser
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsPixmapItem, QMessageBox, QDialog, QTextBrowser, QStyledItemDelegate, QStyleOptionViewItem
 from purchase import ConfirmWindow  # ConfirmWindow import 추가
 from config import menu_ui_path, db_config, ice_cream_images, topping_images, user_img_path # user_img_path 추가
 from deepface import DeepFace
 import numpy as np
 from datetime import datetime
 from face_emotion_age_gender_detect import FaceRecognition
+
+
+
+class CenterAlignDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        option.displayAlignment = Qt.AlignCenter
+        super().paint(painter, option, index)
 
 class GreetingThread(QThread):
     def __init__(self, parent, gender, name):
@@ -21,7 +28,6 @@ class GreetingThread(QThread):
         self.gender = gender
         self.name = name
 
-        
 
     def run(self):
         try:
@@ -57,13 +63,6 @@ class MenuWindow(QMainWindow):
         y = (screen_geometry.height() - self.height()) // 2
         self.move(x, y)
         
-        self.setStyleSheet("""
-            QMainWindow {
-                background-image: url('ui/pic/back_ground_menu.png'); 
-                background-repeat: no-repeat;
-                background-position: center; 
-            }
-        """)
 
         self.db_config = db_config
         self.user_id = self.get_latest_user_id()  # 사용자 ID를 가져옴
@@ -78,8 +77,7 @@ class MenuWindow(QMainWindow):
             'topping2': 0,
             'topping3': 0
         }
-        self.Home_Button.setIcon(QIcon("ui/pic/home.png"))
-        self.Home_Button.setIconSize(QSize(80,80))
+
 
         # QStringListModel 초기화
         self.list_model = QStringListModel()
@@ -105,11 +103,83 @@ class MenuWindow(QMainWindow):
         self.setup_recommendations()
         self.greeting_tts()
         
+        # UI 설정
+        self.customize_ui()
+        
+    
+    def customize_ui(self):
+
+        self.setStyleSheet("""
+            QMainWindow {
+                background-image: url('ui/pic/back_ground_menu.png'); 
+                background-repeat: no-repeat;
+                background-position: center; 
+            }
+        """)
+
+        self.Home_Button.setIcon(QIcon("ui/pic/home.png"))
+        self.Home_Button.setIconSize(QSize(80,80))
+
+        # QPushButton 스타일 설정
+        button_style = """
+            QPushButton {
+                background-color: #62A0EA;
+                border: 2px solid #62A0EA;
+                border-radius: 15px;
+                color: white;
+                font-size: 20pt;
+                font-weight: bold;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background-color: #3B82F6;
+            }
+            QPushButton:pressed {
+                background-color: #1D4ED8;
+            }
+        """
+        self.Home_Button.setStyleSheet(button_style)
+        self.Next_Button.setStyleSheet(button_style)
+
         # QTextBrowser 위젯 참조
         self.textBrowser_1 = self.findChild(QTextBrowser, "textBrowser_1")
         self.textBrowser_2 = self.findChild(QTextBrowser, "textBrowser_2")
         self.textBrowser_3 = self.findChild(QTextBrowser, "textBrowser_3")
         self.textBrowser_4 = self.findChild(QTextBrowser, "textBrowser_4")
+
+        # QTextBrowser 스타일 설정
+        textBrowser_style = ("""
+            QTextBrowser {
+                background-color: rgb(255,255,255);
+                border: 2px solid black;
+                border-radius: 10px;
+                padding: 7px;
+                font-weight: bold;
+                font-size: 12pt;
+                color: rgb(0,147,255);
+            }
+        """)
+        self.textBrowser_1.setStyleSheet(textBrowser_style)
+        self.textBrowser_2.setStyleSheet(textBrowser_style)
+        self.textBrowser_3.setStyleSheet(textBrowser_style)
+        self.textBrowser_4.setStyleSheet(textBrowser_style)
+
+        # QListView 스타일 설정
+        listView_style = ("""
+            QListView {
+                background-color: rgb(255,255,255);
+                border: 2px solid black;
+                border-radius: 10px;
+                padding: 7px;
+                font-size: 16pt;
+                font-weight: bold;
+                color: black;
+            }
+        """)
+        self.listView.setStyleSheet(listView_style)
+        self.listView.setItemDelegate(CenterAlignDelegate(self.listView))
+
+
 
     # 0.05초 후에 tts.google_tts_and_play("안녕하세요.") 호출
     def greeting_tts(self):
@@ -441,6 +511,10 @@ class MenuWindow(QMainWindow):
         self.close()
 
     def go_to_purchase_window(self):
+        if not self.list_model.stringList():  # QListView가 비어있는지 확인
+            QMessageBox.warning(self, "선택된 항목 없음", "선택된 아이스크림이나 토핑이 없습니다." "\n하나 이상 선택해주세요.")
+            return
+
         self.update_purchase_record()  # purchase_record_table 업데이트
         # Pass the string list from the model to the ConfirmWindow
         self.confirm_window = ConfirmWindow(self.db_config, self.item_click_count, self.list_model.stringList(), self.main)
@@ -547,4 +621,19 @@ class MenuWindow(QMainWindow):
         main_windows = [win for win in gui_windows if isinstance(win, (ConfirmWindow)) and win.isVisible()]
         if not main_windows:
             self.main.home()
-            
+
+
+if __name__ == "__main__":
+    class CustomMainWindow(QMainWindow):
+        def set_data(self, gender, age):
+            self.gender = gender
+            self.age = age
+
+    app = QApplication(sys.argv)
+    main_window = CustomMainWindow()
+    
+    # Main window 설정 및 보여주기
+    menu_window = MenuWindow(db_config, main_window)
+    menu_window.show()
+    
+    sys.exit(app.exec_())
