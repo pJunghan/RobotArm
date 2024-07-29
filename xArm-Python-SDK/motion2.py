@@ -1417,12 +1417,12 @@ class RobotMain(object):
                                             mvacc=self._angle_acc, wait=False, radius=0.0)
         if not self._check_code(code, 'set_servo_angle'): return
         time.sleep(5)
-        if self.cup_trash_detected == True:
-            self.cup_trash_detected = False
-            self.trash_mode()
-        else:
-            print(self.cup_trash_detected)
-            pass
+        # if self.cup_trash_detected == True:
+        #     self.cup_trash_detected = False
+        #     self.trash_mode()
+        # else:
+        #     print(self.cup_trash_detected)
+        #     pass
             
         self._angle_speed = 50
         self._angle_acc = 50
