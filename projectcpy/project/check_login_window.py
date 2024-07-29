@@ -40,11 +40,11 @@ class CheckLoginWindow(QDialog):
 
 
     def customize_ui(self):
-        # QFrame에 배경 이미지 설정
+        # QDialog에 배경 이미지 설정
         ui_image_path = "ui/pic"
         image_path = os.path.join(ui_image_path, "login_background.png")
         if os.path.exists(image_path):
-            self.frame.setStyleSheet(f"QFrame {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
+            self.setStyleSheet(f"QDialog {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
         else:
             print(f"Error: Image file {image_path} does not exist.")
 
@@ -72,11 +72,11 @@ class CheckLoginWindow(QDialog):
         # QTextBrowser 스타일 설정
         textBrowser_style = ("""
             QTextBrowser {
+                background-color: rgb(255,255,255);
                 border: 2px solid #62A0EA;
                 border-radius: 10px;
                 padding: 7px;
                 color: #62A0EA;
-                background-color: rgb(255,255,255);
             }
         """)
         self.Name.setStyleSheet(textBrowser_style)
