@@ -50,7 +50,7 @@ import logging
 class YOLOMain:
     def __init__(self, robot_main):
         # 모델 로드
-        self.model = YOLO('/home/beakhongha/collision avoidance/train18/weights/best.pt')
+        self.model = YOLO('/home/beakhongha/collision avoidance/train21/weights/best.pt')
  
         # 캘리브레이션 데이터 로드
         calibration_data = np.load('/home/beakhongha/RobotArm/camera_calibration/calibration_data.npz')
@@ -329,7 +329,7 @@ class YOLOMain:
                         self.robot.NOT_SEAL = True
 
                 # Trash mode : ROI 내에 'cup' 객체의 중심좌표가 일정 시간 이상 변동이 없는지 확인
-                if label == 'capsule':  # 'capsule' 객체에 대해서만 중심 좌표 계산 및 출력 """추후 cup으로 교체 예정"""
+                if label == 'cup':  # 'cup' 객체에 대해서만 중심 좌표 계산 및 출력
                     # center 좌표(pixel)
                     center_x_pixel = (x2 - x1) / 2 + x1
                     center_y_pixel = (y2 - y1) / 2 + y1
@@ -338,8 +338,9 @@ class YOLOMain:
                     image_points = [center_x_pixel, center_y_pixel]
                     world_points = self.transform_to_robot_coordinates(image_points)
 
-                    self.center_x_mm = world_points[0]
-                    self.center_y_mm = world_points[1]
+                    if center_y_pixel > 160:
+                        self.center_x_mm = world_points[0]
+                        self.center_y_mm = world_points[1]
 
                     cv2.putText(image_with_masks, f'Center: ({int(self.center_x_mm)}, {int(self.center_y_mm)})', (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 캡슐 중심 좌표 표시
                     self.update_coordinates(self.center_x_mm, self.center_y_mm)
@@ -348,7 +349,7 @@ class YOLOMain:
                     roi_x1, roi_y1 = -400.0, -170.0
                     roi_x2, roi_y2 = 400.0, 145.0
 
-                    current_time = time.time()  # 현재 시간 기록
+                    current_time_trash = time.time()  # 현재 시간 기록
                                         
                     if self.last_cup_center is not None:
                         if (self.center_x_mm is not None and self.center_y_mm is not None and                               # 중심좌표가 존재하면
@@ -356,13 +357,13 @@ class YOLOMain:
                             self.distance_between_points((self.center_x_mm, self.center_y_mm), self.last_cup_center) < 10): # 객체의 중심점이 이동하지 않으면
 
                             if self.robot.trash_detect_start_time is None:
-                                self.robot.trash_detect_start_time = current_time
+                                self.robot.trash_detect_start_time = current_time_trash
                                 print('trash detect start time set')
-                            elif current_time - self.robot.trash_detect_start_time >= 2:  # 2초 이상 ROI 내에 존재하고 중심 좌표 변경 없을 시 쓰레기 탐지
+                            elif current_time_trash - self.robot.trash_detect_start_time >= 1:  # 1초 이상 ROI 내에 존재하고 중심 좌표 변경 없을 시 쓰레기 탐지
                                 self.robot.cup_trash_detected = True
                             else:
                                 # 탐지 시작하고 0초부터 2초까지 단위로 출력
-                                print(f"Capsule detected for {current_time - self.robot.trash_detect_start_time:.2f} seconds")
+                                print(f"Capsule detected for {current_time_trash - self.robot.trash_detect_start_time:.2f} seconds")
                         else:
                             self.robot.trash_detect_start_time = None
                     else:
@@ -1038,14 +1039,14 @@ class RobotMain(object):
         if not self._check_code(code, 'open_lite6_gripper'):
             return
 
-        time.sleep(1)
+        time.sleep(3)
         code = self._arm.close_lite6_gripper()
-        if not self._check_code(code, 'open_lite6_gripper'):
+        if not self._check_code(code, 'close_lite6_gripper'):
             return
         
-        time.sleep(1)
+        time.sleep(2)
         
-        code = self._arm.set_position(z=15, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
+        code = self._arm.set_position(z=10, radius=0, speed=self._tcp_speed, mvacc=self._tcp_acc, relative=True,
                                       wait=True)
         if not self._check_code(code, 'set_position'): return
         print('motion_topping finish')
@@ -1406,6 +1407,16 @@ class RobotMain(object):
 
         print('trash_check_mode start')
 
+        code = self._arm.open_lite6_gripper()
+        if not self._check_code(code, 'open_lite6_gripper'):
+            return
+        
+        time.sleep(2)
+
+        code = self._arm.stop_lite6_gripper()
+        if not self._check_code(code, 'stop_lite6_gripper'):
+            return
+
         self._angle_speed = 50
         self._angle_acc = 50
 
@@ -1718,10 +1729,10 @@ class RobotMain(object):
             # --------------Joint Motion : icecream start--------------------
             if self.MODE == 'icecreaming':
                 print('icecream start')
-                time.sleep(4)
+                time.sleep(2)
                 self.motion_home()
-
                 self.trash_check_mode()
+                self.motion_home()
 
                 while not (self.A_ZONE or self.B_ZONE or self.C_ZONE):  # 캡슐 인식 대기
                     time.sleep(0.2)
