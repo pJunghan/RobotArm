@@ -6,21 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>859</width>
-    <height>648</height>
+    <width>1024</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTextBrowser" name="textBrowser_4">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>50</y>
+      <x>120</x>
+      <y>120</y>
       <width>161</width>
-      <height>81</height>
+      <height>111</height>
      </rect>
     </property>
     <property name="html">
@@ -35,10 +38,10 @@ p, li { white-space: pre-wrap; }
    <widget class="QTextBrowser" name="textBrowser_5">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>170</y>
+      <x>120</x>
+      <y>240</y>
       <width>161</width>
-      <height>81</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="html">
@@ -52,8 +55,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>520</y>
+      <x>670</x>
+      <y>620</y>
       <width>191</width>
       <height>71</height>
      </rect>
@@ -65,8 +68,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>520</y>
+      <x>420</x>
+      <y>620</y>
       <width>171</width>
       <height>71</height>
      </rect>
@@ -78,9 +81,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QTextBrowser" name="textBrowser_3">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>290</y>
-      <width>181</width>
+      <x>160</x>
+      <y>410</y>
+      <width>131</width>
       <height>51</height>
      </rect>
     </property>
@@ -89,15 +92,15 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;초코 발주(추천)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;초코 발주(추천)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="textBrowser_6">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>350</y>
-      <width>181</width>
+      <x>160</x>
+      <y>470</y>
+      <width>141</width>
       <height>51</height>
      </rect>
     </property>
@@ -106,15 +109,15 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;바닐라 발주(추천)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;바닐라 발주(추천)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="textBrowser_7">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>410</y>
-      <width>181</width>
+      <x>160</x>
+      <y>530</y>
+      <width>131</width>
       <height>51</height>
      </rect>
     </property>
@@ -123,14 +126,14 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;딸기 발주(추천)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;딸기 발주(추천)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="ChocoOrder">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>290</y>
+      <x>290</x>
+      <y>410</y>
       <width>181</width>
       <height>51</height>
      </rect>
@@ -139,8 +142,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QTextBrowser" name="VanilaOrder">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>350</y>
+      <x>290</x>
+      <y>470</y>
       <width>181</width>
       <height>51</height>
      </rect>
@@ -149,8 +152,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QTextBrowser" name="StrawberryOrder">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>410</y>
+      <x>290</x>
+      <y>530</y>
       <width>181</width>
       <height>51</height>
      </rect>
@@ -159,9 +162,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QTextBrowser" name="textBrowser_11">
     <property name="geometry">
      <rect>
-      <x>450</x>
-      <y>290</y>
-      <width>181</width>
+      <x>550</x>
+      <y>410</y>
+      <width>141</width>
       <height>51</height>
      </rect>
     </property>
@@ -170,15 +173,15 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;토핑 1 발주(추천)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;토핑 1 발주(추천)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="textBrowser_12">
     <property name="geometry">
      <rect>
-      <x>450</x>
-      <y>350</y>
-      <width>181</width>
+      <x>550</x>
+      <y>470</y>
+      <width>141</width>
       <height>51</height>
      </rect>
     </property>
@@ -187,15 +190,15 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;토핑 2 발주(추천)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;토핑 2 발주(추천)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="textBrowser_13">
     <property name="geometry">
      <rect>
-      <x>450</x>
-      <y>410</y>
-      <width>181</width>
+      <x>550</x>
+      <y>530</y>
+      <width>141</width>
       <height>51</height>
      </rect>
     </property>
@@ -204,15 +207,15 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;토핑 3 발주(추천)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;토핑 3 발주(추천)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="Topping1Order">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>290</y>
-      <width>181</width>
+      <x>690</x>
+      <y>410</y>
+      <width>171</width>
       <height>51</height>
      </rect>
     </property>
@@ -220,9 +223,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QTextBrowser" name="Topping2Order">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>350</y>
-      <width>181</width>
+      <x>690</x>
+      <y>470</y>
+      <width>171</width>
       <height>51</height>
      </rect>
     </property>
@@ -230,9 +233,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QTextBrowser" name="Topping3Order">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>410</y>
-      <width>181</width>
+      <x>690</x>
+      <y>530</y>
+      <width>171</width>
       <height>51</height>
      </rect>
     </property>
@@ -240,8 +243,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QListView" name="listView">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>50</y>
+      <x>300</x>
+      <y>120</y>
       <width>591</width>
       <height>111</height>
      </rect>
@@ -250,8 +253,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QListView" name="listView_2">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>170</y>
+      <x>300</x>
+      <y>240</y>
       <width>591</width>
       <height>101</height>
      </rect>
@@ -260,42 +263,48 @@ p, li { white-space: pre-wrap; }
    <widget class="QTextBrowser" name="textBrowser">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>470</y>
+      <x>0</x>
+      <y>0</y>
       <width>171</width>
       <height>41</height>
      </rect>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustToContents</enum>
     </property>
     <property name="html">
      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;날씨&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="textBrowser_2">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>470</y>
-      <width>191</width>
-      <height>41</height>
+      <x>740</x>
+      <y>0</y>
+      <width>171</width>
+      <height>81</height>
      </rect>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustToContents</enum>
     </property>
     <property name="html">
      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_3">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>520</y>
+      <x>150</x>
+      <y>620</y>
       <width>171</width>
       <height>71</height>
      </rect>
@@ -304,13 +313,52 @@ p, li { white-space: pre-wrap; }
      <string>직접 발주하기</string>
     </property>
    </widget>
+   <widget class="QGraphicsView" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>0</y>
+      <width>111</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustToContents</enum>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_status">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>100</y>
+      <width>391</width>
+      <height>291</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_sales">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>100</y>
+      <width>401</width>
+      <height>291</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>859</width>
+     <width>1024</width>
      <height>22</height>
     </rect>
    </property>

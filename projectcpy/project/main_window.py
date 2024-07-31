@@ -85,6 +85,7 @@ class MainWindow(QMainWindow):
         self.win = OrderManager(self)
         self.win.show()
         self.close()
+        
     def update_purchase_count(self, db_config):
         try:
             # 데이터베이스 연결

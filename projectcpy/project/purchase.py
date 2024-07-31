@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, QStringListModel
 from PyQt5.QtGui import QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QListView
 from datetime import datetime, timedelta
-from config import confirm_ui_path
+from config import confirm_ui_path, db_config
 
 MAX_STOCK = 200
 ICECREAMPRICE = 3000
@@ -390,6 +390,39 @@ class ConfirmWindow(QMainWindow):
     def closeEvent(self, event):
         event.accept()
         self.main.home()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    db_config = {
+        'host': 'localhost',
+        'user': 'your_user',
+        'password': 'your_password',
+        'db': 'your_database',
+        'charset': 'utf8mb4',
+        'cursorclass': pymysql.cursors.DictCursor,
+    }
+    item_click_count = {
+        'choco': 1,
+        'vanila': 2,
+        'strawberry': 1,
+        'topping1': 3,
+        'topping2': 2,
+        'topping3': 1
+    }
+    purchase_list = [
+        "choco: 1개 - 3000원",
+        "vanila: 2개 - 6000원",
+        "strawberry: 1개 - 3000원",
+        "topping1: 3개 - 3000원",
+        "topping2: 2개 - 2000원",
+        "topping3: 1개 - 1000원"
+    ]
+
+    main_window = QMainWindow()
+    confirm_window = ConfirmWindow(db_config, item_click_count, purchase_list, main_window)
+    confirm_window.show()
+    sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
