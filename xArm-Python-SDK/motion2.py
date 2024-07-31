@@ -50,10 +50,10 @@ import logging
 class YOLOMain:
     def __init__(self, robot_main):
         # 모델 로드
-        self.model = YOLO('/home/beakhongha/collision avoidance/train21/weights/best.pt')
+        self.model = YOLO('xArm-Python-SDK/best.pt')
  
         # 캘리브레이션 데이터 로드
-        calibration_data = np.load('/home/beakhongha/RobotArm/camera_calibration/calibration_data.npz')
+        calibration_data = np.load('camera_calibration/calibration_data.npz')
         self.mtx = calibration_data['mtx']
         self.dist = calibration_data['dist']
 
@@ -195,6 +195,10 @@ class YOLOMain:
         rois = [(455, 65, 95, 95), (360, 65, 95, 95), (265, 65, 95, 95)]  # A_ZONE, B_ZONE, C_ZONE 순서
         specific_roi = (450, 230, 110, 110)  # Seal check ROI 구역
 
+        # 'cup' 객체 제외할 ROI 설정 (155, 115, 70, 70)
+        exclude_roi_x1, exclude_roi_y1 = 155, 115
+        exclude_roi_x2, exclude_roi_y2 = 155 + 70, 115 + 70
+
 
         # 카메라 작동
         while True:
@@ -242,6 +246,11 @@ class YOLOMain:
 
                 # 디텍션 박스 및 라벨 표시
                 x1, y1, x2, y2 = map(int, box)  # 박스 좌표 정수형으로 변환
+
+                # 'cup' 객체가 제외할 ROI 내에 있는지 확인
+                if label == 'cup' and (exclude_roi_x1 <= x1 <= exclude_roi_x2 and exclude_roi_y1 <= y1 <= exclude_roi_y2):
+                    continue  # ROI 내에 있으면 스킵
+
                 cv2.rectangle(image_with_masks, (x1, y1), (x2, y2), color, 2)  # 경계 상자 그리기                        
                 cv2.putText(image_with_masks, f'{label} {prob:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 라벨 및 신뢰도 점수 표시
 
@@ -338,9 +347,8 @@ class YOLOMain:
                     image_points = [center_x_pixel, center_y_pixel]
                     world_points = self.transform_to_robot_coordinates(image_points)
 
-                    if center_y_pixel > 160:
-                        self.center_x_mm = world_points[0]
-                        self.center_y_mm = world_points[1]
+                    self.center_x_mm = world_points[0]
+                    self.center_y_mm = world_points[1]
 
                     cv2.putText(image_with_masks, f'Center: ({int(self.center_x_mm)}, {int(self.center_y_mm)})', (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 캡슐 중심 좌표 표시
                     self.update_coordinates(self.center_x_mm, self.center_y_mm)
