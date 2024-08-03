@@ -1,1 +1,2 @@
-# RobotArm 4조 빠삐코
+# RobotArm project
+
