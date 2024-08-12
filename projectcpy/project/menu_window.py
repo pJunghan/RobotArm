@@ -15,11 +15,11 @@ from datetime import datetime
 from face_emotion_age_gender_detect import FaceRecognition
 
 
-
 class CenterAlignDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):
         option.displayAlignment = Qt.AlignCenter
         super().paint(painter, option, index)
+
 
 class GreetingThread(QThread):
     def __init__(self, parent, gender, name):

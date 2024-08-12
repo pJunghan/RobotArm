@@ -10,6 +10,7 @@ from threading import Thread
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTextBrowser
 from login_window import LoginWindow
 from menu_window import MenuWindow
+from order_select_window import Order_Select_Window
 from PyQt5.QtGui import QMovie, QIcon
 from new_account_window import NewAccountWindow
 from config import main_ui_path, db_config
@@ -19,8 +20,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         uic.loadUi(main_ui_path, self)
 
-        self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0}
-        self.none_data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0}
+        self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0, "seat" : 0}
+        self.none_data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0, "seat" : 0}
         self.custom_ui()
 
 
@@ -74,7 +75,7 @@ class MainWindow(QMainWindow):
 
         self.autoButton.setIcon(QIcon("ui/pic/aris.png"))
         self.autoButton.setIconSize(QSize(80,80))
-        self.orderButton.clicked.connect(self.go_to_login_window)
+        self.orderButton.clicked.connect(self.go_to_order_select_window)
         self.autoButton.clicked.connect(self.go_to_auto_order_window)
         self.update_purchase_count(db_config)
 
@@ -82,7 +83,13 @@ class MainWindow(QMainWindow):
         if not hasattr(self, 'login_window'):
             self.login_window = LoginWindow(self)
             self.login_window.show()
-            self.close()  
+            self.close()
+
+    def go_to_order_select_window(self):
+        if not hasattr(self, 'order_select_window'):
+            self.login_window = Order_Select_Window(self)
+            self.login_window.show()
+            self.close() 
 
     def go_to_auto_order_window(self):
         from auto_order import OrderManager
@@ -151,6 +158,7 @@ class MainWindow(QMainWindow):
     def set_data(self, gender = "", age = 20):
         self.data["gender"] = gender
         self.data["age"] = age
+
 
     def closeEvent(self, event):
         pass 

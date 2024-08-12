@@ -3,7 +3,6 @@ import os
 
 # UI 파일 경로
 ui_base_path = "ui"
-gui_img_path = "ui/pic"
 main_ui_path = os.path.join(ui_base_path, "main.ui")
 login_ui_path = os.path.join(ui_base_path, "login.ui")
 menu_ui_path = os.path.join(ui_base_path, "ice_cream_window2.ui")
@@ -13,9 +12,10 @@ confirm_ui_path = os.path.join(ui_base_path, "purchase.ui")
 manager_ui_path = os.path.join(ui_base_path, "manager.ui")
 order_manage_ui_path = os.path.join(ui_base_path,"manager.ui")
 self_manage_ui_path = os.path.join(ui_base_path, "self_manage.ui")
+seat_select_ui_path = os.path.join(ui_base_path, "seat_selection.ui")
+order_select_ui_path = os.path.join(ui_base_path, "order_mode_selector.ui")
 
 image_folder = "flavor"
-
 
 check_ui_path = os.path.join(ui_base_path, "check_login.ui")
 check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
@@ -31,6 +31,10 @@ gender_prototxt = "projectcpy/project/deploy_gender.prototxt"  # 성별 예측 �
 gender_model = "projectcpy/project/gender_net.caffemodel"  # 성별 예측 모델 caffemodel 경로
 tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클라우드 로그인 계정
 
+
+# 배경 이미지 경로
+gui_img_path = "ui/pic"
+seat_select_image_path = os.path.join(gui_img_path, "B103_Drawing.png") # 좌석선택 이미지 도면
 
 db_config = {
     'user': 'junghan',
