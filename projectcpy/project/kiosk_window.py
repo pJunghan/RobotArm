@@ -45,11 +45,12 @@ class KioskWindow(QDialog):
         # QFrame에 배경 이미지 설정
         ui_image_path = "ui/pic"
         image_path = os.path.join(ui_image_path, "login_background.png")
+        
         if os.path.exists(image_path):
             self.frame_2.setStyleSheet(f"QFrame {{background-image: url('{image_path}'); background-repeat: no-repeat; background-position: center;}}")
+        
         else:
             print(f"Error: Image file {image_path} does not exist.")
-
 
         # QPushButton 스타일 설정
         self.captureButton.setStyleSheet("""

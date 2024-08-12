@@ -21,12 +21,20 @@ class MainWindow(QMainWindow):
 
         self.data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0}
         self.none_data = {"topping1" : 0, "topping2" : 0, "topping3" : 0, "gender" : "", "age" : 0}
+        self.custom_ui()
+
+
+    # 화면 구성 설정
+    def custom_ui(self):
+
+        # 메인 창 배경 백그라운드 설정
         self.movie = QMovie("ui/pic/aris_main.gif")
         self.label.setMovie(self.movie)
         self.movie.setScaledSize(self.label.size())
         self.movie.start()
 
-        self.setFixedSize(self.size())  # 현재 창 크기로 고정
+        # 현재 창 크기로 고정
+        self.setFixedSize(self.size())  
 
         # 화면 크기를 가져와 창의 중앙 위치를 계산
         screen_geometry = QApplication.desktop().screenGeometry()
@@ -34,8 +42,7 @@ class MainWindow(QMainWindow):
         y = (screen_geometry.height() - self.height()) // 2
         self.move(x, y)
 
-        # self.orderButton.setGeometry(350, 500, 200, 50)
-
+        # 주문 버튼 스타일 커스텀
         self.orderButton.setStyleSheet("""
             QPushButton {
                 background-color: rgb(251, 191, 196);
@@ -71,14 +78,11 @@ class MainWindow(QMainWindow):
         self.autoButton.clicked.connect(self.go_to_auto_order_window)
         self.update_purchase_count(db_config)
 
-
- 
-
     def go_to_login_window(self):
         if not hasattr(self, 'login_window'):
             self.login_window = LoginWindow(self)
             self.login_window.show()
-            self.close()  # 메인 윈도우를 숨깁니다.
+            self.close()  
 
     def go_to_auto_order_window(self):
         from auto_order import OrderManager
@@ -92,13 +96,13 @@ class MainWindow(QMainWindow):
             conn = pymysql.connect(**db_config)
             cursor = conn.cursor()
 
-
             # 실행할 SQL 쿼리문
             sql_query = """
                 UPDATE purchase_record_table
                 SET choco_count = 0, vanila_count = 0, strawberry_count = 0,
                     topping1_count = 0, topping2_count = 0, topping3_count = 0
                 """
+            
             # 쿼리 실행
             cursor.execute(sql_query)
             conn.commit()
@@ -149,7 +153,7 @@ class MainWindow(QMainWindow):
         self.data["age"] = age
 
     def closeEvent(self, event):
-        pass # 
+        pass 
 
 
 

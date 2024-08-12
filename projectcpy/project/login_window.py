@@ -88,7 +88,6 @@ class LoginWindow(QMainWindow):
             }
         """)
 
-
     def update_frame(self):
         # 카메라에서 프레임을 가져와서 그래픽 뷰에 업데이트
         ret, frame = self.face.get_frame()

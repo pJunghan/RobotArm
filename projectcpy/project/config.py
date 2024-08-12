@@ -35,7 +35,7 @@ tts_account_path = "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클�
 db_config = {
     'user': 'junghan',
     'password': '6488',
-    'host': '172.30.1.12',  # 변경된 IP 주소
+    'host': '172.30.1.90',  # 변경된 IP 주소
     'database': 'order_db',
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor
@@ -53,7 +53,7 @@ db_config = {
 
 
 # db_config = {
-#     'host': '172.30.1.53',      # 데이터베이스 호스트 주소
+#     'host': '172.30.1.57',      # 데이터베이스 호스트 주소
 #     'user': 'user3',        # 사용자 이름
 #     'password': 'test1234',       # 비밀번호
 #     'database': 'order_db',   # 데이터베이스 이름
