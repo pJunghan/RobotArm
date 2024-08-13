@@ -39,7 +39,7 @@ seat_select_image_path = os.path.join(gui_img_path, "B103_Drawing.png") # 좌석
 db_config = {
     'user': 'junghan',
     'password': '6488',
-    'host': '172.30.1.90',  # 변경된 IP 주소
+    'host': '172.30.1.41',  # 변경된 IP 주소
     'database': 'order_db',
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor
