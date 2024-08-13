@@ -138,9 +138,13 @@ class Seat_Selection_Window(QMainWindow):
         # 좌석 선택 시 출력할 메시지 박스
         reply = QMessageBox.question(self, "질문", f"{seat_number}번 좌석을 선택하시겠습니까?", QMessageBox.Yes | QMessageBox.No)
         if reply == QMessageBox.Yes:
+            # 선택한 좌석 번호 저장
             self.main.data["seat"] = int(seat_number)
+
+            # 데이터 저장 확인
             print(self.main.data)
             self.go_to_login_window()
+
 
     def display_image_in_graphics_view(self, image_path):
         try:
@@ -181,7 +185,7 @@ class Seat_Selection_Window(QMainWindow):
 
     def go_to_login_window(self):
         if not hasattr(self, 'login_window'):
-            self.login_window = LoginWindow(self)
+            self.login_window = LoginWindow(self.main)
             self.login_window.show()
             self.close()  
 

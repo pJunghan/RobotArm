@@ -69,7 +69,7 @@ class Order_Select_Window(QDialog):
 
     def go_to_login_window(self):
         if not hasattr(self, 'login_window'):
-            self.login_window = LoginWindow(self)
+            self.login_window = LoginWindow(self.main)
             self.login_window.show()
             self.close()  
 
