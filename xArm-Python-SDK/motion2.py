@@ -31,7 +31,13 @@ import traceback
 import threading
 from xarm import version
 from xarm.wrapper import XArmAPI
-
+import rclpy
+from rclpy.node import Node
+from team4_msgs.srv import PutOnIcecream  # Ensure this import is correct for PutOnIcecream
+from team4_msgs.msg import StoragyStatus
+from aris_package.srv import IsOkayIcecream,SetSeatNumber # aris_package의 서비스
+from aris_package.msg import ArisStatus
+from control_node.control_node.config import goal_dict
 from threading import Thread, Event
 import socket
 import json
@@ -425,10 +431,11 @@ class YOLOMain:
 
 
 
-class RobotMain(object):
+class RobotMain(Node):
     """Robot Main Class"""
 
     def __init__(self, robot, **kwargs):
+        super().__init__('robot_main_client')
         self.alive = True
         self._arm = robot
         self._tcp_speed = 100
@@ -442,6 +449,7 @@ class RobotMain(object):
         self.pressing = False
         self.order_list = []
         self.gritting_list = []
+        self.seat_number = None
 
         self.center_x_mm = None
         self.center_y_mm = None
@@ -465,6 +473,22 @@ class RobotMain(object):
         self.position_jig_C_serve = [-63.1, -138.2, 199.5, -45.5, 88.1, -112.1] #Linear
         self.position_capsule_grab = [234.2, 129.8, 464.5, -153.7, 87.3, -68.7] #Linear
 
+        self.seat_number_client = self.create_client(SetSeatNumber, 'set_seat_number')
+        # ROS 2 client setup
+        self.client = self.create_client(PutOnIcecream, 'notify_delivery')
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Service not available, waiting again...')
+
+        # Start socket thread
+        self.socket_thread = threading.Thread(target=self.socket_connect)
+        self.socket_thread.start()
+
+    def handle_notify_delivery(self, request, response):
+        # 로봇팔의 상태를 업데이트하거나 처리하는 로직 추가
+        self.get_logger().info(f"Received state: {request.state} with seat number: {request.seat_number}")
+        response.success = True
+        return response
+    
     def set_center_coordinates(self, x_mm, y_mm):
         # 좌표 값을 업데이트
         self.center_x_mm = x_mm
@@ -483,24 +507,21 @@ class RobotMain(object):
         if hasattr(self._arm, 'register_count_changed_callback'):
             self._arm.register_count_changed_callback(self._count_changed_callback)
 
-    # Register error/warn changed callback
     def _error_warn_changed_callback(self, data):
         if data and data['error_code'] != 0:
             self.alive = False
-            self.pprint('err={}, quit'.format(data['error_code']))
+            self.get_logger().error(f'Error code: {data["error_code"]}, quitting.')
             self._arm.release_error_warn_changed_callback(self._error_warn_changed_callback)
 
-    # Register state changed callback
     def _state_changed_callback(self, data):
         if data and data['state'] == 4:
             self.alive = False
-            self.pprint('state=4, quit')
+            self.get_logger().error('State = 4, quitting.')
             self._arm.release_state_changed_callback(self._state_changed_callback)
 
-    # Register count changed callback
     def _count_changed_callback(self, data):
-        if self.is_alive:
-            self.pprint('counter val: {}'.format(data['count']))
+        if self.alive:
+            self.get_logger().info(f'Counter value: {data["count"]}')
 
     def _check_code(self, code, label):
         if not self.is_alive or code != 0:
@@ -554,6 +575,7 @@ class RobotMain(object):
         reverse_position[4] = -reverse_position[4]
         reverse_position[5] = reverse_position[5] - 180
         return reverse_position
+
 
     def socket_connect(self):
 
@@ -621,13 +643,195 @@ class RobotMain(object):
                                             "topping3" : self.recv_msg["topping3"]})
                 if self.recv_msg["gender"] != "":
                     self.gritting_list.append([self.recv_msg["gender"], int(self.recv_msg["age"])])
+
+                seat_number = self.recv_msg.get("seat_number")
+                if seat_number is not None and seat_number != 0:
+                    self.seat_number = int(seat_number)
+                    self.send_seat_number()
+
             except Exception as e:
                 print(e)
                 continue
 
+    def send_seat_number(self):
+        if self.seat_number is None:
+            return
+
+        # 서비스 클라이언트가 준비될 때까지 기다립니다
+        if not self.seat_number_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().error('Service not available')
+            return
+
+        # 요청 객체를 생성합니다
+        request = SetSeatNumber.Request()
+        request.seat_number = self.seat_number
+
+        # 비동기 호출
+        future = self.seat_number_client.call_async(request)
+        rclpy.spin_until_future_complete(self, future)
+        response = future.result()
+
+        if response.success:
+            self.get_logger().info(f'Successfully sent seat number: {self.seat_number}')
+            self.seat_number = None  # 성공적으로 전송된 후 seat_number를 초기화합니다
+        else:
+            self.get_logger().error('Failed to send seat number')
+
+class RobotArmServer(Node):
+    def __init__(self):
+        super().__init__('robot_arm_server')
+
+        self.seat_number = None
+
+        #소켓으로 받은 seat_number 받아오는 서비스 생성
+        self.seat_number_service = self.create_service(SetSeatNumber, 'set_seat_number', self.handle_set_seat_number)
+
+        # 배달로봇이 배달 가능한지 판단
+        self.delivery_srv = self.create_service(IsOkayIcecream, 'is_icecream_okay', self.aris_deliver_okay)
+
+        # 로봇 팔이 배달 로봇에게 배달 요청을 보내는 클라이언트 생성
+        self.client = self.create_client(PutOnIcecream, 'notify_delivery')
+        
+        # 아리스 로봇 상태 publish
+        self.status_publisher = self.create_publisher(ArisStatus, 'icecream_status', 10)
+
+        # storagy 로봇 상태 subscribe
+        self.status_subscriber = self.create_subscription(
+            StoragyStatus,
+            'delievery_robot_status',
+            self.handle_robot_status,
+            10
+        )
+        self.get_logger().info('Robot Arm Server is ready.')
+
+    def handle_set_seat_number(self, request, response):
+        self.seat_number = request.seat_number
+        self.get_logger().info(f'Seat number set to: {self.seat_number}')
+        response.success = True
+        return response
+
+    def aris_deliver_okay(self, request, response):
+    # 배달 로봇에서 'okay' 신호를 받으면 배달 요청을 보냄
+        if request.okay:
+            if self.seat_number is not None:
+                self.send_delivery_request()
+                response.seat_number = self.seat_number
+            else:
+                self.get_logger().warning("Seat number is not set, cannot send delivery request.")
+                response.seat_number = -1  # 유효하지 않은 상태
+        else:
+            self.get_logger().info(f"Robot is not ready to deliver ice cream to seat number: {request.okay}")
+            response.seat_number = -1  # 준비되지 않은 상태
+
+        return response
+
+    
+    def send_delivery_request(self):
+        # seat_number가 goal_dict에 있는지 확인
+        if self.seat_number not in goal_dict:
+            self.get_logger().error(f"Seat number {self.seat_number} is not valid.")
+            return
+
+        request = PutOnIcecream.Request()
+        request.seat_number = self.seat_number
+
+        future = self.client.call_async(request)
+        rclpy.spin_until_future_complete(self, future)
+        response = future.result()
+
+        if response.success:
+            self.get_logger().info(f'Successfully sent delivery request for seat number: {self.seat_number}')
+            self.seat_number = None  # 초기화
+        else:
+            self.get_logger().error(f'Failed to send delivery request for seat number: {self.seat_number}')
+
+    def handle_robot_status(self, msg):
+        # 배달 로봇의 상태를 처리하는 로직 추가 (필요 시 구현)
+        pass    
+
+    
+    # def handle_seat_number_request(self, request, response):
+    #     self.get_logger().info(f"Received seat number: {request.seat_number}")
+
+    #     # 배달 로봇에게 좌석 번호와 배달 상태를 보내는 로직
+    #     success = self.send_delivery_request('delivery', request.seat_number)
+    #     response.success = success
+    #     return response
+
+    # def handle_robot_status(self, msg):
+    #     self.get_logger().info(f"Received robot status: {msg}")
 
 
-    # ============================== motion ==============================
+    # def socket_connect(self):
+
+    #     # self.HOST = '192.168.1.167'
+    #     self.HOST = '127.0.0.1'
+    #     self.PORT = 10002
+    #     self.BUFSIZE = 1024
+    #     self.ADDR = (self.HOST, self.PORT)
+
+    #     # self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    #     try:
+    #         self.clientSocket.shutdown(1)
+    #         self.clientSocket.close()
+    #     except:
+    #         pass
+
+    #     self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    #     # self
+    #     self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    #     # self.serverSocket.allow_reuse_address = True
+    #     while True:
+    #         try:
+    #             self.serverSocket.bind(self.ADDR)
+    #             print("bind")
+
+    #             while True:
+    #                 self.serverSocket.listen(1)
+    #                 print(f'[LISTENING] Server is listening on robot_server')
+    #                 time.sleep(1)
+    #                 try:
+    #                     while True:
+    #                         try:
+    #                             self.clientSocket, addr_info = self.serverSocket.accept()
+    #                             print("socket accepted")
+    #                             break
+    #                         except:
+    #                             time.sleep(1)
+    #                             print('except')
+    #                             # break
+
+    #                     break
+
+    #                 except socket.timeout:
+    #                     print("socket timeout")
+
+    #                 except:
+    #                     pass
+    #             break
+    #         except:
+    #             pass
+    #     print("accept")
+
+
+    #     self.connected = True
+    #     self.state = 'ready'
+
+    #     # ------------------- receive msg start -----------
+    #     while self.connected:
+    #         try:
+    #             self.recv_msg = json.loads(self.clientSocket.recv(1024).decode())
+    #             print(self.recv_msg)
+    #             if self.recv_msg["topping1"] != 0 or self.recv_msg["topping2"] != 0 or self.recv_msg["topping3"] != 0:
+    #                 self.order_list.append({"topping1" : self.recv_msg["topping1"], 
+    #                                         "topping2" : self.recv_msg["topping2"], 
+    #                                         "topping3" : self.recv_msg["topping3"]})
+    #             if self.recv_msg["gender"] != "":
+    #                 self.gritting_list.append([self.recv_msg["gender"], int(self.recv_msg["age"])])
+    #         except Exception as e:
+    #             print(e)
+    #             continue
+# ============================== motion ==============================
 
     def motion_home(self):
 
@@ -1789,16 +1993,46 @@ class RobotMain(object):
                 self.gritting(gender)
 
 
-if __name__ == '__main__':
-    RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
+def main(args=None):
+    rclpy.init(args=args)
+
+    # Create XArmAPI instance
     arm = XArmAPI('192.168.1.167', baud_checkset=False)
+
+    # Create RobotMain node instance
     robot_main = RobotMain(arm)
+    
+    # Create YOLOMain instance
     yolo_main = YOLOMain(robot_main)
 
+    # Start robot thread
     robot_thread = threading.Thread(target=robot_main.run_robot)
-    yolo_thread = threading.Thread(target=yolo_main.segmentation)
-    socket_thread = threading.Thread(target=robot_main.socket_connect)
-
     robot_thread.start()
+
+    # Start YOLO thread
+    yolo_thread = threading.Thread(target=yolo_main.segmentation)
     yolo_thread.start()
-    socket_thread.start()
+
+     # Start ROS 2 node for RobotMain
+    robot_node_thread = threading.Thread(target=rclpy.spin, args=(robot_main,))
+    robot_node_thread.start()
+
+    # Create and spin RobotArmServer
+    node = RobotArmServer()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        robot_main.destroy_node()
+        node.destroy_node()
+        rclpy.shutdown()
+        # Ensure the ROS 2 node is shut down properly
+        try:
+            robot_node_thread.join()
+            robot_thread.join()
+            yolo_thread.join()
+        except KeyboardInterrupt:
+            pass
+
+

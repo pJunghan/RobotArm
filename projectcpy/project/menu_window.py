@@ -187,24 +187,28 @@ class MenuWindow(QMainWindow):
         self.greeting_thread = GreetingThread(self, gender, name)
         self.greeting_thread.start()
 
-        self.main.set_data(gender = gender, age = age)
+        if isinstance(self.main, MainWindow) and hasattr(self.main, 'set_data'):
+            self.main.set_data(gender=gender, age=age, seat=None)
+        else:
+            logging.error("self.main 객체에는 'set_data' 메서드가 없거나, 'MainWindow' 인스턴스가 아닙니다.")
+            QMessageBox.critical(self, "오류", "올바른 메인 윈도우 객체가 아닙니다.")
 
-        # if name.startswith("guest"):
-        #     if gender == "Male":
-        #         QTimer.singleShot(50, lambda: tts.google_tts_and_play("남성 회원님 안녕하세요."))
+        if name.startswith("guest"):
+            if gender == "Male":
+                QTimer.singleShot(50, lambda: tts.google_tts_and_play("남성 회원님 안녕하세요."))
 
-        #     elif gender == "Female":
-        #         QTimer.singleShot(50, lambda: tts.google_tts_and_play("여성 회원님 안녕하세요."))
+            elif gender == "Female":
+                QTimer.singleShot(50, lambda: tts.google_tts_and_play("여성 회원님 안녕하세요."))
 
-        #     else:
-        #         QTimer.singleShot(50, lambda: tts.google_tts_and_play("게스트 회원님 안녕하세요."))
+            else:
+                QTimer.singleShot(50, lambda: tts.google_tts_and_play("게스트 회원님 안녕하세요."))
 
-        # else:
-        #     # 이름이 공백으로 구분되어 있는 경우를 처리 및 성 제외하고 이름만 출력
-        #     first_name = name.split(maxsplit=1)[-1]
-        #     QTimer.singleShot(50, lambda: tts.google_tts_and_play(f"{first_name}님 안녕하세요."))
+        else:
+            # 이름이 공백으로 구분되어 있는 경우를 처리 및 성 제외하고 이름만 출력
+            first_name = name.split(maxsplit=1)[-1]
+            QTimer.singleShot(50, lambda: tts.google_tts_and_play(f"{first_name}님 안녕하세요."))
 
-        # self.add_image_to_graphics_view(topping_images[2], self.recommendView_5, 'topping3')
+        self.add_image_to_graphics_view(topping_images[2], self.recommendView_5, 'topping3')
 
     def setup_recommendations(self):
         age, gender, _ = self.get_user_info(self.user_id)
@@ -625,10 +629,10 @@ class MenuWindow(QMainWindow):
 
 if __name__ == "__main__":
     class CustomMainWindow(QMainWindow):
-        def set_data(self, gender, age):
+        def set_data(self, gender, age, seat):
             self.gender = gender
             self.age = age
-
+            self.seat = seat
     app = QApplication(sys.argv)
     main_window = CustomMainWindow()
     

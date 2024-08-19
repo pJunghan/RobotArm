@@ -155,10 +155,10 @@ class MainWindow(QMainWindow):
                 self.data = self.none_data.copy()
 
 
-    def set_data(self, gender = "", age = 20):
+    def set_data(self, gender = "", age = 20, seat_number=0):
         self.data["gender"] = gender
         self.data["age"] = age
-
+        self.data["seat"] = seat_number
 
     def closeEvent(self, event):
         pass 
