@@ -31,8 +31,6 @@ import traceback
 import threading
 import sys
 
-sys.path.append('/home/rds/aris_ws/RobotArm/xArm-Python-SDK')
-
 from xarm import version
 from xarm.wrapper import XArmAPI
 
@@ -40,7 +38,11 @@ from threading import Thread, Event
 import socket
 import json
 import os
-
+import rclpy as rp
+from rclpy.node import Node
+from rclpy.parameter import Parameter
+from std_srvs.srv import Empty
+from team4_msgs.srv import PutOnIcecream
 from ultralytics import YOLO
 import cv2
 import numpy as np
@@ -51,7 +53,7 @@ import logging
 
 '''상수 Define'''
 ESC_KEY = ord('q')           # 캠 종료 버튼
-WEBCAM_INDEX = 2             # 사용하고자 하는 웹캠 장치의 인덱스
+WEBCAM_INDEX = 0             # 사용하고자 하는 웹캠 장치의 인덱스
 FRAME_WIDTH = 640            # 웹캠 프레임 너비
 FRAME_HEIGHT = 480           # 웹캠 프레임 높이
 CONFIDENCE_THRESHOLD = 0.87  # YOLO 모델의 신뢰도 임계값
@@ -70,6 +72,39 @@ CUP_DETECTION_TIME = 1      # 컵 인식 시간
 DISTANCE_BETWEEN_POINTS = 10    # 중심좌표가 일정 거리 이하로 변동 시 중심좌표의 변동이 없다고 판단
 
 logging.getLogger("ultralytics").setLevel(logging.WARNING)  # 로깅 수준을 WARNING으로 설정하여 정보 메시지 비활성화
+
+class ArisNode(Node):
+    """
+    storagy와 통신을 담당하는 노드
+    """
+    def __init__(self):
+        super().__init__("aris_node")
+
+        self.call_storagy_client = self.create_client(
+            Empty, "/go_to_icecream")
+        self.complite_puton_client = self.create_client(
+            PutOnIcecream, "/set_seat_number")
+        
+    def call_storagy(self):
+        print("call_aris")
+        req = Empty.Request()
+        while not self.call_storagy_client.service_is_ready():
+            print("waitting service...")
+            time.sleep(1)
+
+        res = self.call_storagy_client.call(request=req)
+        print(res)
+
+
+    def complite_puton(self, seat_num) -> bool:
+        print("puton")
+        req = PutOnIcecream.Request()
+        while not self.complite_puton_client.service_is_ready():
+            print("waitting service...")
+            time.sleep(1)
+
+        req.seat_number = seat_num
+        return self.complite_puton_client.call(request=req).is_okay
 
 
 
@@ -400,6 +435,7 @@ class YOLOMain:
         YOLO 모델을 실행하는 메서드
         실시간으로 웹캠 영상을 처리 및 예측 결과를 화면에 출력하고, 여러 기능을 실행
         """
+        print("yolo start")
         # 카메라 작동
         while True:
             # 웹캠에서 프레임 읽기
@@ -521,13 +557,15 @@ class YOLOMain:
 class RobotMain(object):
     """Robot Main Class"""
 
-    def __init__(self, robot, **kwargs):
+    def __init__(self, robot, node, **kwargs):
         self.alive = True
         self._arm = robot
+        self.node = node
         self._tcp_speed = 100
         self._tcp_acc = 2000
         self._angle_speed = 20
         self._angle_acc = 500
+        self._table_num = 1
         self._vars = {}
         self._funcs = {}
         self._robot_init()
@@ -722,6 +760,8 @@ class RobotMain(object):
                                             "topping3" : self.recv_msg["topping3"]})
                 if self.recv_msg["gender"] != "":
                     self.gritting_list.append([self.recv_msg["gender"], int(self.recv_msg["age"])])
+                if self.recv_msg["seat"] != "":
+                    self._table_num = self.recv_msg["seat"]
             except Exception as e:
                 print(e)
                 continue
@@ -1694,6 +1734,10 @@ class RobotMain(object):
         else:
             self.motion_greet()
 
+    def node_run(self):
+        while True:
+            rp.spin_once(self.node)
+
 
     # ============================= main =============================
     def run_robot(self):
@@ -1702,6 +1746,7 @@ class RobotMain(object):
 
         while self.is_alive:
             if self.order_list != []:
+                self.node.call_storagy()
                 self.MODE = 'icecreaming'
                 raw_order = self.order_list.pop(0)
                 order = raw_order
@@ -1747,6 +1792,7 @@ class RobotMain(object):
                     self.motion_topping(order)
                     self.motion_make_icecream()
                     self.motion_serve_storagy()
+                    result = self.node.complite_puton(self._table_num)
                     self.motion_trash_capsule()
                     self.motion_home()
                     print('icecream finish')
@@ -1773,16 +1819,35 @@ class RobotMain(object):
                 self.gritting(gender)
 
 
-if __name__ == '__main__':
+def main():
     RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
     arm = XArmAPI('192.168.1.167', baud_checkset=False)
-    robot_main = RobotMain(arm)
-    yolo_main = YOLOMain(robot_main)
+    rp.init(args=None)
+    try:
+        node = ArisNode()
+        robot_main = RobotMain(arm, node)
+        yolo_main = YOLOMain(robot_main)
+        # node.call_storagy() # for test
+        # node.complite_puton(1) # for test
+        robot_thread = threading.Thread(target=robot_main.run_robot)
+        yolo_thread = threading.Thread(target=yolo_main.run_yolo)
+        socket_thread = threading.Thread(target=robot_main.socket_connect)
+        # node_thread = threading.Thread(target=robot_main.node_run)
+        robot_thread.start()
+        yolo_thread.start()
+        # socket_thread.start()
+        # node_thread.start()
+        rp.spin(node=node)
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt stop")
 
-    robot_thread = threading.Thread(target=robot_main.run_robot)
-    yolo_thread = threading.Thread(target=yolo_main.run_yolo)
-    socket_thread = threading.Thread(target=robot_main.socket_connect)
+    except Exception as e:
+        print(f"Error Msg : {e}")
 
-    robot_thread.start()
-    yolo_thread.start()
-    socket_thread.start()
+    finally:
+        # ROS2 종료 및 노드 파괴
+        node.destroy_node()
+        rp.shutdown()
+
+if __name__ == '__main__':
+    main()
