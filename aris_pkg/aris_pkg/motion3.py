@@ -43,6 +43,7 @@ from rclpy.node import Node
 from rclpy.parameter import Parameter
 from std_srvs.srv import Empty
 from team4_msgs.srv import PutOnIcecream
+from team4_msgs.msg import StoragyStatus
 from ultralytics import YOLO
 import cv2
 import numpy as np
@@ -84,6 +85,11 @@ class ArisNode(Node):
             Empty, "/go_to_icecream")
         self.complite_puton_client = self.create_client(
             PutOnIcecream, "/set_seat_number")
+        self.state_sub = self.create_subscription(
+            StoragyStatus, "/storagy_state", 1
+        )
+        
+        self.storagy_state = ""
         
     def call_storagy(self):
         print("call_aris")
@@ -1367,6 +1373,12 @@ class RobotMain(object):
 
         print('motion_serve finish')
 
+    def watting_storagy(self):
+        while 1:
+            if self.node.storagy_state == "wait_aris":
+                break
+            time.sleep(0.5)
+
     def motion_serve_storagy(self):
 
         print('motion_serve_storagy start')
@@ -1427,7 +1439,7 @@ class RobotMain(object):
         code = self._arm.set_servo_angle(angle=[98.3, -17.1, 6.3, 102.2, 85, 0], speed=self._angle_speed,
                                          mvacc=self._angle_acc, wait=False, radius=0.0)
         if not self._check_code(code, 'set_servo_angle'): return
-
+        result = self.node.complite_puton(self._table_num)
         print('motion_serve_storagy finish')
 
     def motion_trash_capsule(self):
@@ -1734,10 +1746,6 @@ class RobotMain(object):
         else:
             self.motion_greet()
 
-    def node_run(self):
-        while True:
-            rp.spin_once(self.node)
-
 
     # ============================= main =============================
     def run_robot(self):
@@ -1792,7 +1800,6 @@ class RobotMain(object):
                     self.motion_topping(order)
                     self.motion_make_icecream()
                     self.motion_serve_storagy()
-                    result = self.node.complite_puton(self._table_num)
                     self.motion_trash_capsule()
                     self.motion_home()
                     print('icecream finish')
@@ -1832,11 +1839,11 @@ def main():
         robot_thread = threading.Thread(target=robot_main.run_robot)
         yolo_thread = threading.Thread(target=yolo_main.run_yolo)
         socket_thread = threading.Thread(target=robot_main.socket_connect)
-        # node_thread = threading.Thread(target=robot_main.node_run)
+        
         robot_thread.start()
         yolo_thread.start()
-        # socket_thread.start()
-        # node_thread.start()
+        socket_thread.start()
+
         rp.spin(node=node)
     except KeyboardInterrupt:
         print("KeyboardInterrupt stop")
