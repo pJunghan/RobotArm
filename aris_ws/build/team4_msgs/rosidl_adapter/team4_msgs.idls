@@ -1,0 +1,4 @@
+/home/jhpc/RobotArm/aris_ws/build/team4_msgs/rosidl_adapter/team4_msgs:srv/PutOnIcecream.idl
+/home/jhpc/RobotArm/aris_ws/build/team4_msgs/rosidl_adapter/team4_msgs:srv/IsOkayIcecream.idl
+/home/jhpc/RobotArm/aris_ws/build/team4_msgs/rosidl_adapter/team4_msgs:msg/StoragyStatus.idl
+/home/jhpc/RobotArm/aris_ws/build/team4_msgs/rosidl_adapter/team4_msgs:msg/ArisStatus.idl

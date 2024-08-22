@@ -33,10 +33,10 @@ from xarm import version
 from xarm.wrapper import XArmAPI
 import rclpy
 from rclpy.node import Node
-from team4_msgs.srv import PutOnIcecream  # Ensure this import is correct for PutOnIcecream
-from team4_msgs.msg import StoragyStatus
-from aris_package.srv import IsOkayIcecream,SetSeatNumber # aris_package의 서비스
-from aris_package.msg import ArisStatus
+from team4_msgs.srv import PutOnIcecream, IsOkayIcecream  # Ensure this import is correct for PutOnIcecream
+from team4_msgs.msg import StoragyStatus, ArisStatus
+
+from aris_package.config import ControlNodeConfig
 from threading import Thread, Event
 import socket
 import json
@@ -472,9 +472,10 @@ class RobotMain(Node):
         self.position_jig_C_serve = [-63.1, -138.2, 199.5, -45.5, 88.1, -112.1] #Linear
         self.position_capsule_grab = [234.2, 129.8, 464.5, -153.7, 87.3, -68.7] #Linear
 
-        self.seat_number_client = self.create_client(SetSeatNumber, 'set_seat_number')
+        self.seat_number_client = self.create_client(PutOnIcecream, 'set_seat_number')
         # ROS 2 client setup
         self.client = self.create_client(PutOnIcecream, 'notify_delivery')
+        
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting again...')
 
@@ -662,7 +663,7 @@ class RobotMain(Node):
             return
 
         # 요청 객체를 생성합니다
-        request = SetSeatNumber.Request()
+        request = PutOnIcecream.Request()
         request.seat_number = self.seat_number
 
         # 비동기 호출
@@ -683,7 +684,7 @@ class RobotArmServer(Node):
         self.seat_number = None
 
         #소켓으로 받은 seat_number 받아오는 서비스 생성
-        self.seat_number_service = self.create_service(SetSeatNumber, 'set_seat_number', self.handle_set_seat_number)
+        self.seat_number_service = self.create_service(PutOnIcecream, 'set_seat_number', self.handle_set_seat_number)
 
         # 배달로봇이 배달 가능한지 판단
         self.delivery_srv = self.create_service(IsOkayIcecream, 'is_icecream_okay', self.aris_deliver_okay)
@@ -711,7 +712,7 @@ class RobotArmServer(Node):
 
     def aris_deliver_okay(self, request, response):
     # 배달 로봇에서 'okay' 신호를 받으면 배달 요청을 보냄
-        if request.okay:
+        if request.is_okay == True:
             if self.seat_number is not None:
                 self.send_delivery_request()
                 response.seat_number = self.seat_number
@@ -719,7 +720,7 @@ class RobotArmServer(Node):
                 self.get_logger().warning("Seat number is not set, cannot send delivery request.")
                 response.seat_number = -1  # 유효하지 않은 상태
         else:
-            self.get_logger().info(f"Robot is not ready to deliver ice cream to seat number: {request.okay}")
+            self.get_logger().info(f"Robot is not ready to deliver ice cream to seat number: {request.is_okay}")
             response.seat_number = -1  # 준비되지 않은 상태
 
         return response
@@ -2028,5 +2029,3 @@ def main(args=None):
             yolo_thread.join()
         except KeyboardInterrupt:
             pass
-
-

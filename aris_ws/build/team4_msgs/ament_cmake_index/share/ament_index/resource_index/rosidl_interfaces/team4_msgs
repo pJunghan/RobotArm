@@ -1,0 +1,12 @@
+msg/ArisStatus.idl
+msg/ArisStatus.msg
+msg/StoragyStatus.idl
+msg/StoragyStatus.msg
+srv/IsOkayIcecream.idl
+srv/IsOkayIcecream.srv
+srv/IsOkayIcecream_Request.msg
+srv/IsOkayIcecream_Response.msg
+srv/PutOnIcecream.idl
+srv/PutOnIcecream.srv
+srv/PutOnIcecream_Request.msg
+srv/PutOnIcecream_Response.msg

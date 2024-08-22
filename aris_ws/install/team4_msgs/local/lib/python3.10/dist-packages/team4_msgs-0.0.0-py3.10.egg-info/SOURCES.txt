@@ -1,0 +1,12 @@
+setup.py
+team4_msgs/__init__.py
+team4_msgs.egg-info/PKG-INFO
+team4_msgs.egg-info/SOURCES.txt
+team4_msgs.egg-info/dependency_links.txt
+team4_msgs.egg-info/top_level.txt
+team4_msgs/msg/__init__.py
+team4_msgs/msg/_aris_status.py
+team4_msgs/msg/_storagy_status.py
+team4_msgs/srv/__init__.py
+team4_msgs/srv/_is_okay_icecream.py
+team4_msgs/srv/_put_on_icecream.py

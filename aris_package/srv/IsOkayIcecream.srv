@@ -1,3 +1,0 @@
-bool is_okay #request
----
-int32 seat_number  #response

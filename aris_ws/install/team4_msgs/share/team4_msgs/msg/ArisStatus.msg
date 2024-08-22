@@ -1,0 +1,2 @@
+string aris_status
+int32 seat_number
