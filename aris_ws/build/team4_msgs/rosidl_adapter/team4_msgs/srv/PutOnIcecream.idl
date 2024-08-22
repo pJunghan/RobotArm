@@ -1,0 +1,19 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from team4_msgs/srv/PutOnIcecream.srv
+// generated code does not contain a copyright notice
+
+
+module team4_msgs {
+  module srv {
+    struct PutOnIcecream_Request {
+      @verbatim (language="comment", text=
+        "request")
+      int32 seat_number;
+    };
+    struct PutOnIcecream_Response {
+      @verbatim (language="comment", text=
+        "response")
+      boolean is_okay;
+    };
+  };
+};

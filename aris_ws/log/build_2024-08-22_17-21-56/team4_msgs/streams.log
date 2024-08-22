@@ -1,0 +1,219 @@
+[0.233s] Invoking command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/jhpc/RobotArm/aris_ws/build/team4_msgs -- -j8 -l8
+[0.281s] [  5%] Built target team4_msgs__cpp
+[0.281s] [ 12%] Built target team4_msgs__rosidl_generator_c
+[0.291s] [ 12%] Built target ament_cmake_python_copy_team4_msgs
+[0.302s] [ 23%] Built target team4_msgs__rosidl_typesupport_cpp
+[0.308s] [ 34%] Built target team4_msgs__rosidl_typesupport_fastrtps_cpp
+[0.308s] [ 45%] Built target team4_msgs__rosidl_typesupport_introspection_cpp
+[0.310s] [ 56%] Built target team4_msgs__rosidl_typesupport_fastrtps_c
+[0.320s] [ 67%] Built target team4_msgs__rosidl_typesupport_c
+[0.327s] [ 78%] Built target team4_msgs__rosidl_typesupport_introspection_c
+[0.344s] [ 78%] Built target team4_msgs
+[0.360s] [ 80%] Built target team4_msgs__py
+[0.380s] [ 89%] Built target team4_msgs__rosidl_generator_py
+[0.398s] [100%] Built target team4_msgs__rosidl_typesupport_c__pyext
+[0.398s] [100%] Built target team4_msgs__rosidl_typesupport_fastrtps_c__pyext
+[0.398s] [100%] Built target team4_msgs__rosidl_typesupport_introspection_c__pyext
+[0.548s] running egg_info
+[0.548s] writing team4_msgs.egg-info/PKG-INFO
+[0.548s] writing dependency_links to team4_msgs.egg-info/dependency_links.txt
+[0.549s] writing top-level names to team4_msgs.egg-info/top_level.txt
+[0.550s] reading manifest file 'team4_msgs.egg-info/SOURCES.txt'
+[0.551s] writing manifest file 'team4_msgs.egg-info/SOURCES.txt'
+[0.577s] [100%] Built target ament_cmake_python_build_team4_msgs_egg
+[0.587s] Invoked command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/jhpc/RobotArm/aris_ws/build/team4_msgs -- -j8 -l8
+[0.683s] Invoking command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/jhpc/RobotArm/aris_ws/build/team4_msgs
+[0.690s] -- Install configuration: ""
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/ament_index/resource_index/rosidl_interfaces/team4_msgs
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/is_okay_icecream.h
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__functions.c
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__type_support.h
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__functions.h
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__struct.h
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__type_support.h
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__functions.c
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__functions.h
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__struct.h
+[0.691s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/put_on_icecream.h
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__struct.h
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__type_support.h
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__functions.c
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__functions.h
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__type_support.h
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__functions.c
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__struct.h
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__functions.h
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/storagy_status.h
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/rosidl_generator_c__visibility_control.h
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/aris_status.h
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/environment/library_path.sh
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/environment/library_path.dsv
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/lib/libteam4_msgs__rosidl_generator_c.so
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail
+[0.692s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__rosidl_typesupport_fastrtps_c.h
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__rosidl_typesupport_fastrtps_c.h
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__rosidl_typesupport_fastrtps_c.h
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__rosidl_typesupport_fastrtps_c.h
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/lib/libteam4_msgs__rosidl_typesupport_fastrtps_c.so
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__type_support.c
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__rosidl_typesupport_introspection_c.h
+[0.693s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__type_support.c
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__rosidl_typesupport_introspection_c.h
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__type_support.c
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__type_support.c
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__rosidl_typesupport_introspection_c.h
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__rosidl_typesupport_introspection_c.h
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/lib/libteam4_msgs__rosidl_typesupport_introspection_c.so
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/lib/libteam4_msgs__rosidl_typesupport_c.so
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/put_on_icecream.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__traits.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__traits.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__struct.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__struct.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__builder.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__builder.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/is_okay_icecream.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__builder.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__traits.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__builder.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__traits.hpp
+[0.694s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__struct.hpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__struct.hpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/aris_status.hpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/storagy_status.hpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/dds_fastrtps
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__rosidl_typesupport_fastrtps_cpp.hpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__rosidl_typesupport_fastrtps_cpp.hpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/dds_fastrtps
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__rosidl_typesupport_fastrtps_cpp.hpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__rosidl_typesupport_fastrtps_cpp.hpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/lib/libteam4_msgs__rosidl_typesupport_fastrtps_cpp.so
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__type_support.cpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__type_support.cpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/put_on_icecream__rosidl_typesupport_introspection_cpp.hpp
+[0.695s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/srv/detail/is_okay_icecream__rosidl_typesupport_introspection_cpp.hpp
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__rosidl_typesupport_introspection_cpp.hpp
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/aris_status__type_support.cpp
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__type_support.cpp
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/include/team4_msgs/team4_msgs/msg/detail/storagy_status__rosidl_typesupport_introspection_cpp.hpp
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/lib/libteam4_msgs__rosidl_typesupport_introspection_cpp.so
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/lib/libteam4_msgs__rosidl_typesupport_cpp.so
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/environment/pythonpath.sh
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/environment/pythonpath.dsv
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs-0.0.0-py3.10.egg-info
+[0.696s] -- Installing: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs-0.0.0-py3.10.egg-info/dependency_links.txt
+[0.696s] -- Installing: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs-0.0.0-py3.10.egg-info/top_level.txt
+[0.696s] -- Installing: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs-0.0.0-py3.10.egg-info/SOURCES.txt
+[0.696s] -- Installing: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs-0.0.0-py3.10.egg-info/PKG-INFO
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/_team4_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/srv
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/srv/_is_okay_icecream.py
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/srv/__init__.py
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/srv/_put_on_icecream.py
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/srv/_is_okay_icecream_s.c
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/srv/_put_on_icecream_s.c
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/__init__.py
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/_team4_msgs_s.ep.rosidl_typesupport_introspection_c.c
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/team4_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[0.696s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/team4_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[0.697s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/msg
+[0.697s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/msg/_aris_status_s.c
+[0.697s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/msg/__init__.py
+[0.697s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/msg/_aris_status.py
+[0.697s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/msg/_storagy_status_s.c
+[0.697s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/msg/_storagy_status.py
+[0.697s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/team4_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[0.697s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/_team4_msgs_s.ep.rosidl_typesupport_c.c
+[0.697s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/libteam4_msgs__rosidl_generator_py.so
+[0.722s] Listing '/home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs'...
+[0.722s] Listing '/home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/msg'...
+[0.722s] Listing '/home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/srv'...
+[0.726s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/team4_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[0.726s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/team4_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[0.726s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/local/lib/python3.10/dist-packages/team4_msgs/team4_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[0.727s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/lib/libteam4_msgs__rosidl_generator_py.so
+[0.727s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/srv/PutOnIcecream.idl
+[0.727s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/srv/IsOkayIcecream.idl
+[0.727s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/msg/StoragyStatus.idl
+[0.727s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/msg/ArisStatus.idl
+[0.727s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/srv/PutOnIcecream.srv
+[0.727s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/srv/PutOnIcecream_Request.msg
+[0.727s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/srv/PutOnIcecream_Response.msg
+[0.727s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/srv/IsOkayIcecream.srv
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/srv/IsOkayIcecream_Request.msg
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/srv/IsOkayIcecream_Response.msg
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/msg/StoragyStatus.msg
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/msg/ArisStatus.msg
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/ament_index/resource_index/package_run_dependencies/team4_msgs
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/ament_index/resource_index/parent_prefix_path/team4_msgs
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/environment/ament_prefix_path.sh
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/environment/ament_prefix_path.dsv
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/environment/path.sh
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/environment/path.dsv
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/local_setup.bash
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/local_setup.sh
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/local_setup.zsh
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/local_setup.dsv
+[0.728s] -- Installing: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/package.dsv
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/ament_index/resource_index/packages/team4_msgs
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/export_team4_msgs__rosidl_generator_cExport.cmake
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/export_team4_msgs__rosidl_generator_cExport-noconfig.cmake
+[0.728s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/export_team4_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/export_team4_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/team4_msgs__rosidl_typesupport_introspection_cExport.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/team4_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/team4_msgs__rosidl_typesupport_cExport.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/team4_msgs__rosidl_typesupport_cExport-noconfig.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/export_team4_msgs__rosidl_generator_cppExport.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/export_team4_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/export_team4_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/team4_msgs__rosidl_typesupport_introspection_cppExport.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/team4_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/team4_msgs__rosidl_typesupport_cppExport.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/team4_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/export_team4_msgs__rosidl_generator_pyExport.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/export_team4_msgs__rosidl_generator_pyExport-noconfig.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/rosidl_cmake-extras.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/ament_cmake_export_targets-extras.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/team4_msgsConfig.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/cmake/team4_msgsConfig-version.cmake
+[0.729s] -- Up-to-date: /home/jhpc/RobotArm/aris_ws/install/team4_msgs/share/team4_msgs/package.xml
+[0.730s] Invoked command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/jhpc/RobotArm/aris_ws/build/team4_msgs

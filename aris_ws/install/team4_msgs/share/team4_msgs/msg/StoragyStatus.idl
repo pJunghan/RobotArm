@@ -1,0 +1,14 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from team4_msgs/msg/StoragyStatus.msg
+// generated code does not contain a copyright notice
+
+
+module team4_msgs {
+  module msg {
+    struct StoragyStatus {
+      string storagy_status;
+
+      int32 seat_number;
+    };
+  };
+};
