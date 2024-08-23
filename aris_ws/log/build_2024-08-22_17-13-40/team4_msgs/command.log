@@ -1,6 +1,0 @@
-Invoking command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /home/jhpc/RobotArm/aris_ws/src/team4_msgs -DCMAKE_INSTALL_PREFIX=/home/jhpc/RobotArm/aris_ws/install/team4_msgs
-Invoked command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /home/jhpc/RobotArm/aris_ws/src/team4_msgs -DCMAKE_INSTALL_PREFIX=/home/jhpc/RobotArm/aris_ws/install/team4_msgs
-Invoking command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/jhpc/RobotArm/aris_ws/build/team4_msgs -- -j8 -l8
-Invoked command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/jhpc/RobotArm/aris_ws/build/team4_msgs -- -j8 -l8
-Invoking command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/jhpc/RobotArm/aris_ws/build/team4_msgs
-Invoked command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/jhpc/RobotArm/aris_ws/build/team4_msgs

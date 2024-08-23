@@ -1,0 +1,41 @@
+[0.682s] Invoking command in '/home/jhpc/RobotArm/aris_ws/src/aris_package': PYTHONPATH=/home/jhpc/RobotArm/aris_ws/build/aris_package/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jhpc/RobotArm/aris_ws/install/aris_package/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/aris_package build --build-base /home/jhpc/RobotArm/aris_ws/build/aris_package/build install --record /home/jhpc/RobotArm/aris_ws/build/aris_package/install.log --single-version-externally-managed
+[0.819s] /home/jhpc/.local/lib/python3.10/site-packages/setuptools/_distutils/dist.py:268: UserWarning: Unknown distribution option: 'tests_require'
+[0.819s]   warnings.warn(msg)
+[0.905s] running egg_info
+[0.905s] creating ../../build/aris_package/aris_package.egg-info
+[0.919s] writing ../../build/aris_package/aris_package.egg-info/PKG-INFO
+[0.920s] writing dependency_links to ../../build/aris_package/aris_package.egg-info/dependency_links.txt
+[0.920s] writing entry points to ../../build/aris_package/aris_package.egg-info/entry_points.txt
+[0.920s] writing requirements to ../../build/aris_package/aris_package.egg-info/requires.txt
+[0.920s] writing top-level names to ../../build/aris_package/aris_package.egg-info/top_level.txt
+[0.920s] writing manifest file '../../build/aris_package/aris_package.egg-info/SOURCES.txt'
+[0.958s] reading manifest file '../../build/aris_package/aris_package.egg-info/SOURCES.txt'
+[0.960s] Traceback (most recent call last):
+[0.960s]   File "/home/jhpc/RobotArm/aris_ws/src/aris_package/setup.py", line 7, in <module>
+[0.960s]     setup(
+[0.960s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/__init__.py", line 111, in setup
+[0.960s]     return distutils.core.setup(**attrs)
+[0.960s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/_distutils/core.py", line 184, in setup
+[0.960s]     return run_commands(dist)
+[0.960s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/_distutils/core.py", line 200, in run_commands
+[0.960s]     dist.run_commands()
+[0.960s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/_distutils/dist.py", line 964, in run_commands
+[0.961s]     self.run_command(cmd)
+[0.961s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/dist.py", line 948, in run_command
+[0.961s]     super().run_command(command)
+[0.961s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/_distutils/dist.py", line 983, in run_command
+[0.961s]     cmd_obj.run()
+[0.961s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/command/egg_info.py", line 311, in run
+[0.961s]     self.find_sources()
+[0.961s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/command/egg_info.py", line 319, in find_sources
+[0.961s]     mm.run()
+[0.961s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/command/egg_info.py", line 545, in run
+[0.961s]     self.prune_file_list()
+[0.961s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/command/egg_info.py", line 611, in prune_file_list
+[0.961s]     base_dir = self.distribution.get_fullname()
+[0.961s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/_core_metadata.py", line 267, in get_fullname
+[0.961s]     return _distribution_fullname(self.get_name(), self.get_version())
+[0.961s]   File "/home/jhpc/.local/lib/python3.10/site-packages/setuptools/_core_metadata.py", line 285, in _distribution_fullname
+[0.961s]     canonicalize_version(version, strip_trailing_zero=False),
+[0.961s] TypeError: canonicalize_version() got an unexpected keyword argument 'strip_trailing_zero'
+[0.993s] Invoked command in '/home/jhpc/RobotArm/aris_ws/src/aris_package' returned '1': PYTHONPATH=/home/jhpc/RobotArm/aris_ws/build/aris_package/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jhpc/RobotArm/aris_ws/install/aris_package/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/aris_package build --build-base /home/jhpc/RobotArm/aris_ws/build/aris_package/build install --record /home/jhpc/RobotArm/aris_ws/build/aris_package/install.log --single-version-externally-managed

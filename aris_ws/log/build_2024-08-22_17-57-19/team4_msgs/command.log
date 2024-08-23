@@ -1,0 +1,1 @@
+Invoking command in '/home/jhpc/RobotArm/aris_ws/build/team4_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/jhpc/RobotArm/aris_ws/src/team4_msgs -DCMAKE_INSTALL_PREFIX=/home/jhpc/RobotArm/aris_ws/install/team4_msgs
