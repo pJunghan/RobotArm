@@ -1,9 +1,0 @@
-{
-  "package_name": "team4_msgs",
-  "non_idl_tuples": [
-    "/home/jhpc/RobotArm/aris_ws/src/team4_msgs:srv/PutOnIcecream.srv",
-    "/home/jhpc/RobotArm/aris_ws/src/team4_msgs:srv/IsOkayIcecream.srv",
-    "/home/jhpc/RobotArm/aris_ws/src/team4_msgs:msg/StoragyStatus.msg",
-    "/home/jhpc/RobotArm/aris_ws/src/team4_msgs:msg/ArisStatus.msg"
-  ]
-}

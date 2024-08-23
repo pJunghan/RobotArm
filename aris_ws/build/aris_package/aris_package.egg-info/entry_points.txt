@@ -1,2 +1,0 @@
-[console_scripts]
-motion2 = aris_package.motion2:main
