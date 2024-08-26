@@ -129,8 +129,8 @@ class MainWindow(QMainWindow):
             del self.login_window
 
     def socket_run(self):
-        # self.HOST = '192.168.1.167'
-        self.HOST = '127.0.0.1'
+        self.HOST = '192.168.1.167'
+        # self.HOST = '127.0.0.1'
         self.PORT = 10002
         self.BUFSIZE = 1024
         self.ADDR = (self.HOST, self.PORT)

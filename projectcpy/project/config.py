@@ -1,8 +1,8 @@
 import pymysql
 import os
-
+robot_arm_path = "/home/rds/aris_ws/RobotArm/"
 # UI 파일 경로
-ui_base_path = "/home/jhpc/RobotArm/ui"
+ui_base_path = robot_arm_path + "/ui"
 main_ui_path = os.path.join(ui_base_path, "main.ui")
 login_ui_path = os.path.join(ui_base_path, "login.ui")
 menu_ui_path = os.path.join(ui_base_path, "ice_cream_window2.ui")
@@ -15,25 +15,25 @@ self_manage_ui_path = os.path.join(ui_base_path, "self_manage.ui")
 seat_select_ui_path = os.path.join(ui_base_path, "seat_selection.ui")
 order_select_ui_path = os.path.join(ui_base_path, "order_mode_selector.ui")
 
-image_folder = "/home/jhpc/RobotArm/ui/pic"
+image_folder = robot_arm_path + "ui/pic"
 
 check_ui_path = os.path.join(ui_base_path, "check_login.ui")
 check_account_ui_path = os.path.join(ui_base_path, "check_account.ui")
 image_folder = os.path.join("projectcpy/flavor")
 
-model_file_path = "/home/jhpc/RobotArm/projectcpy/project/linear_regression_model.pkl"
-user_img_path = "/home/jhpc/RobotArm/projectcpy/user_pic"
-db_path = "/home/jhpc/RobotArm/projectcpy/user_pic"  # 데이터베이스 경로
-model_path = "/home/jhpc/RobotArm/projectcpy/project/Asian_emotion_model.h5"  # 감정 인식 모델 경로
-age_prototxt = "/home/jhpc/RobotArm/projectcpy/project/deploy_age.prototxt"  # 나이 예측 모델 prototxt 경로
-age_model = "/home/jhpc/RobotArm/projectcpy/project/age_net.caffemodel"  # 나이 예측 모델 caffemodel 경로
-gender_prototxt = "/home/jhpc/RobotArm/projectcpy/project/deploy_gender.prototxt"  # 성별 예측 모델 prototxt 경로
-gender_model = "/home/jhpc/RobotArm/projectcpy/project/gender_net.caffemodel"  # 성별 예측 모델 caffemodel 경로
-tts_account_path = "/home/jhpc/RobotArm/projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클라우드 로그인 계정
+model_file_path = robot_arm_path + "projectcpy/project/linear_regression_model.pkl"
+user_img_path = robot_arm_path + "projectcpy/user_pic"
+db_path = robot_arm_path + "projectcpy/user_pic"  # 데이터베이스 경로
+model_path = robot_arm_path + "projectcpy/project/Asian_emotion_model.h5"  # 감정 인식 모델 경로
+age_prototxt = robot_arm_path + "projectcpy/project/deploy_age.prototxt"  # 나이 예측 모델 prototxt 경로
+age_model = robot_arm_path + "projectcpy/project/age_net.caffemodel"  # 나이 예측 모델 caffemodel 경로
+gender_prototxt = robot_arm_path + "projectcpy/project/deploy_gender.prototxt"  # 성별 예측 모델 prototxt 경로
+gender_model = robot_arm_path + "projectcpy/project/gender_net.caffemodel"  # 성별 예측 모델 caffemodel 경로
+tts_account_path = robot_arm_path + "projectcpy/project/aris-tts-db0d4caef6e0.json" # 구글 클라우드 로그인 계정
 
 
 # 배경 이미지 경로
-gui_img_path = "/home/jhpc/RobotArm/ui/pic"
+gui_img_path = robot_arm_path + "ui/pic"
 seat_select_image_path = os.path.join(gui_img_path, "B103_Drawing.png") # 좌석선택 이미지 도면
 
 db_config = {

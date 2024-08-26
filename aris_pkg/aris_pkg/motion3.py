@@ -54,7 +54,7 @@ import logging
 
 '''상수 Define'''
 ESC_KEY = ord('q')           # 캠 종료 버튼
-WEBCAM_INDEX = 0             # 사용하고자 하는 웹캠 장치의 인덱스
+WEBCAM_INDEX = 1             # 사용하고자 하는 웹캠 장치의 인덱스
 FRAME_WIDTH = 640            # 웹캠 프레임 너비
 FRAME_HEIGHT = 480           # 웹캠 프레임 높이
 CONFIDENCE_THRESHOLD = 0.87  # YOLO 모델의 신뢰도 임계값
@@ -86,7 +86,7 @@ class ArisNode(Node):
         self.complite_puton_client = self.create_client(
             PutOnIcecream, "/set_seat_number")
         self.state_sub = self.create_subscription(
-            StoragyStatus, "/storagy_state", 1
+            StoragyStatus, "/storagy_state", qos_profile=1, callback=self.storagy_state_callback
         )
         
         self.storagy_state = ""
@@ -95,7 +95,7 @@ class ArisNode(Node):
         print("call_aris")
         req = Empty.Request()
         while not self.call_storagy_client.service_is_ready():
-            print("waitting service...")
+            print("waitting storagy service...")
             time.sleep(1)
 
         res = self.call_storagy_client.call(request=req)
@@ -104,6 +104,10 @@ class ArisNode(Node):
 
     def complite_puton(self, seat_num) -> bool:
         print("puton")
+
+        if seat_num == None:
+            return 
+        
         req = PutOnIcecream.Request()
         while not self.complite_puton_client.service_is_ready():
             print("waitting service...")
@@ -111,6 +115,9 @@ class ArisNode(Node):
 
         req.seat_number = seat_num
         return self.complite_puton_client.call(request=req).is_okay
+    
+    def storagy_state_callback(self, msg):
+        self.storagy_state = msg.storagy_status
 
 
 
@@ -571,7 +578,7 @@ class RobotMain(object):
         self._tcp_acc = 2000
         self._angle_speed = 20
         self._angle_acc = 500
-        self._table_num = 1
+        self._table_num = None
         self._vars = {}
         self._funcs = {}
         self._robot_init()
@@ -700,8 +707,8 @@ class RobotMain(object):
 
     def socket_connect(self):
 
-        # self.HOST = '192.168.1.167'
-        self.HOST = '127.0.0.1'
+        self.HOST = '192.168.1.167'
+        # self.HOST = '127.0.0.1'
         self.PORT = 20002
         self.BUFSIZE = 1024
         self.ADDR = (self.HOST, self.PORT)
@@ -768,6 +775,8 @@ class RobotMain(object):
                     self.gritting_list.append([self.recv_msg["gender"], int(self.recv_msg["age"])])
                 if self.recv_msg["seat"] != "":
                     self._table_num = self.recv_msg["seat"]
+                else:
+                    self._table_num = None
             except Exception as e:
                 print(e)
                 continue
