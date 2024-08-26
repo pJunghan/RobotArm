@@ -53,7 +53,7 @@ FRAME_HEIGHT = 480           # 웹캠 프레임 높이
 CONFIDENCE_THRESHOLD = 0.87  # YOLO 모델의 신뢰도 임계값
 DEFAULT_MODEL_PATH = 'xArm-Python-SDK/best.pt'   # YOLO 모델의 경로
 
-CAPSULE_CHECK_ROI = [(280, 190, 90, 90), (370, 190, 90, 90), (460, 190, 90, 90)]  # A_ZONE, B_ZONE, C_ZONE 순서
+CAPSULE_CHECK_ROI = [(460, 190, 90, 90), (370, 190, 90, 90), (280, 190, 90, 90)]  # A_ZONE, B_ZONE, C_ZONE 순서
 SEAL_CHECK_ROI = (475, 360, 110, 110)   # Seal check ROI 구역
 CUP_TRASH_ROI = (100, 20, 520, 210)     # storagy 위의 컵 쓰레기 인식 ROI 구역
 
