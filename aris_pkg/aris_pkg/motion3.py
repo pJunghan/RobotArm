@@ -106,7 +106,8 @@ class ArisNode(Node):
         print("puton")
 
         if seat_num == None:
-            return 
+            print("seat_num is None")
+            return False
         
         req = PutOnIcecream.Request()
         while not self.complite_puton_client.service_is_ready():
@@ -1763,7 +1764,8 @@ class RobotMain(object):
 
         while self.is_alive:
             if self.order_list != []:
-                self.node.call_storagy()
+                if self._table_num != None:
+                    self.node.call_storagy()
                 self.MODE = 'icecreaming'
                 raw_order = self.order_list.pop(0)
                 order = raw_order
