@@ -1,6 +1,7 @@
 import pymysql
 import os
-robot_arm_path = "/home/rds/aris_ws/RobotArm/"
+# robot_arm_path = "/home/rds/aris_ws/RobotArm/"
+robot_arm_path = os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__)))))
 # UI 파일 경로
 ui_base_path = robot_arm_path + "/ui"
 main_ui_path = os.path.join(ui_base_path, "main.ui")
