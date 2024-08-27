@@ -29,20 +29,20 @@ class GreetingThread(QThread):
         self.name = name
 
 
-    def run(self):
-        try:
-            if self.name.startswith("guest"):
-                if self.gender == "Male":
-                    tts.google_tts_and_play("남성 회원님 안녕하세요.")
-                elif self.gender == "Female":
-                    tts.google_tts_and_play("여성 회원님 안녕하세요.")
-                else:
-                    tts.google_tts_and_play("게스트 회원님 안녕하세요.")
-            else:
-                first_name = self.name.split(maxsplit=1)[-1]
-                tts.google_tts_and_play(f"{first_name}님 안녕하세요.")
-        except:
-            pass
+    # def run(self):
+    #     try:
+    #         if self.name.startswith("guest"):
+    #             if self.gender == "Male":
+    #                 tts.google_tts_and_play("남성 회원님 안녕하세요.")
+    #             elif self.gender == "Female":
+    #                 tts.google_tts_and_play("여성 회원님 안녕하세요.")
+    #             else:
+    #                 tts.google_tts_and_play("게스트 회원님 안녕하세요.")
+    #         else:
+    #             first_name = self.name.split(maxsplit=1)[-1]
+    #             tts.google_tts_and_play(f"{first_name}님 안녕하세요.")
+    #     except:
+    #         pass
 
 
 class MenuWindow(QMainWindow):
@@ -101,7 +101,7 @@ class MenuWindow(QMainWindow):
         self.add_image_to_graphics_view(topping_images[2], self.graphicsView_6, 'topping3')
         self.graphicsView_6.mousePressEvent = lambda event: self.item_click_event(event, flavor=None, topping='topping3')
         self.setup_recommendations()
-        self.greeting_tts()
+        # self.greeting_tts()
         
         # UI 설정
         self.customize_ui()
@@ -182,31 +182,31 @@ class MenuWindow(QMainWindow):
 
 
     # 0.05초 후에 tts.google_tts_and_play("안녕하세요.") 호출
-    def greeting_tts(self):
-        age, gender, name = self.get_user_info(self.user_id)
-        self.greeting_thread = GreetingThread(self, gender, name)
-        self.greeting_thread.start()
+    # def greeting_tts(self):
+    #     age, gender, name = self.get_user_info(self.user_id)
+    #     self.greeting_thread = GreetingThread(self, gender, name)
+    #     self.greeting_thread.start()
 
-        if isinstance(self.main, MainWindow) and hasattr(self.main, 'set_data'):
-            self.main.set_data(gender=gender, age=age, seat=None)
-        else:
-            logging.error("self.main 객체에는 'set_data' 메서드가 없거나, 'MainWindow' 인스턴스가 아닙니다.")
-            QMessageBox.critical(self, "오류", "올바른 메인 윈도우 객체가 아닙니다.")
+    #     if isinstance(self.main, MainWindow) and hasattr(self.main, 'set_data'):
+    #         self.main.set_data(gender=gender, age=age, seat=None)
+    #     else:
+    #         logging.error("self.main 객체에는 'set_data' 메서드가 없거나, 'MainWindow' 인스턴스가 아닙니다.")
+    #         QMessageBox.critical(self, "오류", "올바른 메인 윈도우 객체가 아닙니다.")
 
-        if name.startswith("guest"):
-            if gender == "Male":
-                QTimer.singleShot(50, lambda: tts.google_tts_and_play("남성 회원님 안녕하세요."))
+    #     if name.startswith("guest"):
+    #         if gender == "Male":
+    #             QTimer.singleShot(50, lambda: tts.google_tts_and_play("남성 회원님 안녕하세요."))
 
-            elif gender == "Female":
-                QTimer.singleShot(50, lambda: tts.google_tts_and_play("여성 회원님 안녕하세요."))
+    #         elif gender == "Female":
+    #             QTimer.singleShot(50, lambda: tts.google_tts_and_play("여성 회원님 안녕하세요."))
 
-            else:
-                QTimer.singleShot(50, lambda: tts.google_tts_and_play("게스트 회원님 안녕하세요."))
+    #         else:
+    #             QTimer.singleShot(50, lambda: tts.google_tts_and_play("게스트 회원님 안녕하세요."))
 
-        else:
-            # 이름이 공백으로 구분되어 있는 경우를 처리 및 성 제외하고 이름만 출력
-            first_name = name.split(maxsplit=1)[-1]
-            QTimer.singleShot(50, lambda: tts.google_tts_and_play(f"{first_name}님 안녕하세요."))
+    #     else:
+    #         # 이름이 공백으로 구분되어 있는 경우를 처리 및 성 제외하고 이름만 출력
+    #         first_name = name.split(maxsplit=1)[-1]
+    #         QTimer.singleShot(50, lambda: tts.google_tts_and_play(f"{first_name}님 안녕하세요."))
 
         self.add_image_to_graphics_view(topping_images[2], self.recommendView_5, 'topping3')
 
