@@ -1,4 +1,3 @@
-
 # S/N : XYZARIS0V3P2311N03
 # Robot IP : 192.168.1.167
 # code_version : 3.1.5.2
@@ -30,20 +29,21 @@ import datetime
 import random
 import traceback
 import threading
+import sys
+
 from xarm import version
 from xarm.wrapper import XArmAPI
+
+from threading import Thread, Event
+import socket
+import json
+import os
 import rclpy as rp
 from rclpy.node import Node
 from rclpy.parameter import Parameter
 from std_srvs.srv import Empty
 from team4_msgs.srv import PutOnIcecream
 from team4_msgs.msg import StoragyStatus
-
-from threading import Thread, Event
-import socket
-import json
-import os
-
 from ultralytics import YOLO
 import cv2
 import numpy as np
@@ -54,13 +54,13 @@ import logging
 
 '''상수 Define'''
 ESC_KEY = ord('q')           # 캠 종료 버튼
-WEBCAM_INDEX = 2             # 사용하고자 하는 웹캠 장치의 인덱스
+WEBCAM_INDEX = 1             # 사용하고자 하는 웹캠 장치의 인덱스
 FRAME_WIDTH = 640            # 웹캠 프레임 너비
 FRAME_HEIGHT = 480           # 웹캠 프레임 높이
 CONFIDENCE_THRESHOLD = 0.87  # YOLO 모델의 신뢰도 임계값
-DEFAULT_MODEL_PATH = '/home/beakhongha/YOLO_ARIS/train24/weights/best.pt'   # YOLO 모델의 경로
+DEFAULT_MODEL_PATH = 'xArm-Python-SDK/best.pt'   # YOLO 모델의 경로
 
-CAPSULE_CHECK_ROI = [(460, 190, 90, 90), (370, 190, 90, 90), (280, 190, 90, 90)]  # A_ZONE, B_ZONE, C_ZONE 순서
+CAPSULE_CHECK_ROI = [(280, 190, 90, 90), (370, 190, 90, 90), (460, 190, 90, 90)]  # A_ZONE, B_ZONE, C_ZONE 순서
 SEAL_CHECK_ROI = (475, 360, 110, 110)   # Seal check ROI 구역
 CUP_TRASH_ROI = (100, 20, 520, 210)     # storagy 위의 컵 쓰레기 인식 ROI 구역
 
@@ -73,20 +73,6 @@ CUP_DETECTION_TIME = 1      # 컵 인식 시간
 DISTANCE_BETWEEN_POINTS = 10    # 중심좌표가 일정 거리 이하로 변동 시 중심좌표의 변동이 없다고 판단
 
 logging.getLogger("ultralytics").setLevel(logging.WARNING)  # 로깅 수준을 WARNING으로 설정하여 정보 메시지 비활성화
-
-# S/N : XYZARIS0V3P2311N03
-# Robot IP : 192.168.1.167
-# code_version : 3.1.5.2
-
-
-#!/usr/bin/env python3
-# Software License Agreement (BSD License)
-#
-# Copyright (c) 2022, UFACTORY, Inc.
-# All rights reserved.
-#
-# Author: Vinman <vinman.wen@ufactory.cc> <vinman.cub@gmail.com>
-
 
 class ArisNode(Node):
     """
@@ -133,6 +119,7 @@ class ArisNode(Node):
     
     def storagy_state_callback(self, msg):
         self.storagy_state = msg.storagy_status
+
 
 
 class YOLOMain:
@@ -462,6 +449,7 @@ class YOLOMain:
         YOLO 모델을 실행하는 메서드
         실시간으로 웹캠 영상을 처리 및 예측 결과를 화면에 출력하고, 여러 기능을 실행
         """
+        print("yolo start")
         # 카메라 작동
         while True:
             # 웹캠에서 프레임 읽기
@@ -561,7 +549,7 @@ class YOLOMain:
             # 로봇 일시정지 기능
             self.pause_robot(image_with_masks, robot_contours, human_contours)
 
-            # # 화면 왼쪽 위에 최단 거리 및 로봇 상태 및 ROI 상태 표시
+            # 화면 왼쪽 위에 최단 거리 및 로봇 상태 및 ROI 상태 표시
             cv2.putText(image_with_masks, f'Distance: {self.min_distance:.2f}, state: {self.robot.robot_state}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.putText(image_with_masks, f'A_ZONE: {self.robot.A_ZONE}, B_ZONE: {self.robot.B_ZONE}, C_ZONE: {self.robot.C_ZONE}, NOT_SEAL: {self.robot.NOT_SEAL}', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             cv2.putText(image_with_masks, f'cup_trash_detected: {self.robot.cup_trash_detected}', (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
@@ -591,14 +579,18 @@ class RobotMain(object):
         self._tcp_acc = 2000
         self._angle_speed = 20
         self._angle_acc = 500
+        self._table_num = None
         self._vars = {}
         self._funcs = {}
         self._robot_init()
+
+        # 로봇 상태, 아이스크림 프레스 작동 여부
         self.state = 'stopped'
         self.pressing = False
-        
-        self.cup_trash_x = None
-        self.cup_trash_y = None
+
+        # 주문 정보, 성별 정보 리스트
+        self.order_list = []
+        self.gritting_list = []
 
         self.position_home = [179.2, -42.1, 7.4, 186.7, 41.5, -1.6] #angle
         self.position_jig_A_grab = [-257.3, -138.3, 198, 68.3, 86.1, -47.0] #linear
@@ -1012,6 +1004,7 @@ class RobotMain(object):
         time.sleep(1)
 
         print('motion_place_capsule finish')
+        
 
     def motion_grab_cup(self):
 
@@ -1060,22 +1053,13 @@ class RobotMain(object):
         time.sleep(0.5)
 
         print('motion_grab_cup finish')
+        
 
-    def motion_topping(self):
+    def motion_topping(self, order):
 
         self.toppingAmount = 5
 
         print('motion_topping start')
-        print('send')
-
-        # self.Toping = True  ##################################################################
-        # self.C_ZONE = True  ##################################################################
-
-        # self._angle_speed = 200 ##################################################################
-        # self._angle_acc = 200   ##################################################################
-
-        # self._tcp_speed = 100   ##################################################################
-        # self._tcp_acc = 1000    ##################################################################
 
         if self.Toping:
             code = self._arm.set_servo_angle(angle=[36.6, -36.7, 21.1, 85.6, 59.4, 44.5], speed=self._angle_speed,
@@ -1097,7 +1081,7 @@ class RobotMain(object):
             time.sleep(1)
             # ===============================================
 
-            if self.C_ZONE:
+            if order["topping3"] > 0:
                 code = self._arm.set_position(*self.position_topping_C, speed=self._tcp_speed,
                                                 mvacc=self._tcp_acc, radius=0.0, wait=True)
                 if not self._check_code(code, 'set_position'): return
@@ -1132,7 +1116,7 @@ class RobotMain(object):
                                                 relative=True, wait=False)
                 if not self._check_code(code, 'set_position'): return
 
-            elif self.B_ZONE:
+            elif order["topping2"] > 0:
                 code = self._arm.set_servo_angle(angle=[55.8, -48.2, 14.8, 86.1, 60.2, 58.7], speed=self._angle_speed,
                                                     mvacc=self._angle_acc, wait=False, radius=20.0)
                 if not self._check_code(code, 'set_servo_angle'): return
@@ -1179,7 +1163,7 @@ class RobotMain(object):
                                                 mvacc=self._tcp_acc, radius=10.0, wait=False)
                 if not self._check_code(code, 'set_position'): return
 
-            elif self.A_ZONE:
+            elif order["topping1"] > 0:
                 code = self._arm.set_position(*self.position_topping_A, speed=self._tcp_speed,
                                                 mvacc=self._tcp_acc, radius=0.0, wait=True)
                 if not self._check_code(code, 'set_position'): return
@@ -1244,8 +1228,6 @@ class RobotMain(object):
         time.sleep(0.5)
 
         print('motion_topping finish')
-        
-        # self.motion_make_icecream() ##################################################################
 
     def motion_make_icecream(self):
 
@@ -1281,8 +1263,6 @@ class RobotMain(object):
         time.sleep(0.5)
 
         print('motion_make_icecream finish')
-
-        # self.motion_serve_storagy() ##################################################################
 
     def motion_serve(self):
 
@@ -1403,6 +1383,12 @@ class RobotMain(object):
 
         print('motion_serve finish')
 
+    def watting_storagy(self):
+        while 1:
+            if self.node.storagy_state == "wait_aris":
+                break
+            time.sleep(0.5)
+
     def motion_serve_storagy(self):
 
         print('motion_serve_storagy start')
@@ -1440,6 +1426,8 @@ class RobotMain(object):
                                             wait=True)
         if not self._check_code(code, 'set_position'): return
 
+        print('motion_serve_storagy finish')
+
         code = self._arm.open_lite6_gripper()
         if not self._check_code(code, 'open_lite6_gripper'):
             return
@@ -1461,7 +1449,7 @@ class RobotMain(object):
         code = self._arm.set_servo_angle(angle=[98.3, -17.1, 6.3, 102.2, 85, 0], speed=self._angle_speed,
                                          mvacc=self._angle_acc, wait=False, radius=0.0)
         if not self._check_code(code, 'set_servo_angle'): return
-
+        result = self.node.complite_puton(self._table_num)
         print('motion_serve_storagy finish')
 
     def motion_trash_capsule(self):
@@ -1560,9 +1548,9 @@ class RobotMain(object):
                                          mvacc=self._angle_acc, wait=True, radius=0.0)
         if not self._check_code(code, 'set_servo_angle'): return
         time.sleep(0.5)
-        
-        print('motion_trash_capsule finish')
 
+        print('motion_trash_capsule finish')
+        
 
     # ============================= trash mode =============================
     def storagy_trash_mode(self):
@@ -1675,14 +1663,121 @@ class RobotMain(object):
 
         print('storagy_trash_mode finish')
 
+    # ============================= gritting =============================
+
+    def motion_greet(self):
+        try:
+            self.clientSocket.send('greet_start'.encode('utf-8'))
+        except:
+            print('socket error')
+
+        self._angle_speed = 100
+        self._angle_acc = 350
+
+        code = self._arm.set_servo_angle(angle=[178.9, -0.7, 179.9, 181.5, -1.9, -92.6], speed=self._angle_speed,
+                                         mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        code = self._arm.set_servo_angle(angle=[178.9, -0.7, 179.9, 180.9, -28.3, -92.8], speed=self._angle_speed,
+                                         mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        code = self._arm.set_servo_angle(angle=[178.9, -0.7, 179.9, 185.4, 30.8, -94.9], speed=self._angle_speed,
+                                         mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        code = self._arm.set_servo_angle(angle=[178.9, -0.7, 179.9, 180.9, -28.3, -92.8], speed=self._angle_speed,
+                                         mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        code = self._arm.set_servo_angle(angle=[178.9, -0.7, 179.9, 185.4, 30.8, -94.9], speed=self._angle_speed,
+                                         mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        code = self._arm.set_servo_angle(angle=[178.9, -0.7, 179.9, 180.9, -28.3, -92.8], speed=self._angle_speed,
+                                         mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        code = self._arm.set_servo_angle(angle=[178.9, -0.7, 179.9, 185.4, 30.8, -94.9], speed=self._angle_speed,
+                                         mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        try:
+            self.clientSocket.send('motion_greet finish'.encode('utf-8'))
+        except:
+            print('socket error')
+        code = self._arm.set_servo_angle(angle=[178.9, -0.7, 179.9, 181.5, -1.9, -92.6], speed=self._angle_speed,
+                                         mvacc=self._angle_acc, wait=True, radius=0.0)
+        if not self._check_code(code, 'set_servo_angle'):
+            return
+        while True:
+            try:
+                self.clientSocket.send('motion_greet_finish'.encode('utf-8'))
+                break
+            except:
+                print('socket error')
+
+    def gritting(self, gender) -> None: 
+        self._angle_speed = 100
+        self._angle_acc = 100
+
+        if gender == "Female":
+            code = self._arm.set_servo_angle(angle=[207.4, -15.5, 60.6, 181.7, 46.8, -2.5], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[247.6, -15.5, 8.9, 87, 78.5, -104.7], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[179.2, -42.1, 7.4, 186.7, 41.5, -1.6], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0) # home
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            
+        elif gender == "Male":
+            code = self._arm.set_servo_angle(angle=[265.4, -17.3, 105.2, 186.8, -17.1, 0], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[265.4, -9.6, 37.1, 179.8, -6, -8.2], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[265.4, -17.3, 105.2, 186.8, -23.1, 0], speed=self._angle_speed, 
+                                                mvacc=self._angle_acc, wait=True, radius=0.0)
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            code = self._arm.set_servo_angle(angle=[179.2, -42.1, 7.4, 186.7, 41.5, -1.6], speed=self._angle_speed,  
+                                                mvacc=self._angle_acc, wait=True, radius=0.0) # home
+            if not self._check_code(code, 'set_servo_angle'):
+                return
+            
+        else:
+            self.motion_greet()
+
 
     # ============================= main =============================
     def run_robot(self):
 
         self.Toping = True
-        self.MODE = 'icecreaming'
 
         while self.is_alive:
+            if self.order_list != []:
+                if self._table_num != None:
+                    self.node.call_storagy()
+                self.MODE = 'icecreaming'
+                raw_order = self.order_list.pop(0)
+                order = raw_order
+
+            elif self.gritting_list != []:
+                self.MODE = 'gritting'
+                data = self.gritting_list.pop(0)
+                gender = data[0]
+                age = data[1]
+            else:
+                self.MODE = 'ready'
+
             # --------------Joint Motion : icecream start--------------------
             if self.MODE == 'icecreaming':
                 print('icecream start')
@@ -1713,7 +1808,7 @@ class RobotMain(object):
                 if self.NOT_SEAL:
                     self.motion_place_capsule()
                     self.motion_grab_cup()
-                    self.motion_topping()
+                    self.motion_topping(order)
                     self.motion_make_icecream()
                     self.motion_serve_storagy()
                     self.motion_trash_capsule()
@@ -1724,6 +1819,7 @@ class RobotMain(object):
                 else:
                     self.motion_place_fail_capsule()
                     self.motion_home()
+                    self.order_list.insert(0, raw_order)
                     print('please take off the seal')
 
                 code = self._arm.stop_lite6_gripper()
@@ -1736,30 +1832,29 @@ class RobotMain(object):
                 self.cup_trash_detected, self.cup_holder_detected = False, False
                 self.cup_trash_detect_start_time, self.cup_holder_detect_start_time = None, None
                 time.sleep(1)
-
+            
+            elif self.MODE == 'gritting':
+                self.gritting(gender)
 
 
 def main():
+    RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
+    arm = XArmAPI('192.168.1.167', baud_checkset=False)
+    rp.init(args=None)
     try:
-        RobotMain.pprint('xArm-Python-SDK Version:{}'.format(version.__version__))
-        rp.init(args=None)
         node = ArisNode()
-        arm = XArmAPI('192.168.1.167', baud_checkset=False)
         robot_main = RobotMain(arm, node)
         yolo_main = YOLOMain(robot_main)
-
+        # node.call_storagy() # for test
+        # node.complite_puton(1) # for test
         robot_thread = threading.Thread(target=robot_main.run_robot)
         yolo_thread = threading.Thread(target=yolo_main.run_yolo)
         socket_thread = threading.Thread(target=robot_main.socket_connect)
-
-
+        
         robot_thread.start()
         yolo_thread.start()
         socket_thread.start()
 
-        robot_thread.join()
-        yolo_thread.join()
-        
         rp.spin(node=node)
     except KeyboardInterrupt:
         print("KeyboardInterrupt stop")
@@ -1768,12 +1863,9 @@ def main():
         print(f"Error Msg : {e}")
 
     finally:
-        pass
         # ROS2 종료 및 노드 파괴
         node.destroy_node()
         rp.shutdown()
-
-
 
 if __name__ == '__main__':
     main()
