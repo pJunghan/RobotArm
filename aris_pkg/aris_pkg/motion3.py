@@ -591,6 +591,8 @@ class RobotMain(object):
         self._tcp_acc = 2000
         self._angle_speed = 20
         self._angle_acc = 500
+        self.order_list = []
+        self.gritting_list = []
         self._vars = {}
         self._funcs = {}
         self._robot_init()
@@ -1675,21 +1677,39 @@ class RobotMain(object):
 
         print('storagy_trash_mode finish')
 
+    def wait_storagy(self):
+        while True:
+            if self.node.storagy_state == "wait_aris":
+                break
+            time.sleep(1)
+            print("waitting storagy...")
 
     # ============================= main =============================
     def run_robot(self):
 
         self.Toping = True
-        self.MODE = 'icecreaming'
 
         while self.is_alive:
+            if self.order_list != []:
+                self.MODE = 'icecreaming'
+                raw_order = self.order_list.pop(0)
+                order = raw_order
+
+            elif self.gritting_list != []:
+                self.MODE = 'gritting'
+                data = self.gritting_list.pop(0)
+                gender = data[0]
+                age = data[1]
+            else:
+                self.MODE = 'ready'
+
             # --------------Joint Motion : icecream start--------------------
             if self.MODE == 'icecreaming':
                 print('icecream start')
                 time.sleep(4)
                 self.motion_home()
-
-                self.storagy_trash_mode()
+                if self.node.storagy.state == "wait_aris":
+                    self.storagy_trash_mode()
 
                 # 캡슐 인식 대기
                 while not (self.A_ZONE or self.B_ZONE or self.C_ZONE):
@@ -1711,11 +1731,14 @@ class RobotMain(object):
 
                 # 씰 제거 확인 시 아이스크림 제조
                 if self.NOT_SEAL:
+                    self.node.call_storagy()
                     self.motion_place_capsule()
                     self.motion_grab_cup()
-                    self.motion_topping()
+                    self.motion_topping(order)
                     self.motion_make_icecream()
+                    self.wait_storagy()
                     self.motion_serve_storagy()
+                    self.node.complite_puton(self._table_num)
                     self.motion_trash_capsule()
                     self.motion_home()
                     print('icecream finish')
@@ -1724,6 +1747,7 @@ class RobotMain(object):
                 else:
                     self.motion_place_fail_capsule()
                     self.motion_home()
+                    self.order_list.insert(0, raw_order)
                     print('please take off the seal')
 
                 code = self._arm.stop_lite6_gripper()
@@ -1736,6 +1760,12 @@ class RobotMain(object):
                 self.cup_trash_detected, self.cup_holder_detected = False, False
                 self.cup_trash_detect_start_time, self.cup_holder_detect_start_time = None, None
                 time.sleep(1)
+            
+            elif self.MODE == 'gritting':
+                self.gritting(gender)
+
+            time.sleep(0.5)
+   
 
 
 
